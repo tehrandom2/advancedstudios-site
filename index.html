@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>advanced studios</title>
+<meta name="description" content="advanced studios: game builds, soundtracks and the studio's machines.">
+<meta property="og:image" content="img/banner-960.webp">
+<style>
+  :root {
+    color-scheme: dark;
+    --ink: #07060a;
+    --line: #22191b;
+    --text: #ece6e2;
+    --dim: #8f8288;
+    --hot: #ff4433;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--ink); color: var(--text); font: 16px/1.6 system-ui, sans-serif; }
+  a { color: inherit; }
+
+  /* The banner is the page's front door: full width, the maestro on the right, our lockup over the quiet left. */
+  .hero { position: relative; overflow: hidden; aspect-ratio: 16 / 9; max-height: 82vh; width: 100%; background: #120708; }
+  .hero img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 62% 30%; }
+  .hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 55%, var(--ink) 100%), linear-gradient(90deg, rgba(7,6,10,.55), transparent 45%); }
+  .lockup { position: absolute; z-index: 1; left: clamp(16px, 4vw, 64px); top: clamp(16px, 7vw, 96px); }
+  .lockup h1 { margin: 0; font-weight: 700; font-size: clamp(28px, 5.4vw, 76px); line-height: .95; letter-spacing: -.01em; }
+  .lockup p { margin: .35em 0 0; font-size: clamp(16px, 2.2vw, 30px); color: #d9cfcb; font-weight: 400; }
+  .lockup p::after { content: ""; display: block; width: 5.5em; height: 1px; margin-top: .6em; background: linear-gradient(90deg, var(--hot), transparent); }
+
+  main { width: min(46rem, calc(100% - 32px)); margin: 0 auto; padding: 8px 0 64px; }
+  h2 { font-size: .8rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--dim); margin: 2.5rem 0 .75rem; }
+
+  ul.links { list-style: none; margin: 0; padding: 0; }
+  ul.links li { border-top: 1px solid var(--line); }
+  ul.links li:last-child { border-bottom: 1px solid var(--line); }
+  ul.links a { display: flex; justify-content: space-between; gap: 1rem; padding: .9rem .25rem; text-decoration: none; transition: color .15s, padding .15s; }
+  ul.links a:hover, ul.links a:focus-visible { color: var(--hot); padding-left: .6rem; }
+  ul.links span { color: var(--dim); }
+
+  /* Doge speak, circa 2013: Comic Sans in the classic bright colours, a few words scattered at an angle.
+     Kept to the dark corners of the banner so the maestro stays the picture. */
+  .doge { font-family: "Comic Sans MS", "Comic Neue", "Chalkboard SE", cursive; font-weight: 700; text-shadow: 0 0 10px rgba(0,0,0,.9), 0 2px 2px rgba(0,0,0,.8); }
+  .tagline { margin: .9em 0 0; font-size: clamp(15px, 1.7vw, 24px); line-height: 1.5; transform: rotate(-2deg); transform-origin: left; max-width: 18em; }
+  .tagline span { display: inline-block; margin-right: .35em; }
+  .c1 { color: #ff66e0; }
+  .c2 { color: #7dff4f; }
+  .c3 { color: #4fe3ff; }
+  .c4 { color: #ffe14f; }
+  .such { position: absolute; z-index: 1; font-size: clamp(14px, 1.6vw, 26px); opacity: .9; white-space: nowrap; }
+  .such.a { left: 7%; top: 66%; transform: rotate(-9deg); }
+  .such.b { left: 31%; top: 80%; transform: rotate(6deg); }
+  .such.c { right: 5%; top: 72%; transform: rotate(-5deg); }
+  @media (max-width: 700px) { .such.b, .such.c { display: none; } .such.a { top: 74%; } }
+
+  footer { color: var(--dim); font-size: .8rem; margin-top: 3rem; }
+</style>
+</head>
+<body>
+<header class="hero">
+  <picture>
+    <source media="(max-width: 900px)" srcset="img/banner-960.webp">
+    <img src="img/banner-1920.webp" alt="The studio's boss, grinning, conducts a wall of glowing red machines with a baton">
+  </picture>
+  <div class="lockup">
+    <h1>advanced</h1>
+    <p>studios</p>
+    <div class="doge tagline"><span class="c1">very smaert,</span> <span class="c2">much slop,</span> <span class="c3">vibe-coded-trash</span></div>
+  </div>
+  <div class="doge such a c4" aria-hidden="true">wow</div>
+  <div class="doge such b c3" aria-hidden="true">such machine</div>
+  <div class="doge such c c2" aria-hidden="true">so conduct</div>
+</header>
+<main>
+  <h2>Things we make</h2>
+  <ul class="links">
+    <li><a href="https://greytide.advancedstudios.net/">greytide <span>builds</span></a></li>
+    <li><a href="https://greytide.advancedstudios.net/play/">greytide <span>play in the browser</span></a></li>
+    <li><a href="https://greytide.advancedstudios.net/blog/">greytide <span>devlog</span></a></li>
+    <li><a href="https://greytide.advancedstudios.net/soundtrack/">greytide <span>soundtrack</span></a></li>
+    <li><a href="https://dev.advancedstudios.net/shoosting-builds/">shoosting <span>builds</span></a></li>
+    <li><a href="https://dev.advancedstudios.net/shoosting-builds/soundtrack/">shoosting <span>soundtrack</span></a></li>
+    <li><a href="https://dev.advancedstudios.net/shoosting-builds/studio/">shoosting <span>studio</span></a></li>
+    <li><a href="https://radio.advancedstudios.net/">nobody fm <span>radio</span></a></li>
+  </ul>
+
+  <footer>advanced studios</footer>
+</main>
+</body>
+</html>
