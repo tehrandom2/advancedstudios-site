@@ -145,9 +145,9 @@
     text-shadow: 0 0 18px rgba(255,68,51,.45), 0 0 2px rgba(255,68,51,.9), 3px 3px 0 rgba(0,0,0,.6); }
   html:not([data-theme="b"]) main.ta .head p { margin: 0; font: 18px/1.2 "Permanent Marker", cursive; color: #4fe3ff; transform: rotate(3deg); }
   html:not([data-theme="b"]) main.ta .head p b { color: #ff66e0; font-weight: 400; }
-  html:not([data-theme="b"]) main.ta .board { position: relative; z-index: 3; width: min(1300px, 100%); margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start; gap: 64px clamp(28px, 3.4vw, 54px); }
+  html:not([data-theme="b"]) main.ta .board { position: relative; z-index: 3; width: min(1080px, 100%); margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start; gap: 64px clamp(28px, 3.4vw, 54px); }
   /* ---------- one flyer ---------- */
-  html:not([data-theme="b"]) main.ta .fly { --acc: var(--hot); position: relative; width: var(--w); max-width: 100%; margin-top: var(--dy, 0); container-type: inline-size;
+  html:not([data-theme="b"]) main.ta .fly { --acc: var(--hot); position: relative; left: var(--dx, 0); width: var(--w); max-width: 100%; margin-top: var(--dy, 0); container-type: inline-size;
     transform: rotate(var(--tilt)); transition: transform .5s cubic-bezier(.2,1.5,.35,1); will-change: transform; }
   html:not([data-theme="b"]) main.ta .fly::before { content: ""; position: absolute; inset: 18px 10px 0; z-index: -1; background: #000; filter: blur(16px); border-radius: 4px;
     opacity: .55; transform: translate(6px, 12px); transition: opacity .5s, transform .5s; }
@@ -272,13 +272,33 @@
   html:not([data-theme="b"]) main.ta .v-dial .wv.w3 { animation-delay: .4s; }
   @keyframes ta-wv { 0% { opacity: 0; } 30% { opacity: 1; } 100% { opacity: 0; } }
   html:not([data-theme="b"]) main.ta .v-dial .air { animation: ta-blink 1.4s steps(1) infinite; }
+  /* prototype (fast af): a craft rolls round the inside of the tube until the HUD reads MACH 1.00 and the boom hits */
+  html:not([data-theme="b"]) main.ta .v-tube .ring { transform-origin: center; transform: scale(var(--s)); animation: ta-rush .9s linear infinite; animation-delay: calc(var(--i) * -.3s); }
+  @keyframes ta-rush { 0% { transform: scale(.12); opacity: 0; } 30% { opacity: 1; } 100% { transform: scale(1); opacity: 0; } }
+  html:not([data-theme="b"]) main.ta .v-tube .orbit { transform-origin: center; animation: ta-roll 3.6s ease-in-out infinite; }
+  @keyframes ta-roll { 0% { transform: rotate(0); } 30% { transform: rotate(150deg); } 42% { transform: rotate(118deg); } 76% { transform: rotate(310deg); } 100% { transform: rotate(360deg); } }
+  html:not([data-theme="b"]) main.ta .v-tube .jet { animation: ta-blink .2s steps(1) infinite; }
+  html:not([data-theme="b"]) main.ta .v-tube .m1, html:not([data-theme="b"]) main.ta .v-tube .m2 { opacity: 0; }
+  html:not([data-theme="b"]) main.ta .v-tube .m1 { animation: ta-m1 3.6s steps(1) infinite; }
+  html:not([data-theme="b"]) main.ta .v-tube .m2 { animation: ta-m2 3.6s steps(1) infinite; }
+  html:not([data-theme="b"]) main.ta .v-tube .m3 { animation: ta-m3 3.6s steps(1) infinite; }
+  @keyframes ta-m1 { 0% { opacity: 1; } 33%,100% { opacity: 0; } }
+  @keyframes ta-m2 { 0% { opacity: 0; } 33% { opacity: 1; } 66%,100% { opacity: 0; } }
+  @keyframes ta-m3 { 0% { opacity: 0; } 66%,100% { opacity: 1; } }
+  html:not([data-theme="b"]) main.ta .v-tube .boom { transform-origin: center; opacity: 0; animation: ta-tboom 3.6s ease-out infinite; }
+  @keyframes ta-tboom { 0%,65% { transform: scale(1); opacity: 0; } 66% { transform: scale(1); opacity: 1; } 86%,100% { transform: scale(1.4); opacity: 0; } }
+  /* the "soon" tab: not a link, so no tear line, no flutter, no arrow, no pointer */
+  html:not([data-theme="b"]) main.ta .tab.soon { cursor: default; }
+  html:not([data-theme="b"]) main.ta .tab.soon:hover { animation: none; background: var(--specks), var(--paper); }
+  html:not([data-theme="b"]) main.ta .tab.soon .lbl { text-orientation: sideways; }
+  html:not([data-theme="b"]) main.ta .tab.soon .lbl::after { content: none; }
   html:not([data-theme="b"]) main.ta .reticle { position: absolute; z-index: 1; left: 50%; top: 66%; width: 34%; aspect-ratio: 1; transform: translate(-50%,-50%); pointer-events: none; }
   html:not([data-theme="b"]) main.ta .reticle .spin { transform-origin: center; transform-box: fill-box; animation: ta-spin 9s linear infinite; }
   html:not([data-theme="b"]) main.ta .wall-foot { position: relative; z-index: 3; width: min(1240px, 100%); margin: 72px auto 0; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; align-items: baseline; color: var(--dim); font-size: .8rem; }
   html:not([data-theme="b"]) main.ta .wall-foot .doge { font-size: 15px; transform: rotate(-3deg); }
   @media (max-width: 640px) {
     html:not([data-theme="b"]) main.ta .board { gap: 54px; }
-    html:not([data-theme="b"]) main.ta .fly { --tilt: calc(var(--tilt-m, -1deg)) !important; margin-top: 0; }
+    html:not([data-theme="b"]) main.ta .fly { --tilt: calc(var(--tilt-m, -1deg)) !important; margin-top: 0; left: 0; }
     html:not([data-theme="b"]) main.ta .tab { min-height: 214px; }
     html:not([data-theme="b"]) main.ta .tab .lbl { font-size: 17px; }
     html:not([data-theme="b"]) main.ta .tape.l { left: -14px; }
@@ -328,18 +348,21 @@
   html[data-theme="b"] main.tb .block.gt { --phos: #a6ffbe; --glow: rgba(110,255,150,.30); --cab1: #2b2729; --cab2: #110f10; }
   html[data-theme="b"] main.tb .block.sh { --phos: #ffc874; --glow: rgba(255,90,40,.36); --cab1: #34353b; --cab2: #131317; }
   html[data-theme="b"] main.tb .block.fm { --phos: #ffae6b; --glow: rgba(255,130,50,.34); --cab1: #4a2b19; --cab2: #1d0f08; }
+  html[data-theme="b"] main.tb .block.af { --phos: #a8f4ff; --glow: rgba(63,224,255,.32); --cab1: #283139; --cab2: #0c1014; }
   html[data-theme="b"] main.tb .sets { position: relative; display: grid; grid-template-columns: 1.32fr 1fr 1fr; gap: 30px 26px; align-items: start; }
   html[data-theme="b"] main.tb .station-col { grid-row: span 2; display: flex; flex-direction: column; gap: 16px; }
   html[data-theme="b"] main.tb .sh .sets { grid-template-columns: 1fr 1fr 1.32fr; }
   html[data-theme="b"] main.tb .sh .station-col { grid-column: 3; grid-row: 1 / span 2; }
   html[data-theme="b"] main.tb .fm .sets { grid-template-columns: 1.32fr 1fr 1fr; }
+  html[data-theme="b"] main.tb .af .sets { grid-template-columns: 1fr 1fr 1.32fr; }
+  html[data-theme="b"] main.tb .af .station-col { grid-column: 3; grid-row: 1 / span 2; }
   html[data-theme="b"] main.tb .set.wide { grid-column: span 2; }
   html[data-theme="b"] main.tb .set.wide .screen { aspect-ratio: 5 / 3; }
   html[data-theme="b"] main.tb .shelf { position: relative; height: 16px; margin-top: 22px; border-radius: 2px;
     background: linear-gradient(#3c3438, #1b1619 45%, #0c0a0b); box-shadow: 0 18px 28px -10px #000, inset 0 1px 0 rgba(255,255,255,.14); }
   html[data-theme="b"] main.tb .price { position: absolute; top: 6px; left: 6%; padding: 4px 9px 3px; background: #efe8dc; color: #1a1416; font: 700 11px/1.15 ui-monospace, Consolas, monospace; letter-spacing: .08em; text-transform: uppercase; transform: rotate(-2.5deg); box-shadow: 0 6px 10px -4px #000; }
   html[data-theme="b"] main.tb .price b { color: #c8200f; }
-  html[data-theme="b"] main.tb .sh .price { left: auto; right: 8%; transform: rotate(2deg); }
+  html[data-theme="b"] main.tb .sh .price, html[data-theme="b"] main.tb .af .price { left: auto; right: 8%; transform: rotate(2deg); }
   /* ---------- one TV ---------- */
   html[data-theme="b"] main.tb .set { position: relative; display: block; text-decoration: none; color: inherit; -webkit-tap-highlight-color: transparent;
     transform: perspective(1100px) translateY(var(--lift, 0px)) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) rotate(var(--rz, 0deg));
@@ -357,6 +380,7 @@
   html[data-theme="b"] main.tb .fm .cab { background:
       repeating-linear-gradient(93deg, rgba(0,0,0,.2) 0 2px, transparent 2px 7px, rgba(255,190,140,.05) 7px 9px, transparent 9px 16px),
       linear-gradient(158deg, var(--cab1), var(--cab2)); }
+  html[data-theme="b"] main.tb .af .cab::after { content: ""; position: absolute; left: 12px; right: 12px; top: 5px; height: 1px; background: linear-gradient(90deg, transparent, rgba(63,224,255,.55), transparent); }
   html[data-theme="b"] main.tb .sh .cab::after { content: ""; position: absolute; left: 12px; right: 12px; top: 5px; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,68,51,.55), transparent); }
   html[data-theme="b"] main.tb .bezel { padding: 7px; border-radius: 15px; background: #0a0809; box-shadow: inset 0 3px 8px rgba(0,0,0,.95), inset 0 -1px 0 rgba(255,255,255,.07); }
   html[data-theme="b"] main.tb .screen { position: relative; aspect-ratio: 4 / 3; overflow: hidden; border-radius: 10% / 13%; isolation: isolate; container-type: inline-size;
@@ -419,6 +443,7 @@
   html[data-theme="b"] main.tb .label { position: relative; flex: 1; display: flex; align-items: center; gap: 10px; min-width: 0; height: 34px; padding: 0 10px 0 14px; border-radius: 2px; overflow: hidden;
     background: linear-gradient(#f3eee2, #e2d9c6); color: #17120e; }
   html[data-theme="b"] main.tb .label::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 6px; background: var(--hot); }
+  html[data-theme="b"] main.tb .af .label::before { background: #3fe0ff; }
   html[data-theme="b"] main.tb .label::after { content: ""; position: absolute; inset: 0; background: var(--noise) 0 0 / 70px; opacity: .2; mix-blend-mode: multiply; pointer-events: none; }
   html[data-theme="b"] main.tb .label h3 { margin: 0; font: 400 clamp(19px, 2vw, 25px)/1 "Permanent Marker", "Comic Sans MS", cursive; letter-spacing: .01em; white-space: nowrap; transform: rotate(-1.5deg); }
   html[data-theme="b"] main.tb .label .old { font: 400 11px/1.1 "Permanent Marker", cursive; color: #8b8178; text-decoration: line-through; text-decoration-color: #c8200f; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -434,6 +459,11 @@
   html[data-theme="b"] main.tb .sticky .w { color: #c0118f; }
   html[data-theme="b"] main.tb .sticky.dead-note { right: -14px; top: -18px; }
   html[data-theme="b"] main.tb .sticky.fm-note { right: -10px; bottom: 34px; --sr: -5deg; }
+  html[data-theme="b"] main.tb .sticky.af-note { right: -12px; top: -20px; --sr: 5deg; }
+  /* the "soon" set (fast af): not a link, so no pointer and no lift; it still tunes in */
+  html[data-theme="b"] main.tb .set.soon { cursor: default; }
+  html[data-theme="b"] main.tb .set.soon.hot { --lift: 0px; }
+  html[data-theme="b"] main.tb .soon .dymo { background: #0d3c47; }
   /* dead set: please stand by */
   html[data-theme="b"] main.tb .bars { display: flex; opacity: .28; }
   html[data-theme="b"] main.tb .bars i { flex: 1; }
@@ -555,6 +585,27 @@
   @keyframes tb-r-st2 { 0%, 29% { opacity: 0 } 31%, 35% { opacity: .75 } 37%, 100% { opacity: 0 } }
   html[data-theme="b"] main.tb .r-sig { animation: tb-r-sig 7s steps(1, end) infinite; }
   @keyframes tb-r-sig { 0% { opacity: .3 } 13% { opacity: .6 } 19% { opacity: .3 } 31% { opacity: .55 } 37% { opacity: .3 } 51% { opacity: 1 } 88% { opacity: .3 } }
+  /* prototype (fast af): a craft rolls round the tube, the HUD climbs to MACH 1.00, boom */
+  html[data-theme="b"] main.tb .af-ring { transform: scale(var(--s)); animation: tb-af-rush .9s linear infinite; }
+  @keyframes tb-af-rush { 0% { transform: scale(.1); opacity: 0 } 30% { opacity: 1 } 100% { transform: scale(1); opacity: 0 } }
+  html[data-theme="b"] main.tb .af-roll { animation: tb-af-roll 4s ease-in-out infinite; }
+  @keyframes tb-af-roll { 0% { transform: rotate(0) } 28% { transform: rotate(150deg) } 40% { transform: rotate(115deg) } 74% { transform: rotate(305deg) } 100% { transform: rotate(360deg) } }
+  html[data-theme="b"] main.tb .af-jet { animation: tb-blink .2s steps(1, end) infinite; }
+  html[data-theme="b"] main.tb .af-n1, html[data-theme="b"] main.tb .af-n2 { opacity: 0; }
+  html[data-theme="b"] main.tb .af-n1 { animation: tb-af-n1 4s steps(1, end) infinite; }
+  html[data-theme="b"] main.tb .af-n2 { animation: tb-af-n2 4s steps(1, end) infinite; }
+  html[data-theme="b"] main.tb .af-n3 { animation: tb-af-n3 4s steps(1, end) infinite; }
+  @keyframes tb-af-n1 { 0% { opacity: 1 } 25%, 100% { opacity: 0 } }
+  @keyframes tb-af-n2 { 0% { opacity: 0 } 25% { opacity: 1 } 50%, 100% { opacity: 0 } }
+  @keyframes tb-af-n3 { 0% { opacity: 0 } 50%, 100% { opacity: 1 } }
+  html[data-theme="b"] main.tb .af-spd { transform-origin: 0 50%; animation: tb-af-spd 4s ease-in infinite; }
+  @keyframes tb-af-spd { 0% { transform: scaleX(.3) } 50%, 100% { transform: scaleX(1) } }
+  html[data-theme="b"] main.tb .af-heat { transform-origin: 0 50%; transform: scaleX(.6); animation: tb-af-heat 4s ease-in-out infinite; }
+  @keyframes tb-af-heat { 0% { transform: scaleX(.25) } 50% { transform: scaleX(.95) } 100% { transform: scaleX(.25) } }
+  html[data-theme="b"] main.tb .af-flash { opacity: 0; animation: tb-af-flash 4s linear infinite; }
+  @keyframes tb-af-flash { 0%, 49.9% { opacity: 0 } 50% { opacity: .4 } 58%, 100% { opacity: 0 } }
+  html[data-theme="b"] main.tb .af-boom { opacity: 0; animation: tb-af-boom 4s ease-out infinite; }
+  @keyframes tb-af-boom { 0%, 49.9% { opacity: 0; transform: scale(.4) } 50% { opacity: 1; transform: scale(.6) } 62% { opacity: 1; transform: scale(1.15) } 76%, 100% { opacity: 0; transform: scale(1.3) } }
   /* the remote's OSD, following the pointer */
   html[data-theme="b"] main.tb .remote { position: fixed; left: 0; top: 0; z-index: 50; pointer-events: none; display: grid; gap: 2px; opacity: 0; transition: opacity .15s;
     font: 400 22px/1 VT323, monospace; color: var(--phos, #a6ffbe); text-transform: uppercase; letter-spacing: .05em;
@@ -568,14 +619,15 @@
   /* paused off-screen; JS adds .on while a set is in view */
   html.js[data-theme="b"] main.tb .set:not(.on) *, html.js[data-theme="b"] main.tb .set:not(.on) *::before, html.js[data-theme="b"] main.tb .set:not(.on) *::after { animation-play-state: paused !important; }
   @media (max-width: 980px) {
-    html[data-theme="b"] main.tb .sets, html[data-theme="b"] main.tb .sh .sets, html[data-theme="b"] main.tb .fm .sets { grid-template-columns: 1fr 1fr; gap: 22px 16px; }
-    html[data-theme="b"] main.tb .station-col, html[data-theme="b"] main.tb .sh .station-col { grid-column: 1 / -1; grid-row: auto; }
+    html[data-theme="b"] main.tb .sets, html[data-theme="b"] main.tb .sh .sets, html[data-theme="b"] main.tb .fm .sets, html[data-theme="b"] main.tb .af .sets { grid-template-columns: 1fr 1fr; gap: 22px 16px; }
+    html[data-theme="b"] main.tb .station-col, html[data-theme="b"] main.tb .sh .station-col, html[data-theme="b"] main.tb .af .station-col { grid-column: 1 / -1; grid-row: auto; }
     html[data-theme="b"] main.tb .set.wide { grid-column: 1 / -1; }
     html[data-theme="b"] main.tb .sticky.fm-note { bottom: auto; top: -22px; right: -6px; }
+    html[data-theme="b"] main.tb .sticky.af-note { right: -6px; }
   }
   @media (max-width: 560px) {
     html[data-theme="b"] main.tb .wall-in { width: calc(100% - 32px); }
-    html[data-theme="b"] main.tb .sets, html[data-theme="b"] main.tb .sh .sets, html[data-theme="b"] main.tb .fm .sets { gap: 18px 12px; }
+    html[data-theme="b"] main.tb .sets, html[data-theme="b"] main.tb .sh .sets, html[data-theme="b"] main.tb .fm .sets, html[data-theme="b"] main.tb .af .sets { gap: 18px 12px; }
     html[data-theme="b"] main.tb .cab { padding: 7px 7px 0; border-radius: 12px 12px 10px 10px; }
     html[data-theme="b"] main.tb .bezel { padding: 4px; border-radius: 10px; }
     html[data-theme="b"] main.tb .station .cab { padding: 9px; gap: 9px; grid-template-columns: 1fr 34px; }
@@ -591,7 +643,7 @@
     html[data-theme="b"] main.tb .sticky.dead-note { right: -8px; top: -14px; }
     html[data-theme="b"] main.tb .price { font-size: 10px; }
     html[data-theme="b"] main.tb .osd-sub .xtra { display: none; }
-    html[data-theme="b"] main.tb .sticky.fm-note { display: none; }
+    html[data-theme="b"] main.tb .sticky.fm-note, html[data-theme="b"] main.tb .sticky.af-note { display: none; }
   }
   @media (prefers-reduced-motion: reduce) {
     html[data-theme="b"] main.tb *, html[data-theme="b"] main.tb *::before, html[data-theme="b"] main.tb *::after, html[data-theme="b"] main.tb .grain { animation: none !important; transition: none !important; }
@@ -650,6 +702,14 @@
         <feComposite in="gc" in2="ng" operator="arithmetic" k2="1" k3=".42" k4="-.21" result="m"/>
         <feComponentTransfer in="m"><feFuncR type="discrete" tableValues=".07 1 .97 .92"/><feFuncG type="discrete" tableValues=".06 .5 .74 .9"/><feFuncB type="discrete" tableValues=".07 .1 .48 .85"/><feFuncA type="linear" slope="0" intercept="1"/></feComponentTransfer>
       </filter>
+      <filter id="xerox-af" color-interpolation-filters="sRGB" x="0" y="0" width="100%" height="100%">
+        <feColorMatrix type="matrix" values=".25 .45 .3 0 0  .25 .45 .3 0 0  .25 .45 .3 0 0  0 0 0 1 0" result="g"/>
+        <feComponentTransfer in="g" result="gc"><feFuncR type="linear" slope="2.3" intercept="-.04"/><feFuncG type="linear" slope="2.3" intercept="-.04"/><feFuncB type="linear" slope="2.3" intercept="-.04"/></feComponentTransfer>
+        <feTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="2" seed="5" result="n"/>
+        <feColorMatrix in="n" type="matrix" values="1 0 0 0 0  1 0 0 0 0  1 0 0 0 0  0 0 0 0 1" result="ng"/>
+        <feComposite in="gc" in2="ng" operator="arithmetic" k2="1" k3=".42" k4="-.21" result="m"/>
+        <feComponentTransfer in="m"><feFuncR type="discrete" tableValues=".07 .1 .62 .92"/><feFuncG type="discrete" tableValues=".06 .66 .86 .9"/><feFuncB type="discrete" tableValues=".07 .84 .9 .85"/><feFuncA type="linear" slope="0" intercept="1"/></feComponentTransfer>
+      </filter>
     </defs>
   </svg>
 
@@ -693,8 +753,93 @@
 
   <div class="board">
 
+    <!-- ============ NOBODY FM ============ -->
+    <article class="fly" data-glow="#ff8a1f" style="--acc:#ff7a12;--w:380px;--tilt:-2.1deg;--tilt-m:-1.2deg;--dy:0px;--dx:-18px">
+      <span class="tape c" aria-hidden="true"></span>
+      <div class="paper">
+        <p class="kicker"><span>now broadcasting</span><span>on air</span></p>
+        <div class="art" style="--ar:1">
+          <img src="img/cover-nobodyfm-sq.webp" alt="A DJ in headphones leans into a studio microphone, a glowing VU meter on the desk in front of him" width="600" height="600" style="filter:url(#xerox-fm)">
+          <span class="stamp" style="right:10px;top:12px;transform:rotate(8deg)">on air</span>
+        </div>
+        <h3 class="hl" style="--k:20.8"><span class="sr">nobody fm</span><span class="ltrs" aria-hidden="true">NOBODY FM</span></h3>
+        <p class="sub">the radio station. <b>for nobody.</b> (u)</p>
+        <div class="meta"><span>tune in</span><span>turn up</span><span>much radio</span></div>
+        <div class="scrawl c3" style="right:12px;top:56%;transform:rotate(7deg)" aria-hidden="true">wow. listen</div>
+      </div>
+      <nav class="tabs" aria-label="nobody fm links">
+        <span class="stub" aria-hidden="true"></span>
+        <a class="tab wide" href="https://radio.advancedstudios.net/">
+          <span class="tear" aria-hidden="true"></span>
+          <svg class="vig v-dial" viewBox="0 0 80 64" aria-hidden="true" focusable="false">
+            <path d="M60 14 L70 2" stroke="currentColor" stroke-width="2"/>
+            <path class="wv acc-s" d="M73 3a5 5 0 0 1 1 6" fill="none" stroke-width="2"/>
+            <path class="wv w2 acc-s" d="M76 0a9 9 0 0 1 2 11" fill="none" stroke-width="2"/>
+            <rect x="2" y="14" width="76" height="48" rx="4" fill="currentColor"/>
+            <rect x="7" y="19" width="66" height="22" rx="2" fill="#ebe5d8"/>
+            <g stroke="#121013" stroke-width="1.2"><path d="M11 21v6M15 21v3M19 21v3M23 21v6M27 21v3M31 21v3M35 21v6M39 21v3M43 21v3M47 21v6M51 21v3M55 21v3M59 21v6M63 21v3M67 21v3M69 21v6"/></g>
+            <g font-family="Special Elite, monospace" font-size="7" fill="#121013"><text x="8" y="37">88</text><text x="31" y="37">96</text><text x="54" y="37">104</text></g>
+            <rect class="needle acc" x="15" y="18" width="2.5" height="24"/>
+            <g class="knob"><circle cx="62" cy="52" r="7" fill="#ebe5d8"/><path d="M62 52v-6" stroke="#121013" stroke-width="2"/></g>
+            <circle cx="12" cy="52" r="3" class="acc air"/>
+            <text x="18" y="55" font-family="Anton, sans-serif" font-size="9" fill="#ebe5d8">ON AIR</text>
+          </svg>
+          <span class="lbl"><span class="sr">nobody fm: </span>radio</span>
+        </a>
+        <span class="stub" aria-hidden="true"></span>
+        <span class="stub" aria-hidden="true"></span>
+      </nav>
+    </article>
+
+    <!-- ============ FAST AF ============ -->
+    <article class="fly" data-glow="#3fe0ff" style="--acc:#1fc6ec;--w:410px;--tilt:2.2deg;--tilt-m:1.5deg;--dy:58px;--dx:16px">
+      <span class="staple" style="left:16%;top:9px;transform:rotate(7deg)" aria-hidden="true"></span>
+      <span class="tape r" aria-hidden="true"></span>
+      <div class="paper">
+        <p class="kicker"><span>(working title)</span><span>prototype</span></p>
+        <div class="art" style="--ar:20/17">
+          <img src="img/cover-fastaf.webp" alt="A grinning pilot in aviators and a fleece-collared bomber jacket, a jet on the runway behind him and a cyan circuit glow over his shoulder" width="600" height="510" style="filter:url(#xerox-af)">
+          <span class="stamp" style="left:10px;bottom:12px;transform:rotate(-9deg);mix-blend-mode:normal;background:rgba(18,16,19,.75)">mach<br>1.00</span>
+        </div>
+        <h3 class="hl" style="--k:25"><span class="sr">fast af (working title)</span><span class="ltrs" aria-hidden="true">FAST AF</span></h3>
+        <p class="sub">anti-gravity racing for windows: <b>roll round the tube</b>, boost till the boom</p>
+        <div class="meta"><span>8 craft</span><span>boost = heat</span><span>neon causeway</span><span>rust spiral</span><span>skyhook</span></div>
+        <div class="scrawl c1" style="right:14px;bottom:12px;transform:rotate(-6deg);text-shadow:0 1px 0 #121013" aria-hidden="true">such mach</div>
+      </div>
+      <div class="tabs">
+        <span class="stub" aria-hidden="true"></span>
+        <span class="stub" aria-hidden="true"></span>
+        <span class="tab wide soon">
+          <svg class="vig v-tube" viewBox="0 0 80 64" aria-hidden="true" focusable="false">
+            <circle cx="40" cy="27" r="24" fill="none" stroke="currentColor" stroke-width="3"/>
+            <g fill="none" stroke="currentColor" stroke-width="1" opacity=".5"><path d="M40 27L40 3M40 27L57 10M40 27L64 27M40 27L57 44M40 27L40 51M40 27L23 44M40 27L16 27M40 27L23 10"/></g>
+            <g fill="none" stroke="currentColor" stroke-width="1.6" stroke-dasharray="4 5">
+              <circle class="ring" style="--i:0;--s:.3" cx="40" cy="27" r="22"/>
+              <circle class="ring" style="--i:1;--s:.55" cx="40" cy="27" r="22"/>
+              <circle class="ring" style="--i:2;--s:.8" cx="40" cy="27" r="22"/>
+            </g>
+            <circle cx="40" cy="27" r="2.2" fill="currentColor"/>
+            <g class="orbit">
+              <circle cx="40" cy="27" r="22" fill="none"/>
+              <path d="M38 13h4l1 3h-6z" class="acc jet"/>
+              <path d="M32 9.5L40 5.5l8 4-3 3.5H35z" class="acc" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+            </g>
+            <circle class="boom acc-s" cx="40" cy="27" r="24" fill="none" stroke-width="3"/>
+            <text x="6" y="62" font-family="Special Elite, monospace" font-size="9" fill="currentColor">MACH</text>
+            <g font-family="Anton, sans-serif" font-size="11">
+              <text class="m m1" x="40" y="62" fill="currentColor">0.71</text>
+              <text class="m m2" x="40" y="62" fill="currentColor">0.93</text>
+              <text class="m m3 acc" x="40" y="62">1.00</text>
+            </g>
+          </svg>
+          <span class="lbl"><span class="sr">fast af: </span>prototype &middot; soon&trade;</span>
+        </span>
+        <span class="stub" aria-hidden="true"></span>
+      </div>
+    </article>
+
     <!-- ============ GREYTIDE ============ -->
-    <article class="fly" data-glow="#ff4433" style="--acc:#ff4433;--w:430px;--tilt:-2.4deg;--tilt-m:-1.6deg;--dy:0px">
+    <article class="fly" data-glow="#ff4433" style="--acc:#ff4433;--w:430px;--tilt:1.5deg;--tilt-m:-1.6deg;--dy:10px;--dx:-16px">
       <span class="tape l" aria-hidden="true"></span><span class="tape r" aria-hidden="true"></span>
       <div class="paper">
         <p class="kicker"><span>advanced studios presents</span><span>live tonite</span></p>
@@ -785,7 +930,7 @@
     </article>
 
     <!-- ============ SHOOSTING ============ -->
-    <article class="fly" data-glow="#ffc93a" style="--acc:#f2b705;--w:400px;--tilt:2deg;--tilt-m:1.4deg;--dy:72px">
+    <article class="fly" data-glow="#ffc93a" style="--acc:#f2b705;--w:400px;--tilt:-1.9deg;--tilt-m:1.4deg;--dy:52px;--dx:14px">
       <span class="staple" style="left:22%;top:8px;transform:rotate(-8deg)" aria-hidden="true"></span>
       <span class="staple" style="right:20%;top:10px;transform:rotate(6deg)" aria-hidden="true"></span>
       <div class="paper">
@@ -853,44 +998,6 @@
         </a>
       </nav>
     </article>
-
-    <!-- ============ NOBODY FM ============ -->
-    <article class="fly" data-glow="#ff8a1f" style="--acc:#ff7a12;--w:360px;--tilt:-1.3deg;--tilt-m:-1deg;--dy:22px">
-      <span class="tape c" aria-hidden="true"></span>
-      <div class="paper">
-        <p class="kicker"><span>now broadcasting</span><span>on air</span></p>
-        <div class="art" style="--ar:1">
-          <img src="img/cover-nobodyfm-sq.webp" alt="A DJ in headphones leans into a studio microphone, a glowing VU meter on the desk in front of him" width="600" height="600" style="filter:url(#xerox-fm)">
-          <span class="stamp" style="right:10px;top:12px;transform:rotate(8deg)">on air</span>
-        </div>
-        <h3 class="hl" style="--k:20.8"><span class="sr">nobody fm</span><span class="ltrs" aria-hidden="true">NOBODY FM</span></h3>
-        <p class="sub">the radio station. <b>for nobody.</b> (u)</p>
-        <div class="meta"><span>tune in</span><span>turn up</span><span>much radio</span></div>
-        <div class="scrawl c3" style="right:12px;top:56%;transform:rotate(7deg)" aria-hidden="true">wow. listen</div>
-      </div>
-      <nav class="tabs" aria-label="nobody fm links">
-        <span class="stub" aria-hidden="true"></span>
-        <a class="tab wide" href="https://radio.advancedstudios.net/">
-          <span class="tear" aria-hidden="true"></span>
-          <svg class="vig v-dial" viewBox="0 0 80 64" aria-hidden="true" focusable="false">
-            <path d="M60 14 L70 2" stroke="currentColor" stroke-width="2"/>
-            <path class="wv acc-s" d="M73 3a5 5 0 0 1 1 6" fill="none" stroke-width="2"/>
-            <path class="wv w2 acc-s" d="M76 0a9 9 0 0 1 2 11" fill="none" stroke-width="2"/>
-            <rect x="2" y="14" width="76" height="48" rx="4" fill="currentColor"/>
-            <rect x="7" y="19" width="66" height="22" rx="2" fill="#ebe5d8"/>
-            <g stroke="#121013" stroke-width="1.2"><path d="M11 21v6M15 21v3M19 21v3M23 21v6M27 21v3M31 21v3M35 21v6M39 21v3M43 21v3M47 21v6M51 21v3M55 21v3M59 21v6M63 21v3M67 21v3M69 21v6"/></g>
-            <g font-family="Special Elite, monospace" font-size="7" fill="#121013"><text x="8" y="37">88</text><text x="31" y="37">96</text><text x="54" y="37">104</text></g>
-            <rect class="needle acc" x="15" y="18" width="2.5" height="24"/>
-            <g class="knob"><circle cx="62" cy="52" r="7" fill="#ebe5d8"/><path d="M62 52v-6" stroke="#121013" stroke-width="2"/></g>
-            <circle cx="12" cy="52" r="3" class="acc air"/>
-            <text x="18" y="55" font-family="Anton, sans-serif" font-size="9" fill="#ebe5d8">ON AIR</text>
-          </svg>
-          <span class="lbl"><span class="sr">nobody fm: </span>radio</span>
-        </a>
-        <span class="stub" aria-hidden="true"></span>
-        <span class="stub" aria-hidden="true"></span>
-      </nav>
-    </article>
   </div>
 
   <footer class="wall-foot">
@@ -906,10 +1013,134 @@
     <div class="wallhead">
       <div>
         <h2><span class="play" aria-hidden="true">&#9654;</span> Things we make</h2>
-        <p class="osd-sub"><span class="rec" aria-hidden="true">&#9679;</span> CH 01&ndash;08 &middot; late night<span class="xtra"> &middot; all channels free</span></p>
+        <p class="osd-sub"><span class="rec" aria-hidden="true">&#9679;</span> CH 01&ndash;09 &middot; late night<span class="xtra"> &middot; all channels free</span></p>
       </div>
       <p class="hint"><span class="mouse">hover a set to change channel &middot; <kbd>tab</kbd> works too</span><span class="touch">scroll to surf &middot; tap a set to tune in</span></p>
     </div>
+
+    <!-- ===================== NOBODY FM ===================== -->
+    <section class="block fm" aria-labelledby="t-fm">
+      <div class="sets">
+        <div class="station-col">
+          <div class="set station" aria-hidden="true" style="--rz:-.5deg">
+            <div class="cab">
+              <div class="bezel"><div class="screen">
+                <div class="cover"><img src="img/cover-nobodyfm-sq.webp" alt="" width="600" height="600" style="object-position:40% 40%"></div>
+                <div class="osd">VIDEO 1</div><div class="osd-r">&#9679; ON AIR</div><div class="osd-cnt">24/7 &middot; LIVE</div>
+                <div class="scan"></div><div class="hum" style="--hd:-3s"></div><div class="track"></div><div class="static"></div><div class="glass"></div>
+              </div></div>
+              <div class="side"><i class="grille"></i><i class="knob"></i><i class="knob sm"></i><b>ADVANCED</b></div>
+            </div>
+          </div>
+          <div class="vcr">
+            <div class="slot"><div class="tape"><div class="label"><h3 id="t-fm">nobody fm</h3><span class="old" aria-hidden="true">do not tape over!!</span></div></div></div>
+            <span class="clock" aria-hidden="true">12:00</span>
+            <span class="vbtn" aria-hidden="true"><i></i><i></i><i></i></span>
+          </div>
+          <p class="blurb"><b>The radio station.</b> Always on, hosted by nobody in particular.</p>
+        </div>
+
+        <a class="set link wide" href="https://radio.advancedstudios.net/" data-ch="01" style="--rz:.6deg">
+          <div class="cab">
+            <div class="bezel"><div class="screen" aria-hidden="true">
+              <div class="ghost"></div>
+              <div class="feed">
+                <svg class="vig" viewBox="0 0 200 120"><g transform="translate(20 0)">
+                  <text x="168" y="20" font-size="11" text-anchor="end" class="h r-lock">&#9679; ON AIR</text>
+                  <text x="80" y="45" font-size="22" text-anchor="middle" class="r-lock">NOBODY FM</text>
+                  <text x="80" y="43" font-size="14" text-anchor="middle" class="r-noise">~ ~ ~ ~ ~ ~ ~</text>
+                  <text x="80" y="43" font-size="12" text-anchor="middle" class="r-st1">&middot;&middot;&middot;smooth jaz&middot;&middot;&middot;</text>
+                  <text x="80" y="43" font-size="12" text-anchor="middle" class="r-st2">&middot;&middot;&middot;traffic on the&middot;&middot;&middot;</text>
+                  <rect x="10" y="54" width="140" height="38" rx="3" class="s"/>
+                  <path class="s" d="M16 70H144" stroke-width="6" stroke-dasharray="1 5.4" opacity=".6"/>
+                  <path class="s" d="M16 69H144" stroke-width="10" stroke-dasharray="1.2 24.4"/>
+                  <g font-size="8" text-anchor="middle" class="dim">
+                    <text x="16" y="86">88</text><text x="41.6" y="86">92</text><text x="67.2" y="86">96</text><text x="92.8" y="86">100</text><text x="118.4" y="86">104</text><text x="144" y="86">108</text>
+                  </g>
+                  <g class="r-needle"><rect class="h" x="-.9" y="56" width="1.8" height="34"/><rect class="h" x="-4" y="54" width="8" height="2.5"/></g>
+                  <text x="14" y="112" font-size="12" class="r-lock">FM 103.9</text>
+                  <g class="p r-sig"><rect x="118" y="108" width="4" height="4"/><rect x="124" y="105" width="4" height="7"/><rect x="130" y="102" width="4" height="10"/><rect x="136" y="99" width="4" height="13"/><rect x="142" y="96" width="4" height="16"/></g>
+                </g></svg>
+              </div>
+              <div class="osd">CH 01</div>
+              <div class="osd-bar"><span>nobody fm &middot; radio</span><i>&#9679; live</i></div>
+              <div class="scan"></div><div class="hum" style="--hd:-2s"></div><div class="track"></div><div class="static"></div><div class="glass"></div>
+            </div></div>
+            <div class="ctrl"><span class="sr">nobody fm: </span><span class="dymo">radio</span><i class="grille" aria-hidden="true"></i><i class="knob" aria-hidden="true"></i><i class="knob" aria-hidden="true" style="--k:-50deg"></i><i class="led" aria-hidden="true"></i></div>
+          </div>
+          <div class="sticky fm-note" aria-hidden="true">much signal.<br>so analog.<br><span class="w">wow</span></div>
+        </a>
+      </div>
+      <div class="shelf" aria-hidden="true"><span class="price">24/7 &middot; <b>on air</b></span></div>
+    </section>
+
+    <!-- ===================== FAST AF ===================== -->
+    <section class="block af" aria-labelledby="t-af">
+      <div class="sets">
+        <div class="station-col">
+          <div class="set station" aria-hidden="true" style="--rz:.6deg">
+            <div class="cab">
+              <div class="bezel"><div class="screen">
+                <div class="cover"><img src="img/cover-fastaf.webp" alt="" width="600" height="510" style="object-position:50% 30%"></div>
+                <div class="osd">VIDEO 2</div><div class="osd-r">&#9654; SP</div><div class="osd-cnt">MACH 1.00</div>
+                <div class="scan"></div><div class="hum" style="--hd:-4s"></div><div class="track"></div><div class="static"></div><div class="glass"></div>
+              </div></div>
+              <div class="side"><i class="grille"></i><i class="knob"></i><i class="knob sm"></i><b>ADVANCED</b></div>
+            </div>
+          </div>
+          <div class="vcr">
+            <div class="slot"><div class="tape"><div class="label"><h3 id="t-af">fast af<span class="sr"> (working title)</span></h3><span class="old" aria-hidden="true">airshow '95 (dad's)</span></div></div></div>
+            <span class="clock" aria-hidden="true">12:00</span>
+            <span class="vbtn" aria-hidden="true"><i></i><i></i><i></i></span>
+          </div>
+          <p class="blurb"><b>Anti-gravity racing for Windows.</b> A prototype, working title. You're locked to the inside wall of a tube and steer by rolling around it; boost till the HUD reads MACH 1.00 and the boom hits, but boost costs heat. Eight-craft races on Neon Causeway, Rust Spiral and Skyhook.</p>
+        </div>
+
+        <!-- no public page yet: this set is not a link, it only tunes in -->
+        <div class="set soon wide" data-ch="02" style="--rz:-.7deg">
+          <div class="cab">
+            <div class="bezel"><div class="screen" aria-hidden="true">
+              <div class="ghost"></div>
+              <div class="feed">
+                <svg class="vig" viewBox="0 0 200 120">
+                  <path class="s dim" stroke-width=".8" d="M64 64V24M64 64L92.3 35.7M64 64H104M64 64L92.3 92.3M64 64V104M64 64L35.7 92.3M64 64H24M64 64L35.7 35.7"/>
+                  <g class="s" stroke-dasharray="5 7">
+                    <circle class="af-ring" style="--s:.3" cx="64" cy="64" r="38"/>
+                    <circle class="af-ring" style="--s:.55;animation-delay:-.3s" cx="64" cy="64" r="38"/>
+                    <circle class="af-ring" style="--s:.8;animation-delay:-.6s" cx="64" cy="64" r="38"/>
+                  </g>
+                  <circle class="s" stroke-width="2.5" cx="64" cy="64" r="40"/>
+                  <circle class="p" cx="64" cy="64" r="2.4"/>
+                  <g class="af-roll">
+                    <circle cx="64" cy="64" r="38" fill="none"/>
+                    <rect class="h af-jet" x="60" y="34.5" width="8" height="2.5"/>
+                    <path class="p" d="M55 31l9-5 9 5-4 3.5H59z"/>
+                  </g>
+                  <rect class="p af-flash" x="0" y="0" width="200" height="120"/>
+                  <text class="h af-boom" x="64" y="71" font-size="24" text-anchor="middle">BOOM</text>
+                  <text x="122" y="44" font-size="11" class="dim">MACH</text>
+                  <text class="af-n af-n1" x="122" y="70" font-size="28">0.71</text>
+                  <text class="af-n af-n2" x="122" y="70" font-size="28">0.93</text>
+                  <text class="af-n af-n3" x="122" y="70" font-size="28">1.00</text>
+                  <rect class="s" stroke-width="1" x="122" y="77" width="66" height="7"/>
+                  <rect class="p af-spd" x="123.5" y="78.5" width="63" height="4"/>
+                  <text x="122" y="99" font-size="10" class="dim">HEAT</text>
+                  <rect class="s" stroke-width="1" x="148" y="92" width="40" height="7"/>
+                  <rect class="h af-heat" x="149.5" y="93.5" width="37" height="4"/>
+                  <text x="12" y="116" font-size="10" class="dim">NEON CAUSEWAY &middot; LAP 2/3 &middot; P3/8</text>
+                </svg>
+              </div>
+              <div class="osd">CH 02</div>
+              <div class="osd-bar"><span>ch 02 &middot; fast af &middot; soon</span><i>soon&trade;</i></div>
+              <div class="scan"></div><div class="hum" style="--hd:-1.5s"></div><div class="track"></div><div class="static"></div><div class="glass"></div>
+            </div></div>
+            <div class="ctrl"><span class="sr">fast af: </span><span class="dymo" style="--dr:.6deg">prototype &middot; soon&trade;</span><i class="grille" aria-hidden="true"></i><i class="knob" aria-hidden="true" style="--k:150deg"></i><i class="led" aria-hidden="true"></i></div>
+          </div>
+          <div class="sticky af-note" aria-hidden="true">such mach.<br>very tube.<br><span class="w">wow</span></div>
+        </div>
+      </div>
+      <div class="shelf" aria-hidden="true"><span class="price">prototype &middot; <b>soon&trade;</b></span></div>
+    </section>
 
     <!-- ===================== GREYTIDE ===================== -->
     <section class="block gt" aria-labelledby="t-gt">
@@ -919,7 +1150,7 @@
             <div class="cab">
               <div class="bezel"><div class="screen">
                 <div class="cover"><img src="img/cover-greytide.webp" alt="" width="560" height="350" style="object-position:58% 50%"></div>
-                <div class="osd">VIDEO 1</div><div class="osd-r">&#9654; SP</div><div class="osd-cnt">0:42:07</div>
+                <div class="osd">VIDEO 3</div><div class="osd-r">&#9654; SP</div><div class="osd-cnt">0:42:07</div>
                 <div class="scan"></div><div class="hum" style="--hd:-2s"></div><div class="track"></div><div class="static"></div><div class="glass"></div>
               </div></div>
               <div class="side"><i class="grille"></i><i class="knob"></i><i class="knob sm"></i><b>ADVANCED</b></div>
@@ -933,7 +1164,7 @@
           <p class="blurb"><b>Tabletop tower defence.</b> Painted minis hold the line against an unpainted grey horde.</p>
         </div>
 
-        <a class="set link" href="https://greytide.advancedstudios.net/" data-ch="01" style="--rz:-1deg">
+        <a class="set link" href="https://greytide.advancedstudios.net/" data-ch="03" style="--rz:-1deg">
           <div class="cab">
             <div class="bezel"><div class="screen" aria-hidden="true">
               <div class="ghost"></div>
@@ -953,7 +1184,7 @@
                   <text x="14" y="111" font-size="11" class="h b-done">BUILD OK &#9660; DOWNLOAD</text>
                 </svg>
               </div>
-              <div class="osd">CH 01</div>
+              <div class="osd">CH 03</div>
               <div class="osd-bar"><span>greytide &middot; builds</span><i>&#9660;</i></div>
               <div class="scan"></div><div class="hum" style="--hd:-1s"></div><div class="track"></div><div class="static"></div><div class="glass"></div>
             </div></div>
@@ -961,7 +1192,7 @@
           </div>
         </a>
 
-        <a class="set link" href="https://greytide.advancedstudios.net/play/" data-ch="02" style="--rz:.8deg">
+        <a class="set link" href="https://greytide.advancedstudios.net/play/" data-ch="04" style="--rz:.8deg">
           <div class="cab">
             <div class="bezel"><div class="screen" aria-hidden="true">
               <div class="ghost"></div>
@@ -982,7 +1213,7 @@
                   <text x="14" y="115" font-size="10" class="dim">PAINTED 41 &middot; GREY 3</text>
                 </svg>
               </div>
-              <div class="osd">CH 02</div>
+              <div class="osd">CH 04</div>
               <div class="osd-bar"><span>greytide &middot; play</span><i>&#9654;</i></div>
               <div class="scan"></div><div class="hum" style="--hd:-4s"></div><div class="track"></div><div class="static"></div><div class="glass"></div>
             </div></div>
@@ -990,7 +1221,7 @@
           </div>
         </a>
 
-        <a class="set link" href="https://greytide.advancedstudios.net/blog/" data-ch="03" style="--rz:.5deg">
+        <a class="set link" href="https://greytide.advancedstudios.net/blog/" data-ch="05" style="--rz:.5deg">
           <div class="cab">
             <div class="bezel"><div class="screen" aria-hidden="true">
               <div class="ghost"></div>
@@ -1018,7 +1249,7 @@
                   </g>
                 </svg>
               </div>
-              <div class="osd">CH 03</div>
+              <div class="osd">CH 05</div>
               <div class="osd-bar"><span>greytide &middot; devlog</span><i>&#9998;</i></div>
               <div class="scan"></div><div class="hum" style="--hd:-3s"></div><div class="track"></div><div class="static"></div><div class="glass"></div>
             </div></div>
@@ -1026,7 +1257,7 @@
           </div>
         </a>
 
-        <a class="set link" href="https://greytide.advancedstudios.net/soundtrack/" data-ch="04" style="--rz:-.7deg">
+        <a class="set link" href="https://greytide.advancedstudios.net/soundtrack/" data-ch="06" style="--rz:-.7deg">
           <div class="cab">
             <div class="bezel"><div class="screen" aria-hidden="true">
               <div class="ghost"></div>
@@ -1057,7 +1288,7 @@
                   <text x="148" y="113" font-size="10" text-anchor="end" class="dim">01:12 / 03:40</text>
                 </svg>
               </div>
-              <div class="osd">CH 04</div>
+              <div class="osd">CH 06</div>
               <div class="osd-bar"><span>greytide &middot; soundtrack</span><i>&#9834;</i></div>
               <div class="scan"></div><div class="hum" style="--hd:-5s"></div><div class="track"></div><div class="static"></div><div class="glass"></div>
             </div></div>
@@ -1075,9 +1306,9 @@
           <div class="set station" aria-hidden="true" style="--rz:.7deg">
             <div class="cab">
               <div class="bezel"><div class="screen">
-                <!-- SHOOSTING ART: Kiki's cover. To change it, swap this one <img>; the ghosts in the CH 05-07 sets follow it automatically. -->
+                <!-- SHOOSTING ART: Kiki's cover. To change it, swap this one <img>; the ghosts in the CH 07-09 sets follow it automatically. -->
                 <div class="cover"><img src="img/cover-shoosting.webp" alt="" width="600" height="600" style="object-position:50% 62%"></div>
-                <div class="osd">VIDEO 2</div><div class="osd-r">&#9654; SP</div><div class="osd-cnt">RND 3 &middot; 2&ndash;2</div>
+                <div class="osd">VIDEO 4</div><div class="osd-r">&#9654; SP</div><div class="osd-cnt">RND 3 &middot; 2&ndash;2</div>
                 <div class="scan"></div><div class="hum" style="--hd:-1s"></div><div class="track"></div><div class="static"></div><div class="glass"></div>
               </div></div>
               <div class="side"><i class="grille"></i><i class="knob"></i><i class="knob sm"></i><b>ADVANCED</b></div>
@@ -1091,7 +1322,7 @@
           <p class="blurb"><b>Arena duel shooter.</b> Best-of-N duels. The losing side picks a card, and every build escalates.</p>
         </div>
 
-        <a class="set link" href="https://dev.advancedstudios.net/shoosting-builds/" data-ch="05" style="--rz:.9deg">
+        <a class="set link" href="https://dev.advancedstudios.net/shoosting-builds/" data-ch="07" style="--rz:.9deg">
           <div class="cab">
             <div class="bezel"><div class="screen" aria-hidden="true">
               <div class="ghost"></div>
@@ -1113,7 +1344,7 @@
                   <text x="14" y="42" font-size="10" class="h s-done" style="paint-order:stroke;stroke:#060807;stroke-width:6">LOCKED &amp; LOADED &#9654;</text>
                 </svg>
               </div>
-              <div class="osd">CH 05</div>
+              <div class="osd">CH 07</div>
               <div class="osd-bar"><span>shoosting &middot; builds</span><i>&#9660;</i></div>
               <div class="scan"></div><div class="hum" style="--hd:-2.5s"></div><div class="track"></div><div class="static"></div><div class="glass"></div>
             </div></div>
@@ -1121,7 +1352,7 @@
           </div>
         </a>
 
-        <a class="set link" href="https://dev.advancedstudios.net/shoosting-builds/soundtrack/" data-ch="06" style="--rz:-.8deg">
+        <a class="set link" href="https://dev.advancedstudios.net/shoosting-builds/soundtrack/" data-ch="08" style="--rz:-.8deg">
           <div class="cab">
             <div class="bezel"><div class="screen" aria-hidden="true">
               <div class="ghost"></div>
@@ -1144,7 +1375,7 @@
                   <text x="14" y="117" font-size="10" class="dim">&#9654; 02:47 &middot; very loud</text>
                 </svg>
               </div>
-              <div class="osd">CH 06</div>
+              <div class="osd">CH 08</div>
               <div class="osd-bar"><span>shoosting &middot; soundtrack</span><i>&#9834;</i></div>
               <div class="scan"></div><div class="hum" style="--hd:-4.5s"></div><div class="track"></div><div class="static"></div><div class="glass"></div>
             </div></div>
@@ -1152,7 +1383,7 @@
           </div>
         </a>
 
-        <a class="set link" href="https://dev.advancedstudios.net/shoosting-builds/studio/" data-ch="07" style="--rz:-.4deg">
+        <a class="set link" href="https://dev.advancedstudios.net/shoosting-builds/studio/" data-ch="09" style="--rz:-.4deg">
           <div class="cab">
             <div class="bezel"><div class="screen" aria-hidden="true">
               <div class="ghost"></div>
@@ -1171,7 +1402,7 @@
                   </div>
                 </div>
               </div>
-              <div class="osd">CH 07</div>
+              <div class="osd">CH 09</div>
               <div class="osd-bar"><span>shoosting &middot; studio</span><i>&#9998;</i></div>
               <div class="scan"></div><div class="hum" style="--hd:-.5s"></div><div class="track"></div><div class="static"></div><div class="glass"></div>
             </div></div>
@@ -1192,62 +1423,6 @@
         </div>
       </div>
       <div class="shelf" aria-hidden="true"><span class="price">free &middot; <b>best of N</b></span></div>
-    </section>
-
-    <!-- ===================== NOBODY FM ===================== -->
-    <section class="block fm" aria-labelledby="t-fm">
-      <div class="sets">
-        <div class="station-col">
-          <div class="set station" aria-hidden="true" style="--rz:-.5deg">
-            <div class="cab">
-              <div class="bezel"><div class="screen">
-                <div class="cover"><img src="img/cover-nobodyfm-sq.webp" alt="" width="600" height="600" style="object-position:40% 40%"></div>
-                <div class="osd">VIDEO 3</div><div class="osd-r">&#9679; ON AIR</div><div class="osd-cnt">24/7 &middot; LIVE</div>
-                <div class="scan"></div><div class="hum" style="--hd:-3s"></div><div class="track"></div><div class="static"></div><div class="glass"></div>
-              </div></div>
-              <div class="side"><i class="grille"></i><i class="knob"></i><i class="knob sm"></i><b>ADVANCED</b></div>
-            </div>
-          </div>
-          <div class="vcr">
-            <div class="slot"><div class="tape"><div class="label"><h3 id="t-fm">nobody fm</h3><span class="old" aria-hidden="true">do not tape over!!</span></div></div></div>
-            <span class="clock" aria-hidden="true">12:00</span>
-            <span class="vbtn" aria-hidden="true"><i></i><i></i><i></i></span>
-          </div>
-          <p class="blurb"><b>The radio station.</b> Always on, hosted by nobody in particular.</p>
-        </div>
-
-        <a class="set link wide" href="https://radio.advancedstudios.net/" data-ch="08" style="--rz:.6deg">
-          <div class="cab">
-            <div class="bezel"><div class="screen" aria-hidden="true">
-              <div class="ghost"></div>
-              <div class="feed">
-                <svg class="vig" viewBox="0 0 200 120"><g transform="translate(20 0)">
-                  <text x="168" y="20" font-size="11" text-anchor="end" class="h r-lock">&#9679; ON AIR</text>
-                  <text x="80" y="45" font-size="22" text-anchor="middle" class="r-lock">NOBODY FM</text>
-                  <text x="80" y="43" font-size="14" text-anchor="middle" class="r-noise">~ ~ ~ ~ ~ ~ ~</text>
-                  <text x="80" y="43" font-size="12" text-anchor="middle" class="r-st1">&middot;&middot;&middot;smooth jaz&middot;&middot;&middot;</text>
-                  <text x="80" y="43" font-size="12" text-anchor="middle" class="r-st2">&middot;&middot;&middot;traffic on the&middot;&middot;&middot;</text>
-                  <rect x="10" y="54" width="140" height="38" rx="3" class="s"/>
-                  <path class="s" d="M16 70H144" stroke-width="6" stroke-dasharray="1 5.4" opacity=".6"/>
-                  <path class="s" d="M16 69H144" stroke-width="10" stroke-dasharray="1.2 24.4"/>
-                  <g font-size="8" text-anchor="middle" class="dim">
-                    <text x="16" y="86">88</text><text x="41.6" y="86">92</text><text x="67.2" y="86">96</text><text x="92.8" y="86">100</text><text x="118.4" y="86">104</text><text x="144" y="86">108</text>
-                  </g>
-                  <g class="r-needle"><rect class="h" x="-.9" y="56" width="1.8" height="34"/><rect class="h" x="-4" y="54" width="8" height="2.5"/></g>
-                  <text x="14" y="112" font-size="12" class="r-lock">FM 103.9</text>
-                  <g class="p r-sig"><rect x="118" y="108" width="4" height="4"/><rect x="124" y="105" width="4" height="7"/><rect x="130" y="102" width="4" height="10"/><rect x="136" y="99" width="4" height="13"/><rect x="142" y="96" width="4" height="16"/></g>
-                </g></svg>
-              </div>
-              <div class="osd">CH 08</div>
-              <div class="osd-bar"><span>nobody fm &middot; radio</span><i>&#9679; live</i></div>
-              <div class="scan"></div><div class="hum" style="--hd:-2s"></div><div class="track"></div><div class="static"></div><div class="glass"></div>
-            </div></div>
-            <div class="ctrl"><span class="sr">nobody fm: </span><span class="dymo">radio</span><i class="grille" aria-hidden="true"></i><i class="knob" aria-hidden="true"></i><i class="knob" aria-hidden="true" style="--k:-50deg"></i><i class="led" aria-hidden="true"></i></div>
-          </div>
-          <div class="sticky fm-note" aria-hidden="true">much signal.<br>so analog.<br><span class="w">wow</span></div>
-        </a>
-      </div>
-      <div class="shelf" aria-hidden="true"><span class="price">24/7 &middot; <b>on air</b></span></div>
     </section>
 
     <footer class="sign-off">advanced studios <span>end of broadcast &middot; please adjust your set</span></footer>
@@ -1372,7 +1547,8 @@ const themeB = (() => {
   });
 
   const sets = [...wall.querySelectorAll('.set')];
-  const links = sets.filter(s => s.tagName === 'A');
+  // the links, plus the "soon" set: not a link, but it still tunes in
+  const links = sets.filter(s => s.tagName === 'A' || s.classList.contains('soon'));
   const feedOf = s => s.querySelector('.feed, .cover, .bars');
   const remote = wall.querySelector('.remote'), rCh = remote.querySelector('.r-ch'), rVol = remote.querySelector('.r-vol');
   const volHTML = rVol.innerHTML, doge = [['such channel', 'c1'], ['very smaert', 'c2'], ['wow', 'c4'], ['much signal', 'c3'], ['so analog', 'c1']];
