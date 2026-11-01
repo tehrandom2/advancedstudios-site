@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Sick Drop · advanced studios</title>
-<meta name="description" content="Sick Drop is a snowboarding rhythm game. The mountain is built to the beat. Download the Linux build.">
+<meta name="description" content="Sick Drop is a snowboarding rhythm game. The mountain is built to the beat. Free download for Linux.">
 <meta property="og:title" content="Sick Drop">
 <meta property="og:description" content="A snowboarding rhythm game. Land on the drop, carve in time, climb from C to S tier.">
 <meta property="og:image" content="https://advancedstudios.net/sick-drop/img/og.jpg">
@@ -183,6 +183,10 @@
   ol.steps li::before { content: counter(st); position: absolute; left: 0; top: -2px; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: rgba(127,230,247,.12); color: var(--A); font: 400 20px/1 VT323, monospace; }
   code { font: 500 .92em/1 ui-monospace, "SF Mono", Menlo, Consolas, monospace; background: rgba(241,237,228,.08); padding: .18em .42em; border-radius: 5px; color: var(--snow); }
   .note { margin: 18px 0 0; font-size: 14px; color: var(--faint); }
+  .note code { font-size: .85em; }
+  .sum { margin: 14px 0 0; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; font-size: 13px; color: var(--faint); }
+  .sum span { font: 400 16px/1 VT323, monospace; letter-spacing: .12em; }
+  .sum code { font-size: 11.5px; color: var(--dim); word-break: break-all; line-height: 1.5; background: none; padding: 0; }
 
   /* credits */
   .credits { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 30px 0 0; padding: 0; list-style: none; }
@@ -260,11 +264,11 @@
       <div class="hero-low">
       <p class="pitch"><b>Sick Drop is a snowboarding rhythm game.</b> The mountain is built to the beat: land on the drop, carve in time, and climb from C to S tier, where the song turns <span class="eleven">up to 11</span>.</p>
       <div class="cta">
-        <!-- DOWNLOAD (hero): when the release is up, make this an <a class="btn" href="…/SickDrop-Linux.zip"> and drop the "soon" class -->
-        <span class="btn soon" role="note">
+        <!-- DOWNLOAD (hero): release sick-drop-linux-2026-11-01 -->
+        <a class="btn" href="https://github.com/tehrandom2/advancedstudios-downloads/releases/download/sick-drop-linux-2026-11-01/SickDrop-Linux.zip">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 3v11.2l3.6-3.6 1.4 1.4-6 6-6-6 1.4-1.4 3.6 3.6V3h2zM5 19h14v2H5z"/></svg>
-          <span>Linux build coming soon<small>about 1.4 GB &middot; zip</small></span>
-        </span>
+          <span>Download for Linux<small>1.29 GB &middot; zip &middot; 1 Nov 2026</small></span>
+        </a>
         <a class="ghostlink" href="#download">System requirements &amp; install</a>
       </div>
       <ul class="facts" aria-label="At a glance">
@@ -355,17 +359,16 @@
       <div class="dl rv" style="--d:.1s">
         <div class="card">
           <h3><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4" width="19" height="16" rx="2.5"/><path d="M7 10l3 2.5L7 15M12.5 15.5h4.5"/></svg>Linux</h3>
-          <!-- VERSION + DATE: fill in when the release is published -->
-          <p class="ver">First public build &middot; <b>coming soon</b></p>
-          <!-- DOWNLOAD (card): same link as the hero button -->
-          <span class="btn soon" role="note">
+          <p class="ver">First public build &middot; <b>1 November 2026</b></p>
+          <a class="btn" href="https://github.com/tehrandom2/advancedstudios-downloads/releases/download/sick-drop-linux-2026-11-01/SickDrop-Linux.zip">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 3v11.2l3.6-3.6 1.4 1.4-6 6-6-6 1.4-1.4 3.6 3.6V3h2zM5 19h14v2H5z"/></svg>
-            <span>Download for Linux<small>coming soon &middot; about 1.4 GB</small></span>
-          </span>
+            <span>Download for Linux<small>SickDrop-Linux.zip &middot; 1.29 GB</small></span>
+          </a>
+          <p class="sum"><span>SHA-256</span> <code>a9cff505cbcaf6d9880d8a01f300a60f74e4cd28a44b8dd57653f217753d72f1</code></p>
           <dl class="req">
-            <dt>System</dt><dd>64-bit Linux</dd>
+            <dt>System</dt><dd>Linux, x86-64</dd>
             <dt>Graphics</dt><dd>A Vulkan-capable GPU (tested on an RTX 2070 SUPER at 1440p)</dd>
-            <dt>Disk</dt><dd>About 1.4 GB, in a folder you can write to</dd>
+            <dt>Disk</dt><dd>1.29 GB download, about 1.4 GB unpacked, in a folder you can write to</dd>
             <dt>Controls</dt><dd>Gamepad or keyboard</dd>
           </dl>
         </div>
@@ -380,7 +383,7 @@
           <div class="card"><h3>macOS</h3><span class="pill">coming soon</span></div>
         </div>
       </div>
-      <p class="note">Builds are hosted on GitHub: <a href="https://github.com/tehrandom2/advancedstudios-downloads/releases">advancedstudios-downloads releases</a>.</p>
+      <p class="note">Hosted on GitHub: <a href="https://github.com/tehrandom2/advancedstudios-downloads/releases/tag/sick-drop-linux-2026-11-01">release page</a> (with a <code>.sha256</code> file). To check the download: <code>sha256sum SickDrop-Linux.zip</code>. Licence: <code>LICENSE.txt</code> inside the zip.</p>
     </div>
   </section>
 
