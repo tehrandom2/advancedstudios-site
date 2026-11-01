@@ -62,9 +62,28 @@
   @keyframes land { 0%, 70% { transform: scaleX(.15); opacity: .0; } 74% { transform: scaleX(1.12); opacity: 1; } 100% { transform: scaleX(1); opacity: .35; } }
 
   .beat { display: flex; align-items: end; gap: clamp(3px, .5vw, 6px); height: 30px; margin: 22px 0 0; max-width: 100%; overflow: hidden; }
-  .beat i { flex: 0 0 auto; width: clamp(4px, .55vw, 7px); height: 100%; border-radius: 2px; background: var(--snow); opacity: .22; transform-origin: 50% 100%; transform: scaleY(var(--h, .3)); animation: bar var(--beat) ease-out infinite; animation-delay: calc(var(--i) * -.041s); }
-  .beat i:nth-child(4n+1) { background: var(--A); opacity: .7; }
-  @keyframes bar { 0% { transform: scaleY(calc(var(--h) * 1.0)); } 30% { transform: scaleY(calc(var(--h) * .35)); } 100% { transform: scaleY(calc(var(--h) * 1.0)); } }
+  /* the equalizer: every bar kicks on the beat and decays; the first beat of each bar of four (the drop) kicks hardest */
+  .beat i { flex: 0 0 auto; width: clamp(4px, .55vw, 7px); height: 100%; border-radius: 2px; background: var(--snow); opacity: .26; transform-origin: 50% 100%; transform: scaleY(calc(var(--h, .3) * .3)); will-change: transform;
+    animation: bar calc(var(--beat) * 4) linear infinite; animation-delay: calc(var(--i) * .006s); }
+  .beat i:nth-child(4n+1) { background: var(--A); opacity: .75; }
+  @keyframes bar {
+    0% { transform: scaleY(var(--h)); animation-timing-function: cubic-bezier(.2,.7,.3,1); }
+    20% { transform: scaleY(calc(var(--h) * .28)); }
+    25% { transform: scaleY(calc(var(--h) * .72)); animation-timing-function: cubic-bezier(.2,.7,.3,1); }
+    45% { transform: scaleY(calc(var(--h) * .25)); }
+    50% { transform: scaleY(calc(var(--h) * .8)); animation-timing-function: cubic-bezier(.2,.7,.3,1); }
+    70% { transform: scaleY(calc(var(--h) * .28)); }
+    75% { transform: scaleY(calc(var(--h) * .66)); animation-timing-function: cubic-bezier(.2,.7,.3,1); }
+    95%, 100% { transform: scaleY(calc(var(--h) * .25)); } }
+
+  /* hero layers: the photo, the snow and the title move at different speeds (set by script) */
+  .hero picture { transform: translate3d(0, var(--py, 0px), 0) scale(1.08); transform-origin: 50% 40%; will-change: transform; }
+  .hero canvas.snow { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+  .hero-top { transform: translate3d(var(--tx, 0px), var(--ty, 0px), 0); opacity: var(--to, 1); will-change: transform; }
+
+  /* scroll-in reveals (only when motion is allowed and the script is running) */
+  html.anim .rv { opacity: 0; transform: translate3d(0, 26px, 0); transition: opacity .8s ease, transform .9s cubic-bezier(.2,.7,.2,1); transition-delay: var(--d, 0s); }
+  html.anim .rv.in { opacity: 1; transform: none; }
 
   .pitch { margin: 0; font-size: clamp(18px, 1.9vw, 22px); line-height: 1.5; color: #e7e3da; text-shadow: 0 1px 2px rgba(0,0,0,.4); }
   .pitch b { color: var(--snow); font-weight: 600; }
@@ -97,6 +116,16 @@
   .tier.B { --c: var(--B); } .tier.A { --c: var(--A); } .tier.S { --c: var(--S); }
   .tier.S { box-shadow: 0 0 60px -18px var(--S); }
   .tier.S b { animation: pump calc(var(--beat) * 2) ease-out infinite; transform-origin: 0 100%; display: inline-block; }
+  /* the tiers light up one after another when they scroll in: C, B, A, then S turns up to 11 */
+  html.anim .tier { filter: saturate(.15) brightness(.55); transform: translate3d(0, 14px, 0); box-shadow: none; transition: filter .45s ease, transform .6s cubic-bezier(.2,.7,.2,1), box-shadow .8s ease; transition-delay: calc(var(--n) * .42s); }
+  html.anim .tiers.in .tier { filter: none; transform: none; }
+  html.anim .tiers.in .tier.S { box-shadow: 0 0 60px -18px var(--S); }
+  html.anim .tiers.in .tier b { animation: lit .7s cubic-bezier(.2,.7,.2,1) both; animation-delay: calc(var(--n) * .42s); }
+  html.anim .tiers.in .tier.S b { animation: lit .7s cubic-bezier(.2,.7,.2,1) calc(3 * .42s) both, pump calc(var(--beat) * 2) ease-out calc(3 * .42s + .7s) infinite; }
+  @keyframes lit { 0% { transform: scale(.8); text-shadow: none; } 45% { transform: scale(1.14); text-shadow: 0 0 .6em var(--c); } 100% { transform: scale(1); } }
+  .tier b { display: inline-block; transform-origin: 0 100%; }
+  .tier .knob { opacity: 0; transition: opacity .4s ease calc(3 * .42s + .4s); }
+  .tiers.in .tier .knob, html:not(.anim) .tier .knob { opacity: 1; }
   @keyframes pump { 0% { transform: scale(1.06); } 40%, 100% { transform: scale(1); } }
   .tier .knob { position: absolute; right: 14px; top: 14px; font: 400 15px/1 VT323, monospace; color: var(--c); letter-spacing: .1em; }
 
@@ -107,12 +136,15 @@
   .shot.wide { grid-column: span 3; }
   .shot img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s cubic-bezier(.2,.7,.2,1), filter .3s; }
   .shot:hover img { transform: scale(1.035); }
+  .shot { transition: box-shadow .3s ease; }
+  .shot:hover { box-shadow: 0 0 0 1px rgba(127,230,247,.5), 0 18px 50px -20px rgba(127,230,247,.55); }
   .shot figcaption { position: absolute; left: 10px; bottom: 10px; padding: 4px 9px; border-radius: 6px; background: rgba(15,19,24,.72); font: 400 16px/1 VT323, monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--snow); backdrop-filter: blur(4px); }
 
   /* riders + songs */
   .two { display: grid; grid-template-columns: 1fr 1.15fr; gap: clamp(28px, 5vw, 72px); }
   .riders { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 30px 0 0; padding: 0; list-style: none; }
-  .rider { --c: #0aa; border-radius: 12px; padding: 16px 16px 15px; background: var(--ink2); border-top: 4px solid var(--c); }
+  .rider { --c: #0aa; border-radius: 12px; padding: 16px 16px 15px; background: var(--ink2); border-top: 4px solid var(--c); transition: transform .3s cubic-bezier(.2,.7,.2,1), box-shadow .3s; }
+  .rider:hover { transform: translate3d(0, -4px, 0); box-shadow: 0 16px 36px -18px var(--c); }
   .rider b { display: block; font: 400 30px/1 Anton, Impact, sans-serif; letter-spacing: .02em; text-transform: uppercase; }
   .rider span { font-size: 14.5px; color: var(--dim); }
   .songs { margin: 30px 0 0; padding: 0; list-style: none; counter-reset: s; border-top: 1px solid var(--line); }
@@ -122,6 +154,14 @@
   .songs .bpm { font: 400 18px/1 VT323, monospace; color: var(--A); letter-spacing: .04em; }
   .songs .len { font: 400 18px/1 VT323, monospace; color: var(--dim); min-width: 3.2em; text-align: right; }
   .songs li:first-child .t { color: var(--S); }
+  .songs li { position: relative; transition: background-color .25s ease; }
+  .songs li::after { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; border-radius: 2px; background: var(--A); box-shadow: 0 0 12px var(--A); transform: scaleY(0); transition: transform .25s cubic-bezier(.2,.7,.2,1); }
+  .songs .t { display: inline-block; transition: transform .25s cubic-bezier(.2,.7,.2,1), text-shadow .25s; }
+  .songs .bpm { transition: text-shadow .25s, color .25s; }
+  .songs li:hover { background: linear-gradient(90deg, rgba(127,230,247,.13), rgba(127,230,247,0) 75%); }
+  .songs li:hover::after { transform: scaleY(1); }
+  .songs li:hover .t { transform: translate3d(6px, 0, 0); text-shadow: 0 0 18px rgba(127,230,247,.5); }
+  .songs li:hover .bpm { color: #c6f6ff; text-shadow: 0 0 10px var(--A); }
 
   /* download */
   .dl { display: grid; grid-template-columns: 1.25fr 1fr; gap: clamp(16px, 2.4vw, 28px); margin-top: 36px; }
@@ -185,6 +225,7 @@
   }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition: none !important; }
+    .hero picture { transform: none; }
     html { scroll-behavior: auto; }
   }
 </style>
@@ -209,6 +250,7 @@
       <source media="(max-width: 900px)" srcset="img/hero-800.webp">
       <img src="img/hero-1380.webp" alt="" width="1380" height="790" fetchpriority="high">
     </picture>
+    <canvas class="snow" aria-hidden="true"></canvas>
     <div class="wrap hero-in">
       <div class="hero-top">
       <p class="tag">every song is a mountain</p>
@@ -226,7 +268,7 @@
         <a class="ghostlink" href="#download">System requirements &amp; install</a>
       </div>
       <ul class="facts" aria-label="At a glance">
-        <li>10 original songs</li><li>4 riders</li><li>1 mountain</li><li>gamepad or keyboard</li>
+        <li>ten original songs</li><li>four riders</li><li>one mountain</li><li>gamepad or keyboard</li>
       </ul>
       </div>
     </div>
@@ -234,10 +276,10 @@
 
   <section id="play">
     <div class="wrap">
-      <p class="eyebrow">How it plays</p>
-      <h2>Ride the song</h2>
-      <p class="lede">Ten original songs, four riders, one mountain. Every song is its own run. Ride clean, land on the beat, stack the combo and climb the tiers.</p>
-      <div class="tiers" role="list">
+      <p class="eyebrow rv">How it plays</p>
+      <h2 class="rv" style="--d:.08s">Ride the song</h2>
+      <p class="lede rv" style="--d:.16s">Ten original songs, four riders, one mountain. Every song is its own run. Ride clean, land on the beat, stack the combo and climb the tiers.</p>
+      <div class="tiers rv" role="list" style="--d:.1s">
         <div class="tier C" role="listitem" style="--n:0"><b>C</b><span>Dropping in.</span></div>
         <div class="tier B" role="listitem" style="--n:1"><b>B</b><span>Finding the beat.</span></div>
         <div class="tier A" role="listitem" style="--n:2"><b>A</b><span>Clean and on the beat.</span></div>
@@ -248,26 +290,26 @@
 
   <section id="shots">
     <div class="wrap">
-      <p class="eyebrow">Screenshots</p>
-      <h2>On the mountain</h2>
+      <p class="eyebrow rv">Screenshots</p>
+      <h2 class="rv" style="--d:.08s">On the mountain</h2>
       <div class="shots">
-        <button class="shot big" type="button" data-full="img/ride-1600.webp" data-cap="On the run: tier A, combo x33">
+        <button style="--d:0.00s" class="rv shot big" type="button" data-full="img/ride-1600.webp" data-cap="On the run: tier A, combo x33">
           <img src="img/ride-1600.webp" alt="A rider in a teal and orange suit carves down a groomed run toward a snowy valley at dusk; the HUD shows tier A and a x33 combo" width="1600" height="900" loading="lazy">
           <figcaption>The run</figcaption>
         </button>
-        <button class="shot" type="button" data-full="img/results-1600.webp" data-cap="Run complete: time spent in each tier">
+        <button style="--d:0.08s" class="rv shot" type="button" data-full="img/results-1600.webp" data-cap="Run complete: time spent in each tier">
           <img src="img/results-800.webp" alt="The run complete screen at night: grade A, with bars showing time spent in S, A, B and C tiers" width="800" height="450" loading="lazy">
           <figcaption>Run complete</figcaption>
         </button>
-        <button class="shot" type="button" data-full="img/title-1600.webp" data-cap="Title screen">
+        <button style="--d:0.16s" class="rv shot" type="button" data-full="img/title-1600.webp" data-cap="Title screen">
           <img src="img/title-800.webp" alt="The Sick Drop title screen over a hazy dusk horizon: Play, Settings, Quit" width="800" height="450" loading="lazy">
           <figcaption>Title</figcaption>
         </button>
-        <button class="shot wide" type="button" data-full="img/songs-1600.webp" data-cap="Song select: ten tracks, 140 to 172 BPM">
+        <button style="--d:0.24s" class="rv shot wide" type="button" data-full="img/songs-1600.webp" data-cap="Song select: ten tracks, 140 to 172 BPM">
           <img src="img/songs-800.webp" alt="The song select list: ten tracks with their tempo and length" width="800" height="450" loading="lazy">
           <figcaption>Song select</figcaption>
         </button>
-        <button class="shot wide" type="button" data-full="img/riders-1600.webp" data-cap="Rider select">
+        <button style="--d:0.32s" class="rv shot wide" type="button" data-full="img/riders-1600.webp" data-cap="Rider select">
           <img src="img/riders-800.webp" alt="The rider select screen with four cards: Roxy, Brick, Skink and Inky" width="800" height="450" loading="lazy">
           <figcaption>Rider select</figcaption>
         </button>
@@ -278,19 +320,19 @@
   <section>
     <div class="wrap two">
       <div>
-        <p class="eyebrow">The riders</p>
-        <h2>Pick a rider</h2>
+        <p class="eyebrow rv">The riders</p>
+        <h2 class="rv" style="--d:.08s">Pick a rider</h2>
         <ul class="riders">
-          <li class="rider" style="--c:#0fb3b6"><b>Roxy</b><span>The Sno-Glo girl, live from 1964.</span></li>
-          <li class="rider" style="--c:#f2a197"><b>Brick</b><span>All chest. Has a mirror.</span></li>
-          <li class="rider" style="--c:#f3dc78"><b>Skink</b><span>Small lizard. Big hat. Unbothered.</span></li>
-          <li class="rider" style="--c:#c3a6e0"><b>Inky</b><span>Eight arms, all busy.</span></li>
+          <li class="rider rv" style="--c:#0fb3b6; --d:0.00s"><b>Roxy</b><span>The Sno-Glo girl, live from 1964.</span></li>
+          <li class="rider rv" style="--c:#f2a197; --d:0.07s"><b>Brick</b><span>All chest. Has a mirror.</span></li>
+          <li class="rider rv" style="--c:#f3dc78; --d:0.14s"><b>Skink</b><span>Small lizard. Big hat. Unbothered.</span></li>
+          <li class="rider rv" style="--c:#c3a6e0; --d:0.21s"><b>Inky</b><span>Eight arms, all busy.</span></li>
         </ul>
       </div>
       <div>
-        <p class="eyebrow">The songs</p>
-        <h2>Ten tracks</h2>
-        <ol class="songs">
+        <p class="eyebrow rv">The songs</p>
+        <h2 class="rv" style="--d:.08s">Ten tracks</h2>
+        <ol class="songs rv" style="--d:.12s">
           <li><span class="t">Sick Drop</span><span class="bpm">170 BPM</span><span class="len">3:25</span></li>
           <li><span class="t">Jump Cut</span><span class="bpm">164 BPM</span><span class="len">1:51</span></li>
           <li><span class="t">Avalanche Control</span><span class="bpm">150 BPM</span><span class="len">2:44</span></li>
@@ -308,9 +350,9 @@
 
   <section id="download">
     <div class="wrap">
-      <p class="eyebrow">Download</p>
-      <h2>Get the build</h2>
-      <div class="dl">
+      <p class="eyebrow rv">Download</p>
+      <h2 class="rv" style="--d:.08s">Get the build</h2>
+      <div class="dl rv" style="--d:.1s">
         <div class="card">
           <h3><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4" width="19" height="16" rx="2.5"/><path d="M7 10l3 2.5L7 15M12.5 15.5h4.5"/></svg>Linux</h3>
           <!-- VERSION + DATE: fill in when the release is published -->
@@ -334,7 +376,8 @@
             <li>Open a terminal in that folder and run <code>./SickDrop.sh</code></li>
             <li>Plug in a gamepad if you have one, or use the keyboard. In the menus, arrows choose, <code>Enter</code> confirms and <code>Esc</code> goes back.</li>
           </ol></div>
-          <div class="card"><h3>Windows &amp; macOS</h3><span class="pill">not yet</span></div>
+          <div class="card"><h3>Windows</h3><span class="pill">coming soon</span></div>
+          <div class="card"><h3>macOS</h3><span class="pill">coming soon</span></div>
         </div>
       </div>
       <p class="note">Builds are hosted on GitHub: <a href="https://github.com/tehrandom2/advancedstudios-downloads/releases">advancedstudios-downloads releases</a>.</p>
@@ -343,9 +386,9 @@
 
   <section id="credits">
     <div class="wrap">
-      <p class="eyebrow">Credits</p>
-      <h2>Made with</h2>
-      <ul class="credits">
+      <p class="eyebrow rv">Credits</p>
+      <h2 class="rv" style="--d:.08s">Made with</h2>
+      <ul class="credits rv" style="--d:.1s">
         <li><b>Music</b><span>Ten original songs, made with AI (ACE-Step).</span></li>
         <li><b>Riders</b><span>Built from Epic&rsquo;s MetaHuman and MakeHuman (CC0) assets.</span></li>
         <li><b>Engine</b><span>Made with Unreal Engine.</span></li>
@@ -381,6 +424,71 @@
     const h = .25 + .75 * Math.abs(Math.sin(i * .61) * Math.cos(i * .23));
     b.style.setProperty('--h', h.toFixed(2)); b.style.setProperty('--i', i);
     beat.appendChild(b);
+  }
+
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
+  const small = innerWidth < 700;
+
+  if (!reduce && 'IntersectionObserver' in window) {
+    document.documentElement.classList.add('anim');
+
+    // scroll-in reveals
+    const rv = new IntersectionObserver((es) => es.forEach((e) => {
+      if (e.isIntersecting) { e.target.classList.add('in'); rv.unobserve(e.target); }
+    }), { rootMargin: '0px 0px -12% 0px' });
+    document.querySelectorAll('.rv').forEach((el) => rv.observe(el));
+
+    // hero: snow on a canvas, parallax on the layers; all of it stops while the hero is off screen
+    const hero = document.querySelector('.hero'), cv = hero.querySelector('canvas.snow'), ctx = cv.getContext('2d');
+    const pic = hero.querySelector('picture'), top = hero.querySelector('.hero-top');
+    let W = 0, H = 0, dpr = 1, flakes = [], on = true, raf = 0, last = 0, mx = 0, my = 0, tx = 0, ty = 0;
+    const N = small ? 70 : 160;
+    const size = () => {
+      dpr = Math.min(devicePixelRatio || 1, 2);
+      W = hero.clientWidth; H = hero.clientHeight;
+      cv.width = W * dpr | 0; cv.height = H * dpr | 0;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+    const flake = (y) => {
+      const z = Math.random();                       // depth: 0 far, 1 near
+      return { x: Math.random() * W, y: y ?? Math.random() * H, z, r: .6 + z * z * 2.6, v: 18 + z * 70, s: Math.random() * 6.28, w: .4 + Math.random() * 1.2, a: .25 + z * .6 };
+    };
+    size(); for (let i = 0; i < N; i++) flakes.push(flake());
+    addEventListener('resize', () => { size(); }, { passive: true });
+
+    const frame = (t) => {
+      raf = 0;
+      const dt = Math.min(.05, (t - (last || t)) / 1000); last = t;
+      // parallax: the photo drifts slower than the page, the title a little faster and fades out
+      const sy = Math.min(scrollY, H);
+      tx += (mx - tx) * .06; ty += (my - ty) * .06;
+      pic.style.setProperty('--py', (sy * .32 + ty * -8).toFixed(1) + 'px');
+      pic.style.translate = (tx * -10).toFixed(1) + 'px 0';
+      top.style.setProperty('--ty', (sy * -.12 + ty * 4).toFixed(1) + 'px');
+      top.style.setProperty('--tx', (tx * 6).toFixed(1) + 'px');
+      top.style.setProperty('--to', Math.max(0, 1 - sy / (H * .7)).toFixed(3));
+      // snow
+      ctx.clearRect(0, 0, W, H);
+      ctx.fillStyle = '#fff';
+      const wind = 14 + tx * 30;
+      for (const f of flakes) {
+        f.s += dt * f.w;
+        f.y += f.v * dt;
+        f.x += (Math.sin(f.s) * 12 + wind * (.4 + f.z)) * dt;
+        if (f.y > H + 6) Object.assign(f, flake(-6));
+        if (f.x > W + 6) f.x = -6; else if (f.x < -6) f.x = W + 6;
+        ctx.globalAlpha = f.a;
+        ctx.beginPath(); ctx.arc(f.x, f.y - sy * f.z * .25, f.r, 0, 6.283); ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+      if (on) raf = requestAnimationFrame(frame);
+    };
+    const go = () => { if (!raf && on) { last = 0; raf = requestAnimationFrame(frame); } };
+    new IntersectionObserver(([e]) => { on = e.isIntersecting && !document.hidden; go(); }).observe(hero);
+    document.addEventListener('visibilitychange', () => { on = !document.hidden; go(); });
+    if (fine) hero.addEventListener('pointermove', (e) => { mx = e.clientX / innerWidth - .5; my = e.clientY / innerHeight - .5; }, { passive: true });
+    go();
   }
 
   // lightbox
