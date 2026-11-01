@@ -351,6 +351,25 @@
   html[data-theme="b"] main.tb .block.af { --phos: #a8f4ff; --glow: rgba(63,224,255,.32); --cab1: #283139; --cab2: #0c1014; }
   html[data-theme="b"] main.tb .sets { position: relative; display: grid; grid-template-columns: 1.32fr 1fr 1fr; gap: 30px 26px; align-items: start; }
   html[data-theme="b"] main.tb .station-col { grid-row: span 2; display: flex; flex-direction: column; gap: 16px; }
+  html[data-theme="b"] main.tb .block.sd { --phos: #c4f6ff; --glow: rgba(127,230,247,.30); --cab1: #e9e6df; --cab2: #b9b5ad; }
+  html[data-theme="b"] main.tb .block.gl { --phos: #cfeadf; --glow: rgba(159,214,191,.28); --cab1: #23264a; --cab2: #0b0c1f; }
+  html[data-theme="b"] main.tb .gl .sets { grid-template-columns: 1fr 1fr 1.32fr; }
+  html[data-theme="b"] main.tb .gl .station-col { grid-column: 3; grid-row: 1 / span 2; }
+  html[data-theme="b"] main.tb .gl .price { left: auto; right: 8%; transform: rotate(2deg); }
+  html[data-theme="b"] main.tb .sd .label::before { background: #7fe6f7; }
+  html[data-theme="b"] main.tb .gl .label::before { background: #9fd6bf; }
+  html[data-theme="b"] main.tb .sd .dymo { background: #0d4552; }
+  html[data-theme="b"] main.tb .gl .dymo { background: #1f2a4a; }
+  html[data-theme="b"] main.tb .sd .side b { color: #5b5750; }
+  html[data-theme="b"] main.tb .sticky.sd-note { right: -10px; bottom: 30px; --sr: -4deg; }
+  html[data-theme="b"] main.tb .sticky.gl-note { right: -12px; top: -20px; --sr: 5deg; }
+  html[data-theme="b"] main.tb .sd-bars rect { transform-origin: 50% 100%; animation: tb-sd-bar .353s ease-out infinite; animation-delay: calc(var(--i) * -.07s); }
+  @keyframes tb-sd-bar { 0% { transform: scaleY(1); } 40% { transform: scaleY(.35); } 100% { transform: scaleY(1); } }
+  html[data-theme="b"] main.tb .sd-tier text { opacity: 0; animation: tb-sd-tier 5.6s steps(1, end) infinite; }
+  html[data-theme="b"] main.tb .sd-t2 { animation-delay: -4.2s !important; } html[data-theme="b"] main.tb .sd-t3 { animation-delay: -2.8s !important; } html[data-theme="b"] main.tb .sd-t4 { animation-delay: -1.4s !important; }
+  @keyframes tb-sd-tier { 0% { opacity: 1; } 25%, 100% { opacity: 0; } }
+  html[data-theme="b"] main.tb .gl-pulse { fill: none; stroke: var(--hot); stroke-width: 2.5; stroke-linecap: round; stroke-dasharray: 10 400; animation: tb-gl-pulse 3.2s linear infinite; }
+  @keyframes tb-gl-pulse { from { stroke-dashoffset: 410; } to { stroke-dashoffset: 0; } }
   html[data-theme="b"] main.tb .sh .sets { grid-template-columns: 1fr 1fr 1.32fr; }
   html[data-theme="b"] main.tb .sh .station-col { grid-column: 3; grid-row: 1 / span 2; }
   html[data-theme="b"] main.tb .fm .sets { grid-template-columns: 1.32fr 1fr 1fr; }
@@ -619,8 +638,8 @@
   /* paused off-screen; JS adds .on while a set is in view */
   html.js[data-theme="b"] main.tb .set:not(.on) *, html.js[data-theme="b"] main.tb .set:not(.on) *::before, html.js[data-theme="b"] main.tb .set:not(.on) *::after { animation-play-state: paused !important; }
   @media (max-width: 980px) {
-    html[data-theme="b"] main.tb .sets, html[data-theme="b"] main.tb .sh .sets, html[data-theme="b"] main.tb .fm .sets, html[data-theme="b"] main.tb .af .sets { grid-template-columns: 1fr 1fr; gap: 22px 16px; }
-    html[data-theme="b"] main.tb .station-col, html[data-theme="b"] main.tb .sh .station-col, html[data-theme="b"] main.tb .af .station-col { grid-column: 1 / -1; grid-row: auto; }
+    html[data-theme="b"] main.tb .sets, html[data-theme="b"] main.tb .sh .sets, html[data-theme="b"] main.tb .fm .sets, html[data-theme="b"] main.tb .af .sets, html[data-theme="b"] main.tb .gl .sets { grid-template-columns: 1fr 1fr; gap: 22px 16px; }
+    html[data-theme="b"] main.tb .station-col, html[data-theme="b"] main.tb .sh .station-col, html[data-theme="b"] main.tb .af .station-col, html[data-theme="b"] main.tb .gl .station-col { grid-column: 1 / -1; grid-row: auto; }
     html[data-theme="b"] main.tb .set.wide { grid-column: 1 / -1; }
     html[data-theme="b"] main.tb .sticky.fm-note { bottom: auto; top: -22px; right: -6px; }
     html[data-theme="b"] main.tb .sticky.af-note { right: -6px; }
@@ -643,11 +662,12 @@
     html[data-theme="b"] main.tb .sticky.dead-note { right: -8px; top: -14px; }
     html[data-theme="b"] main.tb .price { font-size: 10px; }
     html[data-theme="b"] main.tb .osd-sub .xtra { display: none; }
-    html[data-theme="b"] main.tb .sticky.fm-note, html[data-theme="b"] main.tb .sticky.af-note { display: none; }
+    html[data-theme="b"] main.tb .sticky.fm-note, html[data-theme="b"] main.tb .sticky.af-note, html[data-theme="b"] main.tb .sticky.sd-note, html[data-theme="b"] main.tb .sticky.gl-note { display: none; }
   }
   @media (prefers-reduced-motion: reduce) {
     html[data-theme="b"] main.tb *, html[data-theme="b"] main.tb *::before, html[data-theme="b"] main.tb *::after, html[data-theme="b"] main.tb .grain { animation: none !important; transition: none !important; }
     html[data-theme="b"] main.tb .set { transform: rotate(var(--rz, 0deg)); }
+    html[data-theme="b"] main.tb .sd-tier .sd-t4 { opacity: 1; }
   }
 </style>
 </head>
@@ -701,6 +721,22 @@
         <feColorMatrix in="n" type="matrix" values="1 0 0 0 0  1 0 0 0 0  1 0 0 0 0  0 0 0 0 1" result="ng"/>
         <feComposite in="gc" in2="ng" operator="arithmetic" k2="1" k3=".42" k4="-.21" result="m"/>
         <feComponentTransfer in="m"><feFuncR type="discrete" tableValues=".07 1 .97 .92"/><feFuncG type="discrete" tableValues=".06 .5 .74 .9"/><feFuncB type="discrete" tableValues=".07 .1 .48 .85"/><feFuncA type="linear" slope="0" intercept="1"/></feComponentTransfer>
+      </filter>
+      <filter id="xerox-sd" color-interpolation-filters="sRGB" x="0" y="0" width="100%" height="100%">
+        <feColorMatrix type="matrix" values=".3 .5 .2 0 0  .3 .5 .2 0 0  .3 .5 .2 0 0  0 0 0 1 0" result="g"/>
+        <feComponentTransfer in="g" result="gc"><feFuncR type="linear" slope="1.9" intercept="-.32"/><feFuncG type="linear" slope="1.9" intercept="-.32"/><feFuncB type="linear" slope="1.9" intercept="-.32"/></feComponentTransfer>
+        <feTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="2" seed="17" result="n"/>
+        <feColorMatrix in="n" type="matrix" values="1 0 0 0 0  1 0 0 0 0  1 0 0 0 0  0 0 0 0 1" result="ng"/>
+        <feComposite in="gc" in2="ng" operator="arithmetic" k2="1" k3=".42" k4="-.21" result="m"/>
+        <feComponentTransfer in="m"><feFuncR type="discrete" tableValues=".07 .16 .6 .93"/><feFuncG type="discrete" tableValues=".06 .7 .88 .92"/><feFuncB type="discrete" tableValues=".07 .86 .94 .88"/><feFuncA type="linear" slope="0" intercept="1"/></feComponentTransfer>
+      </filter>
+      <filter id="xerox-gl" color-interpolation-filters="sRGB" x="0" y="0" width="100%" height="100%">
+        <feColorMatrix type="matrix" values=".3 .5 .2 0 0  .3 .5 .2 0 0  .3 .5 .2 0 0  0 0 0 1 0" result="g"/>
+        <feComponentTransfer in="g" result="gc"><feFuncR type="gamma" amplitude="2.6" exponent=".55" offset="0"/><feFuncG type="gamma" amplitude="2.6" exponent=".55" offset="0"/><feFuncB type="gamma" amplitude="2.6" exponent=".55" offset="0"/></feComponentTransfer>
+        <feTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="2" seed="23" result="n"/>
+        <feColorMatrix in="n" type="matrix" values="1 0 0 0 0  1 0 0 0 0  1 0 0 0 0  0 0 0 0 1" result="ng"/>
+        <feComposite in="gc" in2="ng" operator="arithmetic" k2="1" k3=".42" k4="-.21" result="m"/>
+        <feComponentTransfer in="m"><feFuncR type="discrete" tableValues=".07 .12 .52 .9"/><feFuncG type="discrete" tableValues=".06 .14 .78 .9"/><feFuncB type="discrete" tableValues=".1 .3 .68 .88"/><feFuncA type="linear" slope="0" intercept="1"/></feComponentTransfer>
       </filter>
       <filter id="xerox-af" color-interpolation-filters="sRGB" x="0" y="0" width="100%" height="100%">
         <feColorMatrix type="matrix" values=".25 .45 .3 0 0  .25 .45 .3 0 0  .25 .45 .3 0 0  0 0 0 1 0" result="g"/>
@@ -998,6 +1034,86 @@
         </a>
       </nav>
     </article>
+
+    <!-- ============ SICK DROP ============ -->
+    <article class="fly" data-glow="#7fe6f7" style="--acc:#2fc6e6;--w:420px;--tilt:1.8deg;--tilt-m:-1.3deg;--dy:6px;--dx:-14px">
+      <span class="tape l" aria-hidden="true"></span>
+      <span class="staple" style="right:18%;top:9px;transform:rotate(-6deg)" aria-hidden="true"></span>
+      <div class="paper">
+        <p class="kicker"><span>lift tix not req'd</span><span>linux</span></p>
+        <div class="art" style="--ar:20/17">
+          <img src="img/cover-sickdrop.webp" alt="A snowboarder in a teal and orange suit rides down a groomed run toward a snowy valley at dusk" width="600" height="510" style="filter:url(#xerox-sd)">
+          <span class="stamp" style="right:10px;top:12px;transform:rotate(7deg);mix-blend-mode:normal;background:rgba(18,16,19,.75)">s tier<br>vol 11</span>
+        </div>
+        <h3 class="hl" style="--k:21.2"><span class="sr">sick drop</span><span class="ltrs" aria-hidden="true">SICK DROP</span></h3>
+        <p class="sub">snowboarding rhythm game: <b>land on the drop</b>, carve in time, climb C to S</p>
+        <div class="meta"><span>10 songs</span><span>4 riders</span><span>1 mountain</span><span>linux</span></div>
+        <div class="scrawl c3" style="left:16px;top:17%;transform:rotate(-7deg)" aria-hidden="true">such carve</div>
+      </div>
+      <nav class="tabs" aria-label="sick drop links">
+        <span class="stub" aria-hidden="true"></span>
+        <a class="tab wide" href="sick-drop/">
+          <span class="tear" aria-hidden="true"></span>
+          <svg class="vig v-build" viewBox="0 0 80 64" aria-hidden="true" focusable="false">
+            <g class="gear" fill="none" stroke="currentColor" stroke-width="3" stroke-dasharray="3 3"><circle cx="66" cy="13" r="7"/></g>
+            <circle cx="66" cy="13" r="3" fill="currentColor"/>
+            <text x="6" y="20" font-family="Special Elite, monospace" font-size="10" fill="currentColor">BUILD</text>
+            <rect x="5" y="31" width="70" height="17" fill="none" stroke="currentColor" stroke-width="2.5"/>
+            <g class="acc">
+              <path class="pc" style="--i:0" d="M9 35h10v9H9z"/>
+              <path class="pc" style="--i:1" d="M22 35h12v9H22z"/>
+              <path class="pc" style="--i:2" d="M36 35h12v9H36z"/>
+              <path class="pc" style="--i:3" d="M50 35h10v9H50z"/>
+              <path class="pc" style="--i:4" d="M62 35h9v9h-9z"/>
+            </g>
+            <path d="M5 56h70" stroke="currentColor" stroke-width="2" stroke-dasharray="2 4"/>
+          </svg>
+          <span class="lbl"><span class="sr">sick drop: </span>download</span>
+        </a>
+        <span class="stub" aria-hidden="true"></span>
+        <span class="stub" aria-hidden="true"></span>
+      </nav>
+    </article>
+
+    <!-- ============ GHOSTLINE ============ -->
+    <!-- ART: Kiki's Ghostline title composite (square crop of the figures); the CH 11 block uses the same file -->
+    <article class="fly" data-glow="#9fd6bf" style="--acc:#7fcfb0;--w:390px;--tilt:-1.7deg;--tilt-m:1.2deg;--dy:48px;--dx:12px">
+      <span class="tape c" aria-hidden="true"></span>
+      <div class="paper">
+        <p class="kicker"><span>transmissions</span><span>on a ghostline</span></p>
+        <div class="art" style="--ar:1">
+          <img src="img/cover-ghostline.webp" alt="Three hooded figures of folded foil and paper, each with an old television for a head, stand on a glittering ridge under a dark indigo sky" width="600" height="600" style="filter:url(#xerox-gl)">
+          <span class="stamp" style="left:10px;bottom:12px;transform:rotate(-8deg);mix-blend-mode:normal;background:rgba(18,16,19,.75)">build<br>9.6</span>
+        </div>
+        <h3 class="hl" style="--k:21.4"><span class="sr">ghostline</span><span class="ltrs" aria-hidden="true">GHOSTLINE</span></h3>
+        <p class="sub">race a tube built from the song itself: <b>you are the signal</b></p>
+        <div class="meta"><span>mac</span><span>windows</span><span>linux</span><span>9.6 soon</span></div>
+        <div class="scrawl c2" style="right:12px;top:44%;transform:rotate(6deg);text-shadow:0 1px 0 #121013" aria-hidden="true">very haunt</div>
+      </div>
+      <nav class="tabs" aria-label="ghostline links">
+        <span class="stub" aria-hidden="true"></span>
+        <span class="stub" aria-hidden="true"></span>
+        <a class="tab wide" href="ghostline/">
+          <span class="tear" aria-hidden="true"></span>
+          <svg class="vig v-build" viewBox="0 0 80 64" aria-hidden="true" focusable="false">
+            <g class="gear" fill="none" stroke="currentColor" stroke-width="3" stroke-dasharray="3 3"><circle cx="66" cy="13" r="7"/></g>
+            <circle cx="66" cy="13" r="3" fill="currentColor"/>
+            <text x="6" y="20" font-family="Special Elite, monospace" font-size="10" fill="currentColor">SIGNAL</text>
+            <rect x="5" y="31" width="70" height="17" fill="none" stroke="currentColor" stroke-width="2.5"/>
+            <g class="acc">
+              <path class="pc" style="--i:0" d="M9 35h10v9H9z"/>
+              <path class="pc" style="--i:1" d="M22 35h12v9H22z"/>
+              <path class="pc" style="--i:2" d="M36 35h12v9H36z"/>
+              <path class="pc" style="--i:3" d="M50 35h10v9H50z"/>
+              <path class="pc" style="--i:4" d="M62 35h9v9h-9z"/>
+            </g>
+            <path d="M5 56h70" stroke="currentColor" stroke-width="2" stroke-dasharray="2 4"/>
+          </svg>
+          <span class="lbl"><span class="sr">ghostline: </span>download</span>
+        </a>
+        <span class="stub" aria-hidden="true"></span>
+      </nav>
+    </article>
   </div>
 
   <footer class="wall-foot">
@@ -1013,7 +1129,7 @@
     <div class="wallhead">
       <div>
         <h2><span class="play" aria-hidden="true">&#9654;</span> Things we make</h2>
-        <p class="osd-sub"><span class="rec" aria-hidden="true">&#9679;</span> CH 01&ndash;09 &middot; late night<span class="xtra"> &middot; all channels free</span></p>
+        <p class="osd-sub"><span class="rec" aria-hidden="true">&#9679;</span> CH 01&ndash;11 &middot; late night<span class="xtra"> &middot; all channels free</span></p>
       </div>
       <p class="hint"><span class="mouse">hover a set to change channel &middot; <kbd>tab</kbd> works too</span><span class="touch">scroll to surf &middot; tap a set to tune in</span></p>
     </div>
@@ -1423,6 +1539,108 @@
         </div>
       </div>
       <div class="shelf" aria-hidden="true"><span class="price">free &middot; <b>best of N</b></span></div>
+    </section>
+
+    <!-- ===================== SICK DROP ===================== -->
+    <section class="block sd" aria-labelledby="t-sd">
+      <div class="sets">
+        <div class="station-col">
+          <div class="set station" aria-hidden="true" style="--rz:-.5deg">
+            <div class="cab">
+              <div class="bezel"><div class="screen">
+                <div class="cover"><img src="img/cover-sickdrop.webp" alt="" width="600" height="510" style="object-position:50% 50%"></div>
+                <div class="osd">VIDEO 5</div><div class="osd-r">&#9654; SP</div><div class="osd-cnt">170 BPM</div>
+                <div class="scan"></div><div class="hum" style="--hd:-2.2s"></div><div class="track"></div><div class="static"></div><div class="glass"></div>
+              </div></div>
+              <div class="side"><i class="grille"></i><i class="knob"></i><i class="knob sm"></i><b>ADVANCED</b></div>
+            </div>
+          </div>
+          <div class="vcr">
+            <div class="slot"><div class="tape"><div class="label"><h3 id="t-sd">sick drop</h3><span class="old" aria-hidden="true">ski trip '96</span></div></div></div>
+            <span class="clock" aria-hidden="true">12:00</span>
+            <span class="vbtn" aria-hidden="true"><i></i><i></i><i></i></span>
+          </div>
+          <p class="blurb"><b>A snowboarding rhythm game.</b> The mountain is built to the beat: land on the drop, carve in time, and climb from C to S tier, where the song turns up to 11. Ten original songs, four riders, one mountain. For Linux.</p>
+        </div>
+
+        <a class="set link wide" href="sick-drop/" data-ch="10" style="--rz:.6deg">
+          <div class="cab">
+            <div class="bezel"><div class="screen" aria-hidden="true">
+              <div class="ghost"></div>
+              <div class="feed">
+                <svg class="vig" viewBox="0 0 200 120">
+                  <text x="186" y="20" font-size="12" text-anchor="end">170 BPM</text>
+                  <text x="14" y="44" font-size="10" class="dim">TIER</text>
+                  <g class="sd-tier"><text x="14" y="84" font-size="40" class="h sd-t1">C</text><text x="14" y="84" font-size="40" class="h sd-t2">B</text><text x="14" y="84" font-size="40" class="h sd-t3">A</text><text x="14" y="84" font-size="40" class="h sd-t4">S</text></g>
+                  <g class="p sd-bars">
+                    <rect style="--i:0" x="62" y="56" width="6" height="30"/><rect style="--i:1" x="72" y="56" width="6" height="30"/><rect style="--i:2" x="82" y="56" width="6" height="30"/><rect style="--i:3" x="92" y="56" width="6" height="30"/>
+                    <rect style="--i:4" x="102" y="56" width="6" height="30"/><rect style="--i:5" x="112" y="56" width="6" height="30"/><rect style="--i:6" x="122" y="56" width="6" height="30"/><rect style="--i:7" x="132" y="56" width="6" height="30"/>
+                    <rect style="--i:8" x="142" y="56" width="6" height="30"/><rect style="--i:9" x="152" y="56" width="6" height="30"/><rect style="--i:10" x="162" y="56" width="6" height="30"/><rect style="--i:11" x="172" y="56" width="6" height="30"/>
+                  </g>
+                  <text x="14" y="111" font-size="11" class="h">LINUX &#9660; DOWNLOAD</text>
+                </svg>
+              </div>
+              <div class="osd">CH 10</div>
+              <div class="osd-bar"><span>sick drop &middot; download</span><i>&#9660;</i></div>
+              <div class="scan"></div><div class="hum" style="--hd:-3.2s"></div><div class="track"></div><div class="static"></div><div class="glass"></div>
+            </div></div>
+            <div class="ctrl"><span class="sr">sick drop: </span><span class="dymo">download</span><i class="grille" aria-hidden="true"></i><i class="knob" aria-hidden="true" style="--k:60deg"></i><i class="led" aria-hidden="true"></i></div>
+          </div>
+          <div class="sticky sd-note" aria-hidden="true">such carve.<br>very beat.<br><span class="w">wow</span></div>
+        </a>
+      </div>
+      <div class="shelf" aria-hidden="true"><span class="price">linux &middot; <b>free</b></span></div>
+    </section>
+
+    <!-- ===================== GHOSTLINE ===================== -->
+    <section class="block gl" aria-labelledby="t-gl">
+      <div class="sets">
+        <div class="station-col">
+          <div class="set station" aria-hidden="true" style="--rz:.5deg">
+            <div class="cab">
+              <div class="bezel"><div class="screen">
+                <!-- GHOSTLINE ART: Kiki's title composite, square crop; the flyer uses the same file -->
+                <div class="cover"><img src="img/cover-ghostline.webp" alt="" width="600" height="600" style="object-position:50% 44%"></div>
+                <div class="osd">VIDEO 6</div><div class="osd-r">&#9654; SP</div><div class="osd-cnt">BUILD 9.6</div>
+                <div class="scan"></div><div class="hum" style="--hd:-1.2s"></div><div class="track"></div><div class="static"></div><div class="glass"></div>
+              </div></div>
+              <div class="side"><i class="grille"></i><i class="knob"></i><i class="knob sm"></i><b>ADVANCED</b></div>
+            </div>
+          </div>
+          <div class="vcr">
+            <div class="slot"><div class="tape"><div class="label"><h3 id="t-gl">ghostline</h3><span class="old" aria-hidden="true">do not erase (??)</span></div></div></div>
+            <span class="clock" aria-hidden="true">12:00</span>
+            <span class="vbtn" aria-hidden="true"><i></i><i></i><i></i></span>
+          </div>
+          <p class="blurb"><b>You are the signal.</b> Race a tube built from the song itself, every wall, gate and drop placed on the beat, at speeds that break the sound barrier. Build 9.6 is coming to macOS, Windows and Linux.</p>
+        </div>
+
+        <a class="set link wide" href="ghostline/" data-ch="11" style="--rz:-.6deg">
+          <div class="cab">
+            <div class="bezel"><div class="screen" aria-hidden="true">
+              <div class="ghost"></div>
+              <div class="feed">
+                <svg class="vig" viewBox="0 0 200 120">
+                  <text x="186" y="20" font-size="12" text-anchor="end">BUILD 9.6</text>
+                  <path class="s" d="M-4 74 C40 86 66 56 104 64 S160 80 204 56"/>
+                  <path class="gl-pulse" d="M-4 74 C40 86 66 56 104 64 S160 80 204 56"/>
+                  <rect x="22" y="62" width="26" height="19" rx="2" class="s gl-scr" style="fill:#060807"/>
+                  <rect x="86" y="44" width="36" height="26" rx="2" class="s gl-scr" style="fill:#060807"/>
+                  <rect x="150" y="62" width="22" height="16" rx="2" class="s gl-scr" style="fill:#060807"/>
+                  <path class="s" d="M90 60 q4 -5 8 0 t8 0 t8 0" style="stroke-width:1"/>
+                  <text x="14" y="111" font-size="11" class="h">9.6 &#9660; MAC WIN LINUX</text>
+                </svg>
+              </div>
+              <div class="osd">CH 11</div>
+              <div class="osd-bar"><span>ghostline &middot; download</span><i>&#9660;</i></div>
+              <div class="scan"></div><div class="hum" style="--hd:-4.2s"></div><div class="track"></div><div class="static"></div><div class="glass"></div>
+            </div></div>
+            <div class="ctrl"><span class="sr">ghostline: </span><span class="dymo">download</span><i class="grille" aria-hidden="true"></i><i class="knob" aria-hidden="true" style="--k:-90deg"></i><i class="led" aria-hidden="true"></i></div>
+          </div>
+          <div class="sticky gl-note" aria-hidden="true">much signal.<br>so ghost.<br><span class="w">wow</span></div>
+        </a>
+      </div>
+      <div class="shelf" aria-hidden="true"><span class="price">build 9.6 &middot; <b>soon</b></span></div>
     </section>
 
     <footer class="sign-off">advanced studios <span>end of broadcast &middot; please adjust your set</span></footer>
