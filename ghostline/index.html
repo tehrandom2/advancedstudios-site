@@ -126,6 +126,10 @@
 
   .plats { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(12px, 2vw, 22px); margin-top: 32px; }
   .plat .btn { width: 100%; }
+  .req { margin: 18px 0 0; display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; font-size: 14px; }
+  .req dt { color: var(--faint); font: 400 15px/1.45 VT323, monospace; letter-spacing: .1em; text-transform: uppercase; }
+  .req dd { margin: 0; color: #c9cdd9; line-height: 1.45; }
+  .why { margin: -6px 0 16px; color: var(--dim); font-size: 14.5px; }
   .plat .ver { margin-bottom: 18px; }
   .sum { margin: 16px 0 0; font-size: 13px; color: var(--faint); display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
   .sum span { font: 400 15px/1 VT323, monospace; letter-spacing: .12em; }
@@ -277,6 +281,7 @@
           <p class="ver">Build <b>9.6</b> &middot; Apple Silicon</p>
           <!-- DOWNLOAD (macOS): make this an <a class="btn" href="…"> and drop "soon"; then fill the date and SHA-256 below -->
           <span class="btn soon" role="note"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 3v11.2l3.6-3.6 1.4 1.4-6 6-6-6 1.4-1.4 3.6 3.6V3h2zM5 19h14v2H5z"/></svg><span>Download for macOS<small>coming soon</small></span></span>
+          <dl class="req"><dt>System</dt><dd>macOS 14 Sonoma or newer, Apple Silicon (M1 or later)</dd><dt>Memory</dt><dd>8 GB</dd><dt>Disk</dt><dd>About 1.5 GB unzipped</dd></dl>
           <p class="sum"><span>SHA-256</span> <code>published with the build</code></p>
         </div>
         <div class="card plat">
@@ -284,6 +289,7 @@
           <p class="ver">Build <b>9.6</b> &middot; 64-bit</p>
           <!-- DOWNLOAD (Windows): make this an <a class="btn" href="…"> and drop "soon"; then fill the date and SHA-256 below -->
           <span class="btn soon" role="note"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 3v11.2l3.6-3.6 1.4 1.4-6 6-6-6 1.4-1.4 3.6 3.6V3h2zM5 19h14v2H5z"/></svg><span>Download for Windows<small>coming soon</small></span></span>
+          <dl class="req"><dt>System</dt><dd>Windows 10 or 11, 64-bit</dd><dt>Graphics</dt><dd>DirectX 12 GPU, GTX 1060 / RX 580 class or better</dd><dt>Memory</dt><dd>8 GB</dd><dt>Disk</dt><dd>About 1.5 GB unzipped</dd></dl>
           <p class="sum"><span>SHA-256</span> <code>published with the build</code></p>
         </div>
         <div class="card plat">
@@ -291,10 +297,11 @@
           <p class="ver">Build <b>9.6</b> &middot; 64-bit</p>
           <!-- DOWNLOAD (Linux): make this an <a class="btn" href="…"> and drop "soon"; then fill the date and SHA-256 below -->
           <span class="btn soon" role="note"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 3v11.2l3.6-3.6 1.4 1.4-6 6-6-6 1.4-1.4 3.6 3.6V3h2zM5 19h14v2H5z"/></svg><span>Download for Linux<small>coming soon</small></span></span>
+          <dl class="req"><dt>System</dt><dd>x86-64, PipeWire or PulseAudio</dd><dt>Graphics</dt><dd>Vulkan GPU with current drivers</dd><dt>Memory</dt><dd>8 GB</dd><dt>Disk</dt><dd>About 1.5 GB unzipped</dd></dl>
           <p class="sum"><span>SHA-256</span> <code>published with the build</code></p>
         </div>
       </div>
-      <p class="when rv">All three arrive together with build 9.6. Release date to come.</p>
+      <p class="when rv">All three arrive together with build 9.6. Release date to come. Requirements are recommended, not tested on low-end hardware.</p>
       <div class="dl rv" style="--d:.1s">
         <div class="card">
           <h3 style="font-size:24px;margin:0 0 16px">First launch</h3>
@@ -306,8 +313,11 @@
         </div>
         <div class="card">
           <h3 style="font-size:24px;margin:0 0 16px">If your system asks first</h3>
+          <p class="why">The builds aren&rsquo;t signed yet, so your system checks with you once before the first run.</p>
           <ol class="steps">
-            <li><b>macOS:</b> if the app won&rsquo;t open with a double-click, <b>right-click</b> (or <kbd>Control</kbd>-click) it and choose <b>Open</b>, then <b>Open</b> again in the dialog. After that it opens normally.</li>
+            <li><b>macOS 15 Sequoia and later:</b> open Ghostline once and dismiss the warning. Then go to <b>System Settings &rarr; Privacy &amp; Security</b>, scroll down and click <b>Open Anyway</b>, and confirm. After that it opens normally.</li>
+            <li><b>macOS 14 Sonoma:</b> <b>right-click</b> (or <kbd>Control</kbd>-click) the app and choose <b>Open</b>, then <b>Open</b> again in the dialog.</li>
+            <li><b>Windows:</b> if SmartScreen says &ldquo;Windows protected your PC&rdquo;, click <b>More info</b>, then <b>Run anyway</b>.</li>
             <li><b>Checksums:</b> each download lists its SHA-256 above, so you can check the file arrived intact.</li>
           </ol>
         </div>
