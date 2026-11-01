@@ -5,8 +5,11 @@ Fonts in this folder (Latin subset, woff2, self-hosted so the page makes no thir
   special-elite-latin-400-normal.woff2      Special Elite    (Astigmatic)
   stardos-stencil-latin-700-normal.woff2    Stardos Stencil  (Vernon Adams)
   vt323-latin-400-normal.woff2              VT323            (Peter Hull)
+  cormorant-garamond-latin-500-normal.woff2 Cormorant Garamond (Christian Thalmann)
+  cormorant-garamond-latin-500-italic.woff2 Cormorant Garamond (Christian Thalmann)
+  cormorant-garamond-latin-600-normal.woff2 Cormorant Garamond (Christian Thalmann)
 
-All five are Google Fonts families, licensed under the SIL Open Font License, Version 1.1.
+All six families are Google Fonts families, licensed under the SIL Open Font License, Version 1.1.
 The files were taken from the Fontsource packages (@fontsource/*), which redistribute the
 Google Fonts builds unchanged.
 
