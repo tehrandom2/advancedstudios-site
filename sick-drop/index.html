@@ -173,6 +173,7 @@
   .req { margin: 22px 0 0; display: grid; grid-template-columns: auto 1fr; gap: 8px 18px; font-size: 15px; }
   .req dt { color: var(--faint); font: 400 17px/1.4 VT323, monospace; letter-spacing: .08em; text-transform: uppercase; }
   .req dd { margin: 0; color: #dcd8cf; }
+  .req code { font-size: .82em; overflow-wrap: anywhere; }
   .other { display: grid; gap: 12px; align-content: start; }
   .other .card:not(.install) { padding: 20px 22px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
   .other .card h3 { font-size: 22px; }
@@ -374,21 +375,24 @@
           <p class="warn">Unsigned build: Windows may warn before the first run, and blocks it outright on PCs with Smart App Control on. <a href="#asks">What to do</a></p>
           <p class="sum"><span>SHA-256</span> <code>{{SHA_WIN}}</code></p>
           <dl class="req">
-            <dt>System</dt><dd>{{REQ_WIN}}</dd>
+            <dt>System</dt><dd>Windows 10 or 11, 64-bit</dd>
+            <dt>Graphics</dt><dd>A DirectX 12 graphics card</dd>
             <dt>Controls</dt><dd>Gamepad or keyboard</dd>
+            <dt>Saves</dt><dd><code>%LOCALAPPDATA%\SickDrop\Saved</code></dd>
           </dl>
         </div>
         <div class="card plat">
           <h3><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>macOS</h3>
-          <p class="ver">Build <b>c19</b> &middot; Apple Silicon</p>
+          <p class="ver">Build <b>c19</b> &middot; Apple silicon</p>
           <a class="btn" href="{{URL_MAC}}">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 3v11.2l3.6-3.6 1.4 1.4-6 6-6-6 1.4-1.4 3.6 3.6V3h2zM5 19h14v2H5z"/></svg>
             <span>Download for macOS<small>{{SIZE_MAC}} &middot; zip &middot; {{DATE_SHORT}}</small></span>
           </a>
           <p class="sum"><span>SHA-256</span> <code>{{SHA_MAC}}</code></p>
           <dl class="req">
-            <dt>System</dt><dd>{{REQ_MAC}}; Apple Silicon (M1 or later) only</dd>
+            <dt>System</dt><dd>macOS 14 Sonoma or later, Apple silicon (M1 or later) only</dd>
             <dt>Controls</dt><dd>Gamepad or keyboard</dd>
+            <dt>Saves</dt><dd>In the app&rsquo;s container, <code>~/Library/Containers/com.tehrandom.sickdrop</code></dd>
           </dl>
         </div>
         <div class="card plat">
@@ -403,6 +407,7 @@
             <dt>System</dt><dd>Linux, x86-64</dd>
             <dt>Graphics</dt><dd>A Vulkan-capable GPU (tested on an RTX 2070 SUPER at 1440p)</dd>
             <dt>Controls</dt><dd>Gamepad or keyboard</dd>
+            <dt>Saves</dt><dd><code>~/.config/Epic/SickDrop/Saved</code></dd>
           </dl>
         </div>
       </div>
