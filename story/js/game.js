@@ -1,5 +1,6 @@
 // The Neverending: game flow, narration, conversations, voice in and out.
 import { World } from "./world.js";
+import * as kokoro from "./kokoro.js";
 
 const $ = (id) => document.getElementById(id);
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -78,16 +79,33 @@ function speak(who, text, url, onStart) {
     const est = Math.max(2.5, text.length / 15);
     if (settings.mode === "off" || !AC) { onStart?.(est); setTimeout(finish, est * 1000); return; }
     if (settings.mode === "browser") return browserSpeak(who, text, onStart, finish);
+    const play = (u) => {
+      vlog("play", who, text, u.slice(0, 5));
+      voiceEl.src = u;
+      voiceEl.onended = finish;
+      voiceEl.onerror = () => { if (!done) browserSpeak(who, text, onStart, finish); };
+      voiceEl.onloadedmetadata = () => onStart?.(voiceEl.duration || est);
+      voiceEl.play().catch(() => { if (!done) browserSpeak(who, text, onStart, finish); });
+    };
     url = url || lineUrl(who, text);
-    if (!url) return browserSpeak(who, text, onStart, finish);
-    voiceEl.src = url;
-    voiceEl.onended = finish;
-    voiceEl.onerror = () => { if (!done) browserSpeak(who, text, onStart, finish); };
-    voiceEl.onloadedmetadata = () => onStart?.(voiceEl.duration || est);
-    voiceEl.play().catch(() => browserSpeak(who, text, onStart, finish));
+    if (url) return play(url);
+    if (WEB && kokoro.ready()) {  // an unscripted line: made on this device
+      // if this device is slow to make the line, the browser's voice says it instead (the line still finishes, for ▶)
+      let fell = false;
+      vlog("kokoro", who, text);
+      const slow = setTimeout(() => { fell = true; vlog("slow", who, text); if (!done) browserSpeak(who, text, onStart, finish); }, Math.max(10000, text.length * 200));
+      kokoro.synthUrl(text, VOICE(who)).then((u) => { clearTimeout(slow); if (!done && !fell) play(u); },
+        () => { clearTimeout(slow); if (!done && !fell) browserSpeak(who, text, onStart, finish); });
+      return;
+    }
+    browserSpeak(who, text, onStart, finish);
   });
 }
+// a short record of what the voice did and when, for the headless checks (window.__game.vlog)
+const VLOG = [];
+function vlog(what, who, text, extra) { VLOG.push({ t: Math.round(performance.now()), what, who, chars: text.length, extra }); if (VLOG.length > 60) VLOG.shift(); }
 function browserSpeak(who, text, onStart, finish) {
+  vlog("browser", who, text);
   if (!("speechSynthesis" in window)) { onStart?.(text.length / 15); setTimeout(finish, text.length / 15 * 1000); return; }
   const u = new SpeechSynthesisUtterance(text);
   const voices = speechSynthesis.getVoices().filter((v) => v.lang.startsWith("en"));
@@ -102,7 +120,28 @@ function browserSpeak(who, text, onStart, finish) {
 function stopSpeaking() { speakCancel?.(); }
 // A model reply is spoken in two parts (first sentence, then the rest) so the voice starts sooner; the second part is
 // synthesised on the server while the first plays.
+// In the browser (Kokoro) the reply goes in short pieces: a first clause, then each sentence, all queued at once, so the
+// voice starts after one short piece is made and the rest are made while it plays.
+function pieces(text) {
+  const out = [], first = text.match(/^(.{12,70}?(?:[,;:.!?](?=\s)|—))\s*(.+)$/s);
+  let rest = text;
+  if (first) { out.push(first[1]); rest = first[2]; }
+  for (const s of rest.match(/[^.!?]+[.!?]+["”’)]*\s*|[^.!?]+$/g) || []) if (s.trim()) out.push(s.trim());
+  return out;
+}
 async function speakReply(who, text) {
+  if (WEB && settings.mode === "local" && kokoro.ready()) {
+    const ps = pieces(text);
+    for (const p of ps) kokoro.synthUrl(p, VOICE(who));
+    let cancelled = false;
+    for (const p of ps) {
+      const said = speak(who, p);
+      const prev = speakCancel; speakCancel = () => { cancelled = true; prev?.(); };
+      await said;
+      if (cancelled || G.talkingTo !== who) return;
+    }
+    return;
+  }
   const m = text.match(/^(.{20,}?[.!?])\s+(.+)$/s);
   if (!m || settings.mode !== "local" || WEB) return speak(who, text);
   const u2 = "api/tts?" + new URLSearchParams({ voice: VOICE(who), text: m[2] });
@@ -345,6 +384,7 @@ async function askFree(text) {
   const id = G.talkingTo; if (!id || asking) return;
   text = text.trim(); if (!text) return;
   asking = true; stopSpeaking();
+  if (WEB && kokoro.state.status === "idle") kokoro.load().catch(() => {});
   const hist = G.history[hkey(id)];
   addMsg("me", text);
   const thinking = addMsg("thinking", STORY.characters[id].name + " is thinking");
@@ -364,7 +404,8 @@ async function askFree(text) {
       const m = addMsg("them", j.reply); m.dataset.url = j.audio;
       for (const c of j.clues || []) learn(c);
       renderChips();
-      setStatus(j.usage ? `~${j.usage.in + j.usage.out} tokens · $${j.usage.usd}` : "");
+      setStatus(j.usage ? `~${j.usage.in + j.usage.out} tokens · $${j.usage.usd}`
+        : j.left !== undefined && j.left <= 5 ? `${j.left} live question${j.left === 1 ? "" : "s"} left today.` : "");
       world.setThinking(id, false);
       await speakReply(id, j.reply);
     } else for (const c of j.clues || []) learn(c);
@@ -560,6 +601,23 @@ async function boot() {
   $("btnBegin").addEventListener("click", () => start(null));
   $("btnResume").addEventListener("click", () => start(sv));
   if ("speechSynthesis" in window) speechSynthesis.getVoices();
+  if (WEB) startVoices();
+}
+
+// Public build: fetch the character voices while the title screen is up, and say how it's going.
+function startVoices() {
+  window.__kokoro = kokoro.state;
+  const show = (s) => {
+    const mb = (b) => Math.round(b / 1e6);
+    const t = s.status === "ready" ? `Character voices ready (${s.device === "webgpu" ? "WebGPU" : "WASM"}).`
+      : s.status === "failed" ? "Character voices couldn't load here: using your browser's own voice."
+      : s.total ? `Character voices downloading: ${Math.floor(100 * s.loaded / s.total)}% (${mb(s.loaded)} of ${mb(s.total)} MB, first visit only)`
+      : "Character voices loading…";
+    for (const id of ["voiceLoad", "voiceState"]) $(id).textContent = t;
+  };
+  kokoro.onChange(show); show(kokoro.state);
+  if (navigator.connection?.saveData) { $("voiceLoad").textContent = "Data saver is on: character voices load when you ask a question."; return; }
+  kokoro.load().catch(() => {});
 }
 // Phones only let a media element play later if it first played inside a tap: play a moment of silence in each now.
 const SILENCE = "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQAAAAA=";
@@ -576,6 +634,7 @@ function start(sv) {
   if (sv) { G.known = new Set(sv.known || []); G.asked = new Set(sv.asked || []); renderNotebook(); }
   runScene(sv ? sv.scene : 0);
 }
+window.__game = { G, speak, voice: () => voiceEl, vlog: VLOG }; // for debugging and the headless checks
 boot();
 
 // stuck for a while? open the hint by itself, once per scene
