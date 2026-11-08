@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Neverending</title>
+<meta name="theme-color" content="#121427">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,800;1,9..144,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="web">
+<canvas id="c"></canvas>
+<div id="vignette"></div>
+
+<header id="top">
+  <div class="brand"><span class="mark">∞</span> <b>The Neverending</b> <span class="ep" id="epTitle">Episode 1 · The Weight of Evidence</span></div>
+  <div class="tools">
+    <button id="btnHow" class="ghost">How to play</button>
+    <button id="btnNotes" class="ghost">Notebook <span id="clueCount" class="badge">0</span></button>
+    <button id="btnSettings" class="ghost" aria-label="Sound settings">Sound</button>
+  </div>
+</header>
+
+<section id="how" class="drop hidden" aria-label="How to play">
+  <h3>How to play</h3>
+  <ol>
+    <li><b>Watch and listen.</b> Each scene opens with a narrated moment. Click, tap or press <kbd>Space</kbd> to move on a line.</li>
+    <li><b>Question the characters.</b> When the narration stops, click a character (or their name tag) to talk.
+      Pick a suggested question, type your own, or <b>hold the mic button and speak</b>. They answer in their own voice.</li>
+    <li><b>Ask the right thing.</b> Characters only know what they know, and they keep secrets until you ask the right question.
+      Every secret you uncover goes in your <b>Notebook</b>.</li>
+    <li><b>Find what the scene needs</b> (the objective, top left) and the story continues. Stuck? Press <b>Hint</b>.</li>
+  </ol>
+  <p class="small only-lan">First visit: your browser warns about the certificate (it's this machine's own, made for the LAN).
+    Choose <i>Advanced → Proceed</i> once; the microphone only works over this secure link.
+    Typing always works if you'd rather not speak.</p>
+</section>
+
+<section id="settings" class="drop hidden" aria-label="Sound settings">
+  <label>Music <input id="volMusic" type="range" min="0" max="1" step="0.05" value="0.4"></label>
+  <label>Voices <input id="volVoice" type="range" min="0" max="1" step="0.05" value="1"></label>
+  <label>Voice engine
+    <select id="voiceMode">
+      <option value="local">Character voices</option>
+      <option value="browser">Browser voice</option>
+      <option value="off">Text only</option>
+    </select>
+  </label>
+  <button id="btnSkip" class="ghost small">Skip to next scene</button>
+  <button id="btnRestart" class="ghost small">Restart episode</button>
+</section>
+
+<section id="notebook" class="drop hidden" aria-label="Notebook">
+  <h3>Notebook</h3>
+  <ul id="clues"><li class="empty">Nothing yet. Ask questions.</li></ul>
+</section>
+
+<div id="objective" class="hidden">
+  <div class="obj-time" id="objTime"></div>
+  <div class="obj-text" id="objText"></div>
+  <div class="obj-pips" id="objPips"></div>
+  <div class="obj-hint hidden" id="objHint"></div>
+  <div class="obj-row">
+    <button id="btnHint" class="ghost small">Hint</button>
+    <button id="btnContinue" class="cta hidden">The story continues ▸</button>
+  </div>
+</div>
+
+<div id="tags"></div>
+
+<section id="narr" class="hidden" aria-live="polite">
+  <div class="who" id="narrWho"></div>
+  <div class="line" id="narrText"></div>
+  <button id="narrNext" class="next" aria-label="Next line">▸</button>
+</section>
+
+<aside id="talk" class="hidden" aria-label="Conversation">
+  <div class="talk-head">
+    <div><div class="talk-name" id="talkName"></div><div class="talk-role" id="talkRole"></div></div>
+    <button id="talkClose" class="ghost" aria-label="Close conversation">✕</button>
+  </div>
+  <div class="talk-log" id="talkLog"></div>
+  <div class="chips" id="chips"></div>
+  <form class="talk-input" id="talkForm" autocomplete="off">
+    <button type="button" id="mic" class="mic" title="Hold to speak (or tap to start, tap to stop)" aria-label="Hold to speak">
+      <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M12 15a3.5 3.5 0 0 0 3.5-3.5v-6a3.5 3.5 0 1 0-7 0v6A3.5 3.5 0 0 0 12 15Zm6-3.6a.9.9 0 0 0-1.8 0 4.2 4.2 0 0 1-8.4 0 .9.9 0 0 0-1.8 0 6 6 0 0 0 5.1 5.9V20H8.6a.9.9 0 0 0 0 1.8h6.8a.9.9 0 0 0 0-1.8h-2.5v-2.7a6 6 0 0 0 5.1-5.9Z"/></svg>
+    </button>
+    <input id="talkText" type="text" placeholder="Ask anything…" maxlength="300">
+    <button type="submit" class="send" aria-label="Send">Ask</button>
+  </form>
+  <div class="talk-status" id="talkStatus"></div>
+</aside>
+
+<div id="toast"></div>
+
+<section id="card" class="hidden"><div class="card-ep" id="cardEp"></div><h2 id="cardTitle"></h2><div class="card-time" id="cardTime"></div></section>
+
+<section id="title">
+  <div class="title-inner">
+    <div class="kicker">a story that keeps going</div>
+    <h1><span class="mark">∞</span> The Neverending</h1>
+    <h2>Episode 1: <i>The Weight of Evidence</i></h2>
+    <p class="concept only-web">An experiment in stories that never have to end: little narrated scenes, characters who
+      keep secrets, and you, questioning them by voice to work out what's really going on. Episode 1 is one hand-built
+      slice of the idea. Where it goes from here is still being written.</p>
+    <p class="lede">A prize koi is missing. A round white cat is framed. A red cat on the wall knows more than she'll say. The board meets Friday.</p>
+    <div class="howto">
+      <h3>How to play</h3>
+      <ul>
+        <li><b>Listen</b> to each little scene unfold. Tap or press <kbd>Space</kbd> to move on.</li>
+        <li><b>Click a character</b> to question them. Use a suggested question, type, or <b>hold the mic</b> and talk. They answer in their own voice.</li>
+        <li>They <b>keep secrets</b>. Ask the right thing and it goes in your Notebook. Learn what the scene needs and the story moves on.</li>
+        <li class="only-lan">Headphones on. First visit: accept the certificate warning once (<i>Advanced → Proceed</i>); the mic needs it. Typing always works.</li>
+        <li class="only-web">Sound on, headphones if you have them. Allow the microphone when asked, or just type.</li>
+      </ul>
+    </div>
+    <div class="title-btns">
+      <button id="btnBegin" class="cta big">Begin</button>
+      <button id="btnResume" class="ghost hidden">Continue where you left off</button>
+    </div>
+    <div class="credit only-lan">Music: musiquenonstop (radio.advancedstudios.net) · Voices: Kokoro, on this machine · Prototype, three.js</div>
+    <div class="credit only-web">Music: <a href="https://radio.advancedstudios.net/">musiquenonstop</a> · Voices: Kokoro · Characters: Claude · Prototype, three.js · <a href="../">Advanced Studios</a></div>
+  </div>
+</section>
+
+<section id="end" class="hidden">
+  <div class="title-inner">
+    <div class="kicker">end of episode 1</div>
+    <h1>To be continued</h1>
+    <h2 id="endNext"></h2>
+    <p class="lede" id="endTeaser"></p>
+    <p class="small" id="endStats"></p>
+    <p class="small">In the full game the story engine writes the next episode from this one's open threads: the crate in 6C, the earring in a crow's nest, a cat who has just learned she likes being right.</p>
+    <div class="title-btns"><button id="btnAgain" class="ghost">Play again</button></div>
+  </div>
+</section>
+
+<script type="module" src="js/game.js"></script>
+</body>
+</html>
