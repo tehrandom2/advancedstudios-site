@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>advanced studios</title>
-<meta name="description" content="advanced studios: games you can download or play in the browser, a radio station that never stops, and a story you can talk to.">
+<meta name="description" content="advanced studios: one human conducts, a fleet of AI agents builds and ships. Games, a radio station that never stops, a story you can talk to, and a live window into the studio.">
 <meta property="og:title" content="advanced studios">
-<meta property="og:description" content="Games you can download or play in the browser, a radio station that never stops, and a story you can talk to.">
+<meta property="og:description" content="One human conducts. A fleet of AI agents builds and ships: games, a radio station that never stops, a story you can talk to.">
 <meta property="og:image" content="https://advancedstudios.net/img/guide/og.jpg">
-<meta name="theme-color" content="#0c0b0e">
+<meta name="theme-color" content="#0b0809">
 <link rel="icon" href="data:,">
 <link rel="preload" href="fonts/anton-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/vt323-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
@@ -16,419 +16,641 @@
   /* fonts: self-hosted, SIL OFL 1.1 (see fonts/LICENSE.txt) */
   @font-face { font-family: "Anton"; font-style: normal; font-weight: 400; font-display: swap; src: url("fonts/anton-latin-400-normal.woff2") format("woff2"); }
   @font-face { font-family: "VT323"; font-style: normal; font-weight: 400; font-display: swap; src: url("fonts/vt323-latin-400-normal.woff2") format("woff2"); }
+  @font-face { font-family: "Cormorant"; font-style: italic; font-weight: 500; font-display: swap; src: url("fonts/cormorant-garamond-latin-500-italic.woff2") format("woff2"); }
 
-  /* THE LATE-NIGHT PROGRAM GUIDE: a listings magazine read after midnight.
-     Ink page, newsprint type, one broadcast red; Anton for headlines, VT323 for channels and dates. */
+  /* FULL SCORE. One human conducts; a fleet of agents plays every note.
+     The conductor's baton lines leave the picture and become the page: the stave the works sit on,
+     the rays of the orchestra fan, the slurs between related things.
+     Three voices in type: Anton is the poster, Cormorant italic is the conductor's marking on the score,
+     VT323 is the machines. Ink stage, bone paper for anything you are meant to read at length. */
   :root {
     color-scheme: dark;
-    --ink: #0c0b0e;
-    --ink2: #141217;
-    --paper: #efe7da;
-    --text: #e4dcd0;
-    --dim: #a59b93;
-    --faint: #8a807a;
-    --rule: #2b2629;
-    --red: #ff5a45;
+    --ink: #0b0809;
+    --ink2: #151012;
+    --ink3: #1e1719;
+    --bone: #f3ead9;
+    --text: #e6dccb;
+    --dim: #b5a89a;
+    --faint: #978a7e;
+    --rule: #30262a;
+    --red: #ff4f3d;
+    --amber: #ffb347;
+    --paper: #efe6d6;
+    --paper2: #e4d9c5;
+    --pink: #1a1213;
+    --pdim: #54463f;
+    --pred: #a82215;
     --gut: clamp(16px, 4vw, 56px);
-    --max: 1240px;
+    --max: 1328px;
+    --bar: 56px;
   }
   * { box-sizing: border-box; }
-  html { scroll-behavior: smooth; scroll-padding-top: 72px; }
-  body { margin: 0; background: var(--ink); color: var(--text); font: 17px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; -webkit-font-smoothing: antialiased; }
+  html { scroll-behavior: smooth; scroll-padding-top: calc(var(--bar) + 16px); }
+  body { margin: 0; background: var(--ink); color: var(--text); font: 17px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
   a { color: inherit; }
   img { display: block; max-width: 100%; }
-  :focus-visible { outline: 3px solid var(--paper); outline-offset: 3px; border-radius: 6px; }
+  h1, h2, h3, h4, p, ul, ol, dl, dd { margin: 0; padding: 0; }
+  ul, ol { list-style: none; }
+  :focus-visible { outline: 3px solid var(--bone); outline-offset: 3px; border-radius: 6px; }
+  .paper :focus-visible { outline-color: var(--pink); }
   .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
   .wrap { max-width: var(--max); margin: 0 auto; padding: 0 var(--gut); }
-  .vt { font-family: VT323, ui-monospace, monospace; letter-spacing: .06em; text-transform: uppercase; }
-  .skip { position: absolute; left: 8px; top: -60px; z-index: 50; background: var(--paper); color: var(--ink); padding: 10px 14px; border-radius: 6px; font-weight: 600; }
+  .vt { font-family: VT323, ui-monospace, monospace; letter-spacing: .07em; text-transform: uppercase; }
+  .it { font-family: Cormorant, Georgia, "Times New Roman", serif; font-style: italic; font-weight: 500; }
+  .skip { position: absolute; left: 8px; top: -70px; z-index: 60; background: var(--bone); color: var(--ink); padding: 12px 16px; border-radius: 6px; font-weight: 650; }
   .skip:focus { top: 8px; }
 
-  /* ---- top bar: the guide's spine, always in reach ---- */
-  .bar { position: sticky; top: 0; z-index: 20; background: rgba(12,11,14,.93); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-bottom: 1px solid var(--rule); }
-  .bar .wrap { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 60px; }
-  .mark { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; font: 400 22px/1 Anton, Impact, sans-serif; letter-spacing: .02em; min-height: 44px; white-space: nowrap; }
-  .mark i { width: 12px; height: 12px; border-radius: 50%; background: var(--red); box-shadow: 0 0 0 4px rgba(255,90,69,.18); }
+  /* ---- bar ---- */
+  .bar { position: sticky; top: 0; z-index: 30; background: rgba(11,8,9,.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid var(--rule); }
+  .bar .wrap { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: var(--bar); }
+  .mark { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; font: 400 21px/1 Anton, Impact, sans-serif; letter-spacing: .03em; min-height: 44px; white-space: nowrap; text-transform: lowercase; }
+  .mark i { width: 11px; height: 11px; border-radius: 50%; background: var(--red); box-shadow: 0 0 0 4px rgba(255,79,61,.18); }
   .bar nav { display: flex; gap: 2px; }
-  .bar nav a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 12px; text-decoration: none; color: var(--dim); font: 400 21px/1 VT323, monospace; letter-spacing: .08em; text-transform: uppercase; border-radius: 6px; }
-  .bar nav a:hover { color: var(--paper); background: rgba(239,231,218,.06); }
+  .bar nav a { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; min-width: 44px; padding: 0 12px; text-decoration: none; color: var(--dim); font: 400 21px/1 VT323, monospace; letter-spacing: .08em; text-transform: uppercase; border-radius: 6px; }
+  .bar nav a:hover { color: var(--bone); background: rgba(243,234,217,.07); }
 
-  /* ---- masthead: the old front page's hero graphic, now the cover of the guide ----
-     The maestro keeps the right of the picture; the lockup sits over the quiet left, and the
-     "now showing" panel overlaps the bottom edge like a listings box printed over the cover. */
-  .mast { border-bottom: 1px solid var(--rule); padding-bottom: clamp(32px, 5vw, 56px); }
-  .cover { position: relative; isolation: isolate; overflow: hidden; background: #120708; aspect-ratio: 16 / 9; min-height: 560px; max-height: 92vh; display: flex; align-items: flex-end; }
-  .cover picture, .cover img { position: absolute; inset: 0; width: 100%; height: 100%; }
-  .cover img { object-fit: cover; object-position: 66% 28%; z-index: -2; }
-  .cover::before { content: ""; position: absolute; inset: 0; z-index: -1; background:
-      linear-gradient(90deg, rgba(12,11,14,.94) 0%, rgba(12,11,14,.78) 26%, rgba(12,11,14,.25) 50%, transparent 64%),
-      linear-gradient(0deg, var(--ink) 0%, rgba(12,11,14,.6) 16%, transparent 36%); }
-  .cover::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; background: repeating-linear-gradient(0deg, rgba(0,0,0,.16) 0 1px, transparent 1px 3px); }
-  .lock { width: 100%; padding-top: 48px; padding-bottom: clamp(96px, 11vw, 150px); }
-  .lock > * { max-width: min(600px, 48%); }
-  .issue { margin: 0 0 16px; color: var(--red); font-size: 21px; text-shadow: 0 1px 8px #000; }
-  .issue span { color: var(--dim); }
-  .mast h1 { margin: 0; font: 400 clamp(60px, 9vw, 140px)/.86 Anton, Impact, sans-serif; text-transform: uppercase; color: var(--paper); text-shadow: 0 4px 30px rgba(0,0,0,.6); }
-  .mast h1 em { font-style: normal; display: block; color: transparent; -webkit-text-stroke: 1.6px var(--paper); }
-  .lede a { color: var(--paper); text-decoration-color: var(--red); text-underline-offset: 3px; }
-  .lede { margin: 22px 0 0; font-size: clamp(17px, 1.45vw, 20px); line-height: 1.5; color: var(--text); text-shadow: 0 1px 10px #000; }
-  /* the studio's own voice, kept from the old front page: doge speak, on the picture and in the margin */
-  .doge { margin: 14px 0 0; font: 700 clamp(15px, 1.4vw, 18px)/1.5 "Comic Sans MS", "Comic Neue", "Chalkboard SE", cursive; transform: rotate(-2deg); transform-origin: left; text-shadow: 0 0 10px rgba(0,0,0,.9); }
-  .doge span { display: inline-block; margin-right: .5em; }
-  .doge .c1 { color: #ff7ae6; } .doge .c2 { color: #8cff62; } .doge .c3 { color: #62e6ff; }
-  .such { position: absolute; z-index: 1; font: 700 clamp(15px, 1.5vw, 24px)/1 "Comic Sans MS", "Comic Neue", "Chalkboard SE", cursive; text-shadow: 0 0 10px rgba(0,0,0,.95), 0 2px 2px rgba(0,0,0,.8); white-space: nowrap; pointer-events: none; }
-  .such.s1 { right: 6%; top: 64%; color: #8cff62; transform: rotate(-6deg); }
-  .such.s2 { left: 53%; top: 74%; color: #62e6ff; transform: rotate(3deg); }
-  .such.s3 { right: 30%; top: 14%; color: #ffe14f; transform: rotate(-8deg); }
-  .nowrow { position: relative; z-index: 2; margin-top: clamp(-88px, -6vw, -56px); }
-  .nowrow .now { margin-left: auto; max-width: 980px; }
-  .nowrow .now ol { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .nowrow .now li + li { border-top: 0; border-left: 1px solid var(--rule); }
-
-  /* now showing: the newest releases, each dated from its own release record */
-  .now { border: 1px solid var(--rule); border-radius: 10px; background: rgba(20,18,23,.96); box-shadow: 0 30px 60px -30px rgba(0,0,0,.9); }
-  .now h2 { margin: 0; padding: 14px 18px 12px; border-bottom: 1px solid var(--rule); font: 400 22px/1 VT323, monospace; letter-spacing: .1em; text-transform: uppercase; color: var(--paper); display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
-  .now h2 small { color: var(--faint); font-size: 18px; letter-spacing: .06em; }
-  .now ol { list-style: none; margin: 0; padding: 0; }
-  .now li + li { border-top: 1px solid var(--rule); }
-  .now a { display: grid; grid-template-columns: 70px 1fr auto; gap: 14px; align-items: center; padding: 12px 18px; min-height: 64px; text-decoration: none; }
-  .now a:hover { background: rgba(239,231,218,.04); }
-  .now .t { font: 400 20px/1.05 VT323, monospace; color: var(--red); letter-spacing: .04em; text-transform: uppercase; }
-  .now b { display: block; font: 400 21px/1.1 Anton, Impact, sans-serif; letter-spacing: .02em; text-transform: uppercase; color: var(--paper); }
-  .now .w { display: block; font-size: 14.5px; color: var(--dim); margin-top: 3px; }
-  .now .go { color: var(--faint); font-size: 20px; }
-
-  /* ---- sections: one listings page per kind of thing ---- */
-  .sect { padding: clamp(44px, 7vw, 88px) 0 0; }
-  .sect .head { display: flex; align-items: baseline; justify-content: space-between; gap: 6px 16px; flex-wrap: wrap; padding-bottom: 14px; border-bottom: 3px solid var(--paper); }
-  .sect h2 { margin: 0; font: 400 clamp(44px, 6vw, 76px)/.95 Anton, Impact, sans-serif; text-transform: uppercase; color: var(--paper); }
-  .sect .head p { margin: 0; color: var(--dim); font-size: 20px; }
-
-  /* one listing = channel slot | picture | what it is and what you can do */
-  .listing { --acc: var(--red); display: grid; grid-template-columns: 92px minmax(0, 1.05fr) minmax(0, 1fr); gap: clamp(18px, 3vw, 40px); padding: clamp(26px, 3.6vw, 44px) 0; border-bottom: 1px solid var(--rule); align-items: start; }
-  .slot { padding-top: 4px; }
-  .slot .ch { display: block; font: 400 30px/1 VT323, monospace; color: var(--acc); letter-spacing: .04em; }
-  .slot .k { display: block; margin-top: 8px; font: 400 17px/1.25 VT323, monospace; color: var(--faint); letter-spacing: .06em; text-transform: uppercase; }
-  .pic { position: relative; border-radius: 8px; overflow: hidden; background: #000; aspect-ratio: 16 / 10; box-shadow: 0 1px 0 rgba(255,255,255,.06) inset, 0 24px 60px -30px rgba(0,0,0,.9); }
-  .pic img { width: 100%; height: 100%; object-fit: cover; }
-  .pic::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(0deg, rgba(0,0,0,.13) 0 1px, transparent 1px 3px); }
-  .pic .cap { position: absolute; z-index: 1; left: 12px; bottom: 10px; font: 400 17px/1 VT323, monospace; letter-spacing: .08em; text-transform: uppercase; color: rgba(255,255,255,.82); text-shadow: 0 1px 3px #000; }
-  .body h3 { margin: 0; font: 400 clamp(38px, 4.4vw, 60px)/.95 Anton, Impact, sans-serif; text-transform: uppercase; color: var(--paper); }
-  .body .kind { margin: 10px 0 0; font: 400 19px/1.2 VT323, monospace; letter-spacing: .07em; text-transform: uppercase; color: var(--acc); }
-  .body .pitch { margin: 14px 0 0; font-size: 17.5px; color: var(--text); max-width: 34em; }
-  .facts { margin: 14px 0 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 4px 18px; font: 400 18px/1.3 VT323, monospace; letter-spacing: .05em; text-transform: uppercase; color: var(--dim); }
-  .facts li::before { content: "\25B8\00A0"; color: var(--faint); }
-
-  /* actions: labelled, at least 48px tall, the main one filled */
-  .acts { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
-  .btn { display: inline-flex; align-items: center; gap: 10px; min-height: 48px; padding: 9px 18px; border-radius: 999px; text-decoration: none; font-weight: 650; font-size: 16px; line-height: 1.15; border: 1.5px solid rgba(239,231,218,.34); color: var(--paper); transition: background .15s, border-color .15s, transform .15s; }
-  .btn:hover { border-color: var(--paper); background: rgba(239,231,218,.07); }
-  .btn.p { background: var(--paper); color: var(--ink); border-color: var(--paper); }
+  /* ---- buttons ---- */
+  .btn { display: inline-flex; align-items: center; gap: 10px; min-height: 48px; padding: 8px 18px; border-radius: 999px; text-decoration: none; font-weight: 650; font-size: 16px; line-height: 1.15; border: 1.5px solid rgba(243,234,217,.36); color: var(--bone); transition: background .15s, border-color .15s, transform .15s; text-align: left; }
+  .btn:hover { border-color: var(--bone); background: rgba(243,234,217,.08); }
+  .btn.p { background: var(--bone); color: var(--ink); border-color: var(--bone); }
   .btn.p:hover { background: #fff; transform: translateY(-1px); }
+  .btn small { display: block; font-weight: 500; font-size: 12.5px; opacity: .8; margin-top: 1px; }
   .btn svg { width: 18px; height: 18px; flex: none; }
-  .btn small { display: block; font-weight: 500; font-size: 12.5px; opacity: .75; }
+  .paper .btn { border-color: rgba(26,18,19,.42); color: var(--pink); }
+  .paper .btn:hover { border-color: var(--pink); background: rgba(26,18,19,.06); }
+  .paper .btn.p { background: var(--pink); color: var(--paper); border-color: var(--pink); }
+  .paper .btn.p:hover { background: #000; }
 
-  /* the lead listing in a section gets the full width for its picture */
-  .listing.big { grid-template-columns: 92px minmax(0, 1fr); }
-  .listing.big .pic { aspect-ratio: 16 / 7.2; }
-  .listing.big .body { grid-column: 2; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 clamp(24px, 4vw, 56px); align-items: start; }
-  .listing.big .body .acts { margin-top: 6px; }
+  /* ---- A. the front door ---- */
+  .hero { position: relative; isolation: isolate; overflow: hidden; border-bottom: 1px solid var(--rule); }
+  .hero-art { position: absolute; z-index: -3; right: 0; top: 0; width: min(76vw, 1180px); aspect-ratio: 16 / 9; }
+  .hero-art picture, .hero-art img { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .hero-art img { object-fit: cover; object-position: 70% 22%; }
+  .hero-art::after { content: ""; position: absolute; inset: 0; background:
+      linear-gradient(90deg, var(--ink) 0%, rgba(11,8,9,.86) 22%, rgba(11,8,9,.3) 46%, transparent 62%),
+      linear-gradient(0deg, var(--ink) 0%, rgba(11,8,9,.5) 22%, transparent 46%); }
+  .hero-lines { position: absolute; z-index: -1; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+  .hero-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 548px); grid-template-rows: auto 1fr; gap: 0 clamp(24px, 4vw, 64px); align-items: start; padding-top: clamp(34px, 5vh, 52px); min-height: calc(min(100vh, 940px) - var(--bar) - 138px); }
+  .hero-copy { max-width: 640px; grid-column: 1; }
+  .hero-grid > .ticket { grid-column: 2; grid-row: 1 / span 2; align-self: end; }
+  .eyebrow { color: var(--red); font-size: 21px; line-height: 1; margin-bottom: 14px; text-shadow: 0 1px 8px #000; }
+  .eyebrow span { color: var(--dim); }
+  .hero h1 { font: 400 clamp(46px, 5.7vw, 84px)/.9 Anton, Impact, sans-serif; text-transform: uppercase; color: var(--bone); letter-spacing: .005em; text-shadow: 0 4px 30px rgba(0,0,0,.7); }
+  .hero h1 span { display: block; white-space: nowrap; }
+  .hero h1 .r { color: var(--red); }
+  .lede { margin-top: 18px; font-size: clamp(17px, 1.4vw, 19.5px); line-height: 1.5; max-width: 33em; text-shadow: 0 1px 10px #000; }
+  .lede b { color: var(--bone); }
+  /* the playbill credits: who conducts, who plays */
+  .bill { margin-top: 18px; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 16px; align-items: baseline; max-width: 640px; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); padding: 12px 0; }
+  .bill dt { font: 400 20px/1.2 VT323, monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--red); }
+  .bill dd { font-size: 16px; line-height: 1.35; color: var(--text); }
+  .bill dd b { font: 400 19px/1 Anton, Impact, sans-serif; letter-spacing: .03em; text-transform: uppercase; color: var(--bone); margin-right: 8px; }
+  .bill .fleet { font-family: VT323, monospace; font-size: 18.5px; letter-spacing: 0; }
+  .cta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+  .marking { position: absolute; z-index: -1; right: clamp(16px, 4vw, 64px); top: 18px; font-size: clamp(18px, 1.7vw, 25px); line-height: 1.1; color: var(--bone); transform: rotate(-3deg); white-space: nowrap; background: rgba(11,8,9,.86); padding: 5px 14px 7px; border-radius: 4px; border: 1px solid var(--rule); }
 
-  /* the story has no screenshot, so it gets a set of its own */
-  .pic, .scroll { text-decoration: none; }
-  .scroll { position: relative; overflow: hidden; border-radius: 8px; aspect-ratio: 16 / 10; background: radial-gradient(90% 80% at 50% 45%, #2b2140 0%, #120f1c 60%, #0a0910 100%); display: grid; place-items: center; }
-  .scroll .inf { font: 400 clamp(110px, 15vw, 190px)/1 Anton, Impact, sans-serif; color: transparent; -webkit-text-stroke: 1.6px rgba(231,214,255,.8); }
-  .scroll .ep { position: absolute; left: 18px; right: 18px; bottom: 14px; font: 400 20px/1.2 VT323, monospace; color: #d3c3f6; letter-spacing: .08em; text-transform: uppercase; }
-  .scroll .q { position: absolute; top: 16px; left: 18px; right: 18px; font: italic 500 16px/1.4 Georgia, serif; color: #c4b5e0; }
+  /* the Studio, as a ticket: the flagship, docked on the first screen */
+  .ticket { position: relative; display: grid; grid-template-columns: 178px minmax(0, 1fr); border-radius: 12px; box-shadow: 0 30px 70px -24px #000, 0 0 0 1px rgba(0,0,0,.4); overflow: hidden; }
+  .ticket::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 6px; background: repeating-linear-gradient(90deg, var(--amber) 0 18px, var(--pink) 18px 22px); }
+  .tk-stub { padding: 26px 14px 14px; border-right: 2px dashed rgba(26,18,19,.45); background: var(--paper2); display: flex; flex-direction: column; gap: 16px; }
+  .tk-pic { display: block; padding: 5px; background: #fff; box-shadow: 0 8px 18px -8px rgba(0,0,0,.7); transform: rotate(-3deg); }
+  .tk-pic img { width: 100%; height: auto; }
+  .tk-stub ul { font: 400 17px/1.15 VT323, monospace; letter-spacing: .05em; text-transform: uppercase; color: var(--pdim); display: grid; gap: 7px; }
+  .tk-stub li:first-child { color: var(--pred); font-size: 20px; }
+  .tk-body { padding: 22px 20px 18px; min-width: 0; }
+  .tk-kick { color: var(--pred); font-size: 19px; line-height: 1; }
+  .ticket h2 { font: 400 clamp(36px, 3.4vw, 46px)/1 Anton, Impact, sans-serif; text-transform: uppercase; margin-top: 6px; }
+  .ticket p.tk-copy { margin-top: 8px; font-size: 15px; line-height: 1.45; color: #2b2021; }
+  .tk-acts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
+  .tk-acts .btn { padding: 7px 14px; font-size: 15px; border-radius: 12px; }
+  .tk-acts .btn.p { grid-column: 1 / -1; font-size: 17px; }
+  .tk-acts .btn small { font-size: 12px; }
 
-  .also { margin: 18px 0 0; padding-top: 14px; border-top: 1px dashed var(--rule); color: var(--dim); font-size: 15.5px; }
-  .also a { color: var(--paper); display: inline-block; padding: 10px 0; margin: -10px 0; }
+  /* tonight's programme: the six works, sitting on the stave the baton draws */
+  .programme { position: relative; margin-top: 20px; padding-bottom: 22px; }
+  .programme h2 { font: 400 19px/1 VT323, monospace; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); margin-bottom: 10px; }
+  .programme h2 b { display: inline; color: var(--red); font: inherit; }
+  .programme ul { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; }
+  .programme a { display: flex; align-items: center; gap: 10px; min-height: 60px; padding: 5px 10px 5px 5px; border-radius: 999px; text-decoration: none; background: rgba(21,16,18,.86); border: 1px solid var(--rule); transition: border-color .15s, transform .15s, background .15s; }
+  .programme a:hover { border-color: var(--acc, var(--bone)); background: var(--ink3); transform: translateY(-2px); }
+  .programme .th { flex: none; width: 48px; height: 48px; border-radius: 50%; overflow: hidden; background: #000; box-shadow: 0 0 0 2px var(--acc, var(--rule)); display: grid; place-items: center; }
+  .programme .th img { width: 100%; height: 100%; object-fit: cover; }
+  .programme .th.inf { background: radial-gradient(circle at 50% 45%, #3a2c58, #130f1e); color: #e7d6ff; font: 400 30px/1 Anton, Impact, sans-serif; }
+  .programme b { display: block; font: 400 17px/1.05 Anton, Impact, sans-serif; letter-spacing: .015em; text-transform: uppercase; color: var(--bone); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .programme small { display: block; font: 400 16px/1.1 VT323, monospace; letter-spacing: .05em; text-transform: uppercase; color: var(--dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .programme span { min-width: 0; }
 
-  /* ---- more places ---- */
-  .elsewhere { margin-top: clamp(44px, 7vw, 88px); border-top: 3px solid var(--paper); padding: 22px 0 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 18px 40px; }
-  .elsewhere h2 { margin: 0 0 4px; font: 400 22px/1 VT323, monospace; letter-spacing: .1em; color: var(--paper); text-transform: uppercase; }
-  .elsewhere p { margin: 0; color: var(--dim); font-size: 15.5px; }
-  .elsewhere a { display: inline-flex; align-items: center; min-height: 44px; color: var(--paper); }
-  footer { margin-top: 56px; border-top: 1px solid var(--rule); }
-  footer .wrap { display: flex; justify-content: space-between; align-items: center; gap: 8px 16px; flex-wrap: wrap; padding-top: 12px; padding-bottom: 32px; color: var(--faint); font: 400 18px/1.4 VT323, monospace; letter-spacing: .08em; text-transform: uppercase; }
+  /* ---- section heads, with rehearsal marks ---- */
+  .sect { padding: clamp(40px, 5.4vw, 72px) 0 0; }
+  .head { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 18px; align-items: center; }
+  .reh { grid-row: 1 / span 2; width: 54px; height: 54px; display: grid; place-items: center; border: 2px solid var(--bone); color: var(--bone); font: 400 30px/1 Anton, Impact, sans-serif; }
+  .head h2 { font: 400 clamp(40px, 5.4vw, 72px)/.95 Anton, Impact, sans-serif; text-transform: uppercase; color: var(--bone); }
+  .head p { color: var(--dim); font-size: clamp(18px, 1.7vw, 23px); line-height: 1.25; }
+  .paper .reh { border-color: var(--pink); color: var(--pink); }
+  .paper .head h2 { color: var(--pink); }
+  .paper .head p { color: var(--pdim); }
+
+  /* ---- B. the orchestra (Explore) ---- */
+  .explore > .wrap { max-width: 1480px; }
+  .atlas { display: none; margin-top: 22px; grid-template-columns: minmax(0, 1fr) 372px; gap: 20px; align-items: start; }
+  .atlas > div { position: sticky; top: calc(var(--bar) + 10px); }
+  html.js .atlas { display: grid; }
+  html.js.atlas-failed .atlas { display: none; }
+  .nojs { margin-top: 22px; padding: 16px 18px; border: 1px dashed var(--rule); border-radius: 10px; color: var(--dim); }
+  html.js .nojs { display: none; }
+  html.js.atlas-failed .nojs { display: block; }
+  .nojs a { color: var(--bone); display: inline-block; padding: 12px 0; margin: -12px 0; }
+  .stage { position: relative; aspect-ratio: 1218 / 680; background:
+      radial-gradient(60% 90% at 50% 100%, rgba(255,79,61,.16), transparent 70%),
+      radial-gradient(120% 100% at 50% 100%, #1a1113 0%, var(--ink) 70%); border-radius: 14px; }
+  .stage svg, .stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .stage canvas { pointer-events: none; }
+  .stage svg { overflow: visible; -webkit-tap-highlight-color: transparent; }
+  .stage svg a { cursor: pointer; outline-offset: 2px; }
+  .stage svg text { user-select: none; -webkit-user-select: none; pointer-events: none; }
+  .fan .lbl { font: 400 31px/1 Anton, Impact, sans-serif; letter-spacing: .03em; text-transform: uppercase; fill: #fff; paint-order: stroke; stroke: rgba(8,5,6,.92); stroke-width: 8px; stroke-linejoin: round; }
+  .fan .slbl { font: 400 23px/1 VT323, monospace; letter-spacing: .06em; text-transform: uppercase; fill: var(--text); }
+  .fan .desk-t { font: 400 42px/1 Anton, Impact, sans-serif; letter-spacing: .1em; text-transform: uppercase; fill: #1b0f06; }
+  .fan .desk-s { font: 400 19px/1 VT323, monospace; letter-spacing: .1em; text-transform: uppercase; fill: #3a2208; }
+  .fan .pod-t { font: 400 21px/1 VT323, monospace; letter-spacing: .1em; text-transform: uppercase; fill: var(--bone); }
+  .fan .node { transition: opacity .35s ease, transform .5s cubic-bezier(.2,.8,.2,1); }
+  .fan .rim { fill: none; stroke: var(--acc, var(--bone)); stroke-width: 2.5; opacity: .9; }
+  .fan .row { fill: none; stroke: var(--bone); stroke-width: 1; opacity: .13; }
+  .fan .slur { fill: var(--amber); opacity: .9; transition: opacity .35s ease; }
+  .fan a.line:hover .slur, .fan a.line.on .slur { opacity: 1; fill: #ffd28a; }
+  .fan.has-sel .line.off .slur { opacity: .1; }
+  .fan .scrim { opacity: .24; transition: opacity .3s; }
+  .fan .hit { fill: transparent; stroke: transparent; }
+  .fan a.node:hover .scrim, .fan a.node:focus-visible .scrim, .fan a.node.on .scrim { opacity: 0; }
+  .fan a.node:hover .rim, .fan a.node:focus-visible .rim, .fan a.node.on .rim { stroke-width: 6; opacity: 1; }
+  .fan a.node:focus-visible .rim, .fan a.node:focus-visible .seat-c { stroke: #fff; }
+  .fan .seat-c { fill: var(--ink3); stroke: var(--acc, var(--dim)); stroke-width: 2; transition: fill .2s, stroke-width .2s; }
+  .fan .seat-i { fill: none; stroke: var(--bone); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .fan a.node:hover .seat-c, .fan a.node.on .seat-c { fill: #3a2a2d; stroke-width: 4; }
+  .fan a.node:hover .slbl, .fan a.node.on .slbl { fill: var(--bone); }
+  .fan .edge { fill: none; stroke-linecap: round; transition: opacity .35s ease, stroke-width .2s; }
+  .fan .edge.direction { stroke: var(--red); stroke-width: 1.6; opacity: .75; }
+  .fan .edge.music { stroke: var(--amber); stroke-width: 2.4; opacity: .9; }
+  .fan .edge.family { stroke: var(--bone); stroke-width: 2.2; stroke-dasharray: 2 7; opacity: .9; }
+  .fan .edge.page { stroke: var(--dim); stroke-width: 1.4; opacity: .7; }
+  .fan .ehit { fill: none; stroke: transparent; stroke-width: 26; stroke-linecap: round; pointer-events: stroke; }
+  .fan a.line:hover .edge, .fan a.line.on .edge, .fan a.line:focus-visible .edge { stroke-width: 4.5; opacity: 1; }
+  .fan .dot { fill: var(--amber); }
+  .fan.has-sel .node.off .scrim { opacity: .74; }
+  .fan.has-sel .node.off .rim, .fan.has-sel .node.off .seat-c, .fan.has-sel .node.off .seat-i, .fan.has-sel .node.off .inf { opacity: .3; }
+  .fan.has-sel .node.off .slbl { fill: var(--dim); }
+  .fan.has-sel .node.off .desk-fill { opacity: .5; }
+  .fan.has-sel .node.off .pod-img { opacity: .5; }
+  .fan.has-sel .line.off .edge { opacity: .12; }
+  .fan.has-sel .line.off .dot { opacity: .2; }
+  .fan .baton { stroke: var(--bone); stroke-width: 4; stroke-linecap: round; }
+  .fan .baton-tip { fill: #fff; }
+  .fan .pod-ring { fill: none; stroke: var(--red); stroke-width: 3; }
+  .fan a.node.on .pod-ring, .fan a.node:hover .pod-ring { stroke: #fff; stroke-width: 5; }
+  .fan .inf { font: 400 150px/1 Anton, Impact, sans-serif; fill: none; stroke: rgba(231,214,255,.85); stroke-width: 2; }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 12px; color: var(--dim); font: 400 18px/1.2 VT323, monospace; letter-spacing: .06em; text-transform: uppercase; }
+  .legend li { display: inline-flex; align-items: center; gap: 8px; }
+  .legend em { font-style: normal; }
+  .legend i { display: inline-block; width: 30px; height: 0; border-top: 2.5px solid var(--red); }
+  .legend .k-music i { border-color: var(--amber); }
+  .legend .k-family i { border-top: 3px dotted var(--bone); }
+  .legend .k-page i { border-color: var(--dim); border-top-width: 1.5px; }
+
+  /* the programme note: paper, because it is for reading */
+  .note { background: var(--paper); color: var(--pink); border-radius: 12px; padding: 22px 22px 20px; min-height: 420px; box-shadow: 0 30px 60px -30px #000; position: relative; }
+  .note::before { content: ""; position: absolute; left: 22px; right: 22px; top: 0; height: 5px; background: var(--acc, var(--red)); }
+  .note .kick { font: 400 19px/1.15 VT323, monospace; letter-spacing: .07em; text-transform: uppercase; color: var(--pred); }
+  .note h3 { font: 400 clamp(34px, 3vw, 44px)/1 Anton, Impact, sans-serif; text-transform: uppercase; margin-top: 6px; outline: none; overflow-wrap: anywhere; }
+  .note h3 em { display: block; font: italic 500 25px/1.15 Cormorant, Georgia, serif; text-transform: none; color: var(--pred); margin: 3px 0; }
+  .note .art { margin: 14px -22px 0; aspect-ratio: 16 / 7; background: #1a1213; overflow: hidden; }
+  .note .art img { width: 100%; height: 100%; object-fit: cover; }
+  .note .blurb { margin-top: 14px; font-size: 16.5px; line-height: 1.5; }
+  .note .facts { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 2px 14px; font: 400 18px/1.25 VT323, monospace; letter-spacing: .05em; text-transform: uppercase; color: var(--pdim); }
+  .note .facts li::before { content: "\25B8\00A0"; }
+  .note .aside { margin-top: 10px; font-size: 14.5px; line-height: 1.45; color: var(--pdim); }
+  .note .acts { display: grid; gap: 8px; margin-top: 16px; }
+  .note .acts .btn { border-radius: 12px; }
+  .note h4 { margin-top: 20px; padding-top: 12px; border-top: 1px solid rgba(26,18,19,.22); font: 400 19px/1 VT323, monospace; letter-spacing: .1em; text-transform: uppercase; color: var(--pdim); }
+  .note .offs { margin-top: 4px; }
+  .note .offs li { display: flex; align-items: center; gap: 8px; border-bottom: 1px solid rgba(26,18,19,.12); padding: 4px 0; }
+  .note .off-a { flex: 1 1 auto; min-width: 0; min-height: 46px; display: flex; flex-direction: column; justify-content: center; text-decoration: none; padding: 2px 4px; border-radius: 6px; }
+  .note .off-a:hover { background: rgba(26,18,19,.07); }
+  .note .off-a b { font-size: 15.5px; font-weight: 650; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: rgba(26,18,19,.35); }
+  .note .off-a small { font: 400 16px/1.15 VT323, monospace; letter-spacing: .04em; text-transform: uppercase; color: var(--pdim); }
+  .note .btn.mini { flex: none; min-height: 44px; min-width: 64px; justify-content: center; padding: 4px 14px; font-size: 14.5px; border-radius: 10px; }
+  .note .lines { margin-top: 6px; }
+  .note .lines a { display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; gap: 10px; align-items: center; min-height: 46px; padding: 6px 4px; text-decoration: none; border-bottom: 1px solid rgba(26,18,19,.12); font-size: 15.5px; line-height: 1.25; border-radius: 6px; }
+  .note .lines a:hover { background: rgba(26,18,19,.07); }
+  .note .lines i { display: block; width: 30px; height: 0; border-top: 3px solid var(--pred); }
+  .note .lines .k-music i { border-color: #b36a00; }
+  .note .lines .k-family i { border-top: 3px dotted var(--pink); }
+  .note .lines .k-page i { border-color: var(--pdim); border-top-width: 1.5px; }
+  .note .lines b { font-weight: 650; }
+  .note .lines span.go { color: var(--pdim); }
+  .note .quote { margin-top: 10px; padding-left: 14px; border-left: 3px solid var(--pred); }
+  .note .quote q { font: italic 500 20px/1.25 Cormorant, Georgia, serif; quotes: "\201C" "\201D"; }
+  .note .src { margin-top: 14px; font-size: 14.5px; color: var(--pdim); }
+  .note .src a, .note .quote a, .note .back { display: inline-flex; align-items: center; min-height: 44px; min-width: 44px; color: var(--pink); font-weight: 600; max-width: 100%; overflow-wrap: anywhere; }
+  .note .statement { margin-top: 14px; font: italic 500 23px/1.3 Cormorant, Georgia, serif; }
+  .note .ends { display: grid; gap: 10px; margin-top: 16px; }
+  .note .end { border: 1px solid rgba(26,18,19,.25); border-radius: 12px; padding: 12px; }
+  .note .end b { display: block; font: 400 22px/1 Anton, Impact, sans-serif; text-transform: uppercase; letter-spacing: .02em; }
+  .note .end > small { display: block; font: 400 17px/1.2 VT323, monospace; letter-spacing: .05em; text-transform: uppercase; color: var(--pdim); margin-top: 3px; }
+  .note .end .acts { margin-top: 10px; }
+  .note .back { margin-top: 12px; text-decoration: none; gap: 8px; }
+  .note .back:hover { text-decoration: underline; }
+  .note .how { margin-top: 12px; font-size: 16px; line-height: 1.5; }
+
+  /* ---- C. how a piece gets made ---- */
+  .steps { margin-top: 30px; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); border-top: 1px solid var(--rule); counter-reset: bar; position: relative; }
+  .steps::before { content: ""; position: absolute; left: 0; right: 0; top: 18px; height: 33px; background: repeating-linear-gradient(0deg, rgba(255,79,61,.5) 0 1px, transparent 1px 8px); pointer-events: none; }
+  .steps li { position: relative; padding: 76px 18px 22px 18px; border-left: 2px solid var(--rule); counter-increment: bar; }
+  .steps li:last-child { border-right: 2px solid var(--rule); }
+  .steps .who { position: absolute; left: 14px; top: 16px; display: inline-flex; align-items: center; height: 36px; padding: 0 12px; border-radius: 999px; font: 400 20px/1 VT323, monospace; letter-spacing: .08em; text-transform: uppercase; background: var(--ink); border: 2px solid var(--red); color: var(--red); }
+  .steps .who.fleet { border-color: var(--amber); color: var(--amber); }
+  .steps .who.you { border-color: var(--bone); color: var(--bone); }
+  .steps h3 { font: 400 25px/1.05 Anton, Impact, sans-serif; text-transform: uppercase; color: var(--bone); letter-spacing: .01em; }
+  .steps q { display: block; margin-top: 10px; font: italic 500 20px/1.3 Cormorant, Georgia, serif; color: var(--text); quotes: "\201C" "\201D"; }
+  .steps .by { margin-top: 8px; font-size: 14.5px; color: var(--dim); }
+  .steps .by a { display: inline-flex; align-items: center; min-height: 44px; min-width: 44px; color: var(--bone); }
+  .watch { margin-top: 22px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; color: var(--dim); }
+
+  /* ---- D. the index: everything, plainly ---- */
+  .paper { background: var(--paper); color: var(--pink); color-scheme: light; }
+  .index { margin-top: clamp(48px, 7vw, 92px); padding: clamp(40px, 6vw, 76px) 0 clamp(40px, 6vw, 72px); }
+  .idx { margin-top: 28px; columns: 3 320px; column-gap: 40px; }
+  .idx section { padding: 0 0 22px; }
+  .idx h3 { break-after: avoid; }
+  .idx h3 { font: 400 21px/1 VT323, monospace; letter-spacing: .1em; text-transform: uppercase; color: var(--pred); border-bottom: 2px solid var(--pink); padding-bottom: 6px; margin-bottom: 4px; }
+  .idx article { padding: 12px 0 8px; border-bottom: 1px solid rgba(26,18,19,.2); break-inside: avoid; }
+  .idx h4 { font: 400 27px/1 Anton, Impact, sans-serif; text-transform: uppercase; letter-spacing: .01em; }
+  .idx .tag { font: 400 17px/1.2 VT323, monospace; letter-spacing: .05em; text-transform: uppercase; color: var(--pdim); margin-top: 3px; }
+  .idx .d { font-size: 14.5px; line-height: 1.45; color: #2b2021; margin-top: 6px; }
+  .idx ul { margin-top: 4px; }
+  .idx li a { display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 4px 0; font-weight: 600; font-size: 15.5px; line-height: 1.25; text-underline-offset: 3px; }
+  .idx li a .v { flex: none; min-width: 78px; font: 400 17px/1 VT323, monospace; letter-spacing: .06em; text-transform: uppercase; color: var(--pred); text-decoration: none; display: inline-block; }
+  .idx li a small { font-weight: 400; color: var(--pdim); }
+  .show { display: none; }
+  html.js:not(.atlas-failed) .show { display: inline-flex; align-items: center; min-height: 44px; font-size: 14.5px; color: var(--pdim); font-weight: 500; }
+  .rel { margin-top: 26px; }
+  .rel h3 { font: 400 21px/1 VT323, monospace; letter-spacing: .1em; text-transform: uppercase; color: var(--pred); border-bottom: 2px solid var(--pink); padding-bottom: 6px; }
+  .rel ul { columns: 2 420px; column-gap: 40px; }
+  .rel li { break-inside: avoid; padding: 10px 0 4px; border-bottom: 1px solid rgba(26,18,19,.2); font-size: 15px; line-height: 1.45; }
+  .rel li b { font-weight: 700; }
+  .rel li a { display: inline-flex; align-items: center; min-height: 44px; min-width: 44px; font-weight: 600; margin-right: 14px; max-width: 100%; overflow-wrap: anywhere; }
+  .rel li, .idx article, .note { overflow-wrap: break-word; }
+  .rel .k { font: 400 16px/1 VT323, monospace; letter-spacing: .06em; text-transform: uppercase; color: var(--pred); margin-right: 6px; }
+
+  footer .wrap { display: flex; justify-content: space-between; align-items: center; gap: 8px 24px; flex-wrap: wrap; padding-top: 16px; padding-bottom: 34px; color: var(--faint); font: 400 18px/1.4 VT323, monospace; letter-spacing: .07em; text-transform: uppercase; }
   footer a { display: inline-flex; align-items: center; min-height: 44px; }
+  footer .colophon { flex-basis: 100%; font: 400 14.5px/1.5 system-ui, sans-serif; letter-spacing: 0; text-transform: none; color: var(--faint); max-width: 62em; }
 
-  /* gentle arrival, only when motion is welcome */
+  /* arrivals, only when motion is welcome */
   @media (prefers-reduced-motion: no-preference) {
     html.js .rv { opacity: 0; transform: translateY(14px); transition: opacity .7s ease, transform .7s cubic-bezier(.2,.7,.2,1); }
     html.js .rv.in { opacity: 1; transform: none; }
-    .on { animation: on 2.4s steps(1, end) infinite; }
-    @keyframes on { 0%, 70% { opacity: 1 } 71%, 100% { opacity: .35 } }
+    .note.turn > * { animation: turn .32s cubic-bezier(.2,.7,.2,1) both; }
+    @keyframes turn { from { opacity: 0; transform: translateY(8px); } }
+    html.js .fan .node.seated { opacity: 0; }
+    html.js .fan.in .node.seated { opacity: 1; transition-delay: calc(var(--i, 0) * 55ms); }
   }
-  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .btn, .btn.p:hover { transition: none; transform: none; } }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { transition: none !important; animation: none !important; }
+  }
 
   /* ---- narrower ---- */
-  @media (max-width: 960px) {
-    .lock > * { max-width: 62%; }
-    .nowrow .now ol { grid-template-columns: 1fr; }
-    .nowrow .now li + li { border-left: 0; border-top: 1px solid var(--rule); }
-    .nowrow .now { max-width: 560px; }
-    .listing, .listing.big { grid-template-columns: 64px minmax(0, 1fr); }
-    .listing > .pic, .listing > .scroll, .listing > .body, .listing.big > .body { grid-column: 2; }
-    .listing.big .body { display: block; }
-    .listing.big .body .acts { margin-top: 22px; }
-    .listing.big .pic { aspect-ratio: 16 / 9; }
+  @media (max-width: 1180px) {
+    .programme ul { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .atlas { grid-template-columns: minmax(0, 1fr); }
+    .atlas > div { position: static; }
+    .steps { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .steps li:nth-child(n+4) { border-top: 1px solid var(--rule); }
+  }
+  @media (max-width: 980px) {
+    .hero-grid { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; min-height: 0; }
+    .hero-copy { max-width: 640px; }
+    .hero-grid > .ticket { grid-column: 1; grid-row: auto; max-width: 640px; margin-top: 22px; }
   }
   @media (max-width: 700px) {
-    /* phones: the picture on top, uncropped enough to keep the maestro, the lockup printed below it */
-    .cover { display: block; aspect-ratio: auto; min-height: 0; max-height: none; overflow: visible; background: transparent; }
-    .cover picture { position: relative; display: block; aspect-ratio: 4 / 3; overflow: hidden; }
-    .cover img { position: absolute; z-index: 0; object-position: 70% 22%; }
-    .cover::before { background: linear-gradient(0deg, var(--ink) 0%, rgba(12,11,14,.55) 22%, transparent 45%); height: calc(100vw * .75); bottom: auto; z-index: 1; }
-    .cover::after { height: calc(100vw * .75); bottom: auto; z-index: 1; }
-    .such { display: none; }
-    .lock { position: relative; z-index: 2; margin-top: -54px; padding-top: 0; padding-bottom: 28px; }
-    .lock > * { max-width: none; }
-    .nowrow { margin-top: 0; }
-    .nowrow .now { max-width: none; }
-  }
-  @media (max-width: 600px) {
+    :root { --bar: 52px; }
+    .bar { background: var(--ink); backdrop-filter: none; -webkit-backdrop-filter: none; }
     body { font-size: 16.5px; }
-    .bar .wrap { gap: 4px; }
     .mark { font-size: 18px; gap: 8px; }
-    .mark i { width: 10px; height: 10px; }
-    .bar nav a { padding: 0 7px; min-width: 44px; justify-content: center; font-size: 18px; }
+    .bar nav a { padding: 0 8px; font-size: 19px; }
     .bar nav .opt { display: none; }
-    .listing, .listing.big { grid-template-columns: minmax(0, 1fr); gap: 14px; }
-    .slot { display: flex; gap: 12px; align-items: baseline; padding: 0; }
-    .slot .k { margin: 0; }
-    .listing > .pic, .listing > .scroll, .listing > .body, .listing.big > .body { grid-column: 1; }
-    .acts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .acts .btn { justify-content: center; text-align: center; padding: 9px 12px; }
-    .acts .btn.p { grid-column: 1 / -1; justify-content: flex-start; text-align: left; padding: 9px 18px; }
-    .acts .btn:not(.p):last-child:nth-child(even) { grid-column: 1 / -1; }
-    .now a { grid-template-columns: 58px 1fr auto; padding: 12px 14px; gap: 12px; }
+    /* phones: the picture on top, the poster printed over its lower edge */
+    .hero-art { position: relative; width: 100%; aspect-ratio: 3 / 2; }
+    .hero-art::after { background: linear-gradient(0deg, var(--ink) 0%, rgba(11,8,9,.6) 24%, transparent 50%); }
+    .marking { position: static; display: inline-block; transform: rotate(-2deg); transform-origin: left; margin-top: 14px; white-space: normal; background: none; border: 0; padding: 0; }
+    .hero-grid { margin-top: -64px; padding-top: 0; }
+    .hero h1 { font-size: clamp(40px, 12vw, 58px); }
+    .lede { margin-top: 12px; font-size: 16.5px; line-height: 1.45; }
+    .eyebrow { margin-bottom: 10px; }
+    .bill { grid-template-columns: minmax(0, 1fr); gap: 0; }
+    .bill dd { margin-bottom: 8px; }
+    .cta .btn { flex: 1 1 100%; }
+    /* the Studio rides directly under the lede on a phone, compact: title, one line, the three doors */
+    .hero-grid > .ticket { grid-template-columns: minmax(0, 1fr); margin-top: 16px; }
+    .tk-stub, .tk-more { display: none; }
+    .tk-body { padding: 18px 14px 14px; }
+    .tk-kick { font-size: 17px; }
+    .ticket h2 { font-size: 34px; margin-top: 4px; }
+    .ticket p.tk-copy { margin-top: 5px; font-size: 14.5px; line-height: 1.4; }
+    .tk-acts { margin-top: 10px; }
+    .tk-acts .btn { padding: 6px 12px; }
+    .tk-acts .btn small { font-size: 11.5px; }
+    .hc-b .bill { margin-top: 22px; }
+    .programme ul { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .programme a { padding-right: 8px; gap: 8px; }
+    .programme b { font-size: 16px; }
+    .programme small { font-size: 15px; letter-spacing: .02em; }
+    .legend { gap: 4px 12px; font-size: 16px; letter-spacing: .03em; }
+    .legend em { display: none; }
+    .legend i { width: 18px; }
+    .stage { aspect-ratio: 390 / 464; margin: 0 calc(var(--gut) * -1); border-radius: 0; overflow: hidden; }
+    .stage svg { overflow: hidden; }
+    .fan .lbl { font-size: 14.5px; stroke-width: 5px; }
+    .fan .desk-t { font-size: 19px; }
+    .fan .pod-t { font-size: 16px; }
+    .fan .inf { font-size: 60px; stroke-width: 1.4; }
+    .fan .rim { stroke-width: 2; }
+    .fan .ehit { stroke-width: 34; }
+    .note { padding: 18px 16px; }
+    .note .art { margin: 12px -16px 0; }
+    .note::before { left: 16px; right: 16px; }
+    .steps { grid-template-columns: minmax(0, 1fr); }
+    .steps::before { display: none; }
+    .steps li { padding: 64px 14px 18px; border-left: 0; border-right: 0 !important; border-top: 1px solid var(--rule); }
+    .steps li:first-child { border-top: 0; }
+    .reh { width: 44px; height: 44px; font-size: 24px; }
+    .head { gap: 4px 12px; }
   }
-  @media (max-width: 440px) {
-    .mark .mk2 { display: none; }
-    .issue span { display: none; }
-    .bar nav a { padding: 0 6px; }
-  }
+  @media (max-width: 460px) { .mark .mk2 { display: none; } }
   @media (max-width: 350px) {
-    /* the narrowest phones keep all four sections; the wordmark shrinks to its red dot (the title is right below) */
+    /* the narrowest phones keep all three sections; the wordmark shrinks to its red dot */
     .mark .mk1 { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
     .mark { min-width: 44px; justify-content: center; }
+    .bar nav a { padding: 0 6px; font-size: 18px; }
+  }
+  @media (max-width: 380px) {
+    .eyebrow span { display: none; }
+    .programme ul { grid-template-columns: minmax(0, 1fr); }
   }
 </style>
 <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
-<a class="skip" href="#main">Skip to the listings</a>
+<a class="skip" href="#explore">Skip to Explore</a>
 
 <div class="bar">
   <div class="wrap">
     <a class="mark" href="#top" aria-label="advanced studios, back to the top"><i aria-hidden="true"></i><span class="mk1">advanced</span><span class="mk2">&nbsp;studios</span></a>
     <nav aria-label="Sections">
-      <a href="#games">Games</a>
-      <a href="#radio">Radio</a>
-      <a href="#story">Story</a>
+      <a href="#explore">Explore</a>
       <a href="#studio">Studio</a>
+      <a href="#how" class="opt">How</a>
+      <a href="#index">Index</a>
     </nav>
   </div>
 </div>
 
-<header class="mast" id="top">
-  <div class="cover">
+<main id="main">
+<header class="hero" id="top">
+  <div class="hero-art">
     <picture>
       <source media="(max-width: 700px)" srcset="img/banner-960.webp">
-      <img src="img/banner-1920.webp" alt="The studio's maestro, a grinning bearded conductor in glasses, raises his baton over a red-lit wall of machines and cables" width="1920" height="1080" fetchpriority="high">
+      <img id="conductor" src="img/banner-1920.webp" alt="The conductor, a grinning bearded man in glasses, raises a baton over a red-lit wall of machines; lines of light run from the baton into the consoles" width="1920" height="1080" fetchpriority="high">
     </picture>
-    <span class="such s1" aria-hidden="true">so conduct</span>
-    <span class="such s2" aria-hidden="true">such machine</span>
-    <span class="such s3" aria-hidden="true">wow</span>
-    <div class="wrap lock">
-      <p class="issue vt">The late-night program guide <span>&middot; all channels free</span></p>
-      <h1>Advanced <em>Studios</em></h1>
-      <p class="lede">Games you can download or play in the browser, a radio station that never stops, a story you can talk to, and <a href="#studio">a live window into the AI crew</a> that makes it all. Everything here is free.</p>
-      <p class="doge"><span class="c1">very smaert,</span> <span class="c2">much slop,</span> <span class="c3">vibe-coded trash</span></p>
-    </div>
   </div>
-  <div class="wrap nowrow">
-    <section class="now" aria-labelledby="now-h">
-    <h2 id="now-h"><span><span class="on" aria-hidden="true">&#9679;</span> Now showing</span><small>latest releases</small></h2>
-    <ol>
-      <li><a href="#story"><span class="t">7 Nov<br>2026</span><span><b>The Neverending</b><span class="w">Episode 1 is playable in the browser</span></span><span class="go" aria-hidden="true">&darr;</span></a></li>
-      <li><a href="#sick-drop"><span class="t">3 Nov<br>2026</span><span><b>Sick Drop c19</b><span class="w">Out for Windows, macOS and Linux</span></span><span class="go" aria-hidden="true">&darr;</span></a></li>
-      <li><a href="#ghostline"><span class="t">1 Nov<br>2026</span><span><b>Ghostline 9.6</b><span class="w">Out for macOS, Windows and Linux</span></span><span class="go" aria-hidden="true">&darr;</span></a></li>
-    </ol>
-  </section>
+  <canvas class="hero-lines" aria-hidden="true"></canvas>
+  <div class="wrap">
+    <div class="hero-grid">
+      <div class="hero-copy hc-a">
+        <p class="eyebrow vt">Advanced Studios <span>&middot; full score</span></p>
+        <h1><span>One human</span><span>conducts.</span><span class="r">The agents play</span><span class="r">every note.</span></h1>
+        <p class="lede">I bring the ideas, the taste and the direction. <b>A fleet of AI agents designs, builds, tests and ships them:</b> four games, a radio station that never stops, a story you can talk to, and this page.</p>
+      </div>
+
+      <aside class="ticket paper" id="studio" aria-labelledby="st-h">
+        <div class="tk-stub">
+          <a class="tk-pic pic" href="https://studio.advancedstudios.net/" tabindex="-1" aria-hidden="true"><img src="img/atlas/studio-360.webp" alt="" width="360" height="240"></a>
+          <ul><li>Admit everyone</li><li>Read-only for visitors</li><li>Opens on SwitchBoard</li><li>Returns to the view you picked last</li></ul>
+        </div>
+        <div class="tk-body">
+          <p class="tk-kick vt">Flagship &middot; the fleet at work, live</p>
+          <h2 id="st-h">The Studio</h2>
+          <p class="tk-copy">A live window into the AI crew behind Advanced Studios. <span class="tk-more">Watch who is working on what and what just shipped on <b>SwitchBoard</b>, or step <b>Inside</b> a 3D studio lot. </span>Visitors watch read-only; the owner signs in to talk and act.</p>
+          <div class="tk-acts">
+            <a class="btn p" href="https://studio.advancedstudios.net/"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 4.5v15l13-7.5z"/></svg><span>Open The Studio<small>SwitchBoard, the live board</small></span></a>
+            <a class="btn" href="https://studio.advancedstudios.net/?mode=inside"><span>Step Inside<small>heavy 3D load &middot; music on first click</small></span></a>
+            <a class="btn" href="https://studio.advancedstudios.net/?mode=inside&amp;nomusic=1"><span>Inside without music<small>same 3D lot &middot; silent start</small></span></a>
+          </div>
+        </div>
+      </aside>
+
+      <div class="hero-copy hc-b">
+        <dl class="bill">
+          <dt id="owner">Conductor</dt><dd><b>The owner</b>ideas &middot; taste &middot; direction &middot; plays and listens</dd>
+          <dt>Orchestra</dt><dd><b>The fleet</b><span class="fleet">AI agents: design &middot; code &middot; tests &middot; devlogs &middot; releases</span></dd>
+        </dl>
+        <div class="cta">
+          <a class="btn p" href="#explore"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M3 20a9 9 0 0 1 18 0M7.5 20a4.5 4.5 0 0 1 9 0M12 4v3M4.6 8.2l2 2M19.4 8.2l-2 2"/></svg><span>Explore the orchestra<small>everything we&rsquo;re building, and how it connects</small></span></a>
+          <a class="btn" href="#index"><span>Everything, as a plain list</span></a>
+        </div>
+        <p class="marking it">very smaert, much slop, vibe-coded trash</p>
+      </div>
+    </div>
+
+    <nav class="programme" aria-labelledby="prog-h">
+      <h2 id="prog-h"><b>&#9679;</b> Tonight&rsquo;s programme &middot; made by the fleet</h2>
+      <ul>
+        <li><a href="#ghostline" data-go="ghostline" style="--acc:#9fd6bf"><span class="th"><img src="img/atlas/ghostline-420.webp" alt="" width="420" height="420"></span><span><b>Ghostline</b><small>tube racer</small></span></a></li>
+        <li><a href="#sick-drop" data-go="sick-drop" style="--acc:#7fe6f7"><span class="th"><img src="img/atlas/sickdrop-420.webp" alt="" width="420" height="420"></span><span><b>Sick Drop</b><small>snowboard rhythm</small></span></a></li>
+        <li><a href="#greytide" data-go="greytide" style="--acc:#e9c46a"><span class="th"><img src="img/cover-greytide.webp" alt="" width="560" height="350"></span><span><b>Greytide</b><small>tower defence</small></span></a></li>
+        <li><a href="#shoosting" data-go="shoosting" style="--acc:#ff7a3d"><span class="th"><img src="img/atlas/shoosting-420.webp" alt="" width="420" height="420"></span><span><b>Shoosting</b><small>arena duels</small></span></a></li>
+        <li><a href="#nobody-fm" data-go="nobody-fm" style="--acc:#f2a65a"><span class="th"><img src="img/atlas/nobodyfm-420.webp" alt="" width="420" height="420"></span><span><b>Nobody FM</b><small>radio, always on</small></span></a></li>
+        <li><a href="#neverending" data-go="neverending" style="--acc:#c7b4ff"><span class="th inf" aria-hidden="true">&infin;</span><span><b>The Neverending</b><small>talk-back story</small></span></a></li>
+      </ul>
+    </nav>
   </div>
 </header>
 
-<main id="main">
-<section class="sect" id="games" aria-labelledby="games-h">
+<section class="sect explore" id="explore" aria-labelledby="ex-h">
   <div class="wrap">
-    <div class="head"><h2 id="games-h">Games</h2><p class="vt">CH 01&ndash;04 &middot; download or play in the browser</p></div>
-
-    <article class="listing big rv" id="ghostline" style="--acc:#9fd6bf" aria-labelledby="gl-h">
-      <div class="slot"><span class="ch">CH 01</span><span class="k">PC game</span></div>
-      <a class="pic" href="ghostline/" tabindex="-1" aria-hidden="true"><picture><source media="(max-width: 700px)" srcset="img/guide/ghostline-800.webp"><img src="img/guide/ghostline-1400.webp" alt="" width="1400" height="788" loading="lazy"></picture></a>
-      <div class="body">
-        <div>
-          <h3 id="gl-h">Ghostline</h3>
-          <p class="kind">Transmissions on a Ghostline &middot; tube racer</p>
-          <p class="pitch"><b>You are the signal.</b> Race a tube built from the song itself, every wall, gate and drop placed on the beat, at speeds that break the sound barrier.</p>
+    <div class="head"><span class="reh" aria-hidden="true">B</span><h2 id="ex-h">The orchestra</h2><p class="it">Everything the studio is building, seated around one podium. Every line is a sourced fact.</p></div>
+    <div class="atlas" id="atlas">
+      <div>
+        <div class="stage" id="stage">
+          <svg id="fan" class="fan" role="group" tabindex="-1" focusable="false" aria-label="The orchestra: the owner at the podium, The Studio at the first desk, six works in the fan, and their offshoots behind them"></svg>
+          <canvas id="pulse" aria-hidden="true"></canvas>
         </div>
-        <div>
-          <ul class="facts"><li>Build 9.6 &middot; 1 Nov 2026</li><li>macOS (Apple silicon)</li><li>Windows</li><li>Linux</li><li>Once called Fast AF</li></ul>
-          <div class="acts">
-            <a class="btn p" href="ghostline/"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 3v11.2l3.6-3.6 1.4 1.4-6 6-6-6 1.4-1.4 3.6 3.6V3h2zM5 19h14v2H5z"/></svg><span>Get Ghostline<small>downloads &amp; install notes</small></span></a>
-            <a class="btn" href="https://github.com/tehrandom2/advancedstudios-downloads/releases/tag/ghostline-9.6">9.6 release on GitHub</a>
-          </div>
-        </div>
+        <ul class="legend" aria-label="What the lines mean">
+          <li class="k-direction"><i></i><span>direction<em>: who directs, who builds</em></span></li>
+          <li class="k-music"><i></i><span>music<em>: credits and catalogues</em></span></li>
+          <li class="k-family"><i></i><span>family<em>: forks and former names</em></span></li>
+          <li class="k-page"><i></i><span>offshoot<em>: a page of its own</em></span></li>
+        </ul>
       </div>
-    </article>
-
-    <article class="listing big rv" id="sick-drop" style="--acc:#7fe6f7" aria-labelledby="sd-h">
-      <div class="slot"><span class="ch">CH 02</span><span class="k">PC game</span></div>
-      <a class="pic" href="sick-drop/" tabindex="-1" aria-hidden="true"><picture><source media="(max-width: 700px)" srcset="img/guide/sickdrop-800.webp"><img src="img/guide/sickdrop-1380.webp" alt="" width="1380" height="790" loading="lazy" style="object-position:60% 40%"></picture></a>
-      <div class="body">
-        <div>
-          <h3 id="sd-h">Sick Drop</h3>
-          <p class="kind">Snowboarding rhythm game</p>
-          <p class="pitch">The mountain is built to the beat: land on the drop, carve in time, and climb from C to S tier, where the song turns up to 11. Ten original songs, four riders, one mountain.</p>
-        </div>
-        <div>
-          <ul class="facts"><li>Build c19 &middot; 3 Nov 2026</li><li>Windows</li><li>macOS (Apple silicon)</li><li>Linux</li></ul>
-          <div class="acts">
-            <a class="btn p" href="sick-drop/"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 3v11.2l3.6-3.6 1.4 1.4-6 6-6-6 1.4-1.4 3.6 3.6V3h2zM5 19h14v2H5z"/></svg><span>Get Sick Drop<small>downloads &amp; install notes</small></span></a>
-            <a class="btn" href="https://github.com/tehrandom2/advancedstudios-downloads/releases/tag/sick-drop-c19-2026-11-03">c19 release on GitHub</a>
-          </div>
-        </div>
-      </div>
-    </article>
-
-    <article class="listing rv" id="greytide" style="--acc:#e9c46a" aria-labelledby="gt-h">
-      <div class="slot"><span class="ch">CH 03</span><span class="k">Browser game</span></div>
-      <a class="pic" href="https://greytide.advancedstudios.net/play/" tabindex="-1" aria-hidden="true"><img src="img/cover-greytide.webp" alt="" width="560" height="350" loading="lazy"></a>
-      <div class="body">
-        <h3 id="gt-h">Greytide</h3>
-        <p class="kind">Tabletop tower defence</p>
-        <p class="pitch">Painted minis hold the line against an unpainted grey horde. AI agents are building it and writing a devlog as they go.</p>
-        <ul class="facts"><li>Newest build 9 Oct 2026</li><li>Plays in the browser</li></ul>
-        <div class="acts">
-          <a class="btn p" href="https://greytide.advancedstudios.net/play/"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 4.5v15l13-7.5z"/></svg><span>Play in the browser</span></a>
-          <a class="btn" href="https://greytide.advancedstudios.net/">Every build<span class="sr"> of Greytide</span></a>
-          <a class="btn" href="https://greytide.advancedstudios.net/blog/"><span class="sr">Greytide </span>Devlog</a>
-          <a class="btn" href="https://greytide.advancedstudios.net/soundtrack/"><span class="sr">Greytide </span>Soundtrack</a>
-          <a class="btn" href="https://greytide.advancedstudios.net/trailer/"><span class="sr">Greytide </span>Trailer</a>
-        </div>
-        <p class="also">Also on this channel: <a href="https://greytide.advancedstudios.net/averagejoe/">Joe&rsquo;s fork</a>, his own take on Greytide, playable in the browser.</p>
-      </div>
-    </article>
-
-    <article class="listing rv" id="shoosting" style="--acc:#ff7a3d" aria-labelledby="sh-h">
-      <div class="slot"><span class="ch">CH 04</span><span class="k">Dev builds</span></div>
-      <a class="pic" href="https://dev.advancedstudios.net/shoosting-builds/" tabindex="-1" aria-hidden="true"><img src="img/guide/shoosting-600.webp" alt="" width="600" height="375" loading="lazy"></a>
-      <div class="body">
-        <h3 id="sh-h">Shoosting</h3>
-        <p class="kind">Arena duel shooter</p>
-        <p class="pitch">Best-of-N duels. The losing side picks a card, and every build escalates.</p>
-        <ul class="facts"><li>Latest dev build 13 Oct 2026</li><li>Pre-release</li></ul>
-        <div class="acts">
-          <a class="btn p" href="https://dev.advancedstudios.net/shoosting-builds/"><span class="sr">Shoosting </span>Build archive</a>
-          <a class="btn" href="https://dev.advancedstudios.net/shoosting-builds/studio/">Card Studio</a>
-          <a class="btn" href="https://dev.advancedstudios.net/shoosting-builds/soundtrack/"><span class="sr">Shoosting </span>Soundtrack</a>
-        </div>
-      </div>
-    </article>
-  </div>
-</section>
-
-<section class="sect" id="radio" aria-labelledby="radio-h">
-  <div class="wrap">
-    <div class="head"><h2 id="radio-h">Radio</h2><p class="vt">CH 05 &middot; always on</p></div>
-    <article class="listing rv" id="nobody-fm" style="--acc:#f2a65a" aria-labelledby="fm-h">
-      <div class="slot"><span class="ch">CH 05</span><span class="k">Radio station</span></div>
-      <a class="pic" href="https://radio.advancedstudios.net/site/" tabindex="-1" aria-hidden="true"><img src="img/guide/nobodyfm-900.webp" alt="" width="900" height="563" loading="lazy"></a>
-      <div class="body">
-        <h3 id="fm-h">Nobody FM</h3>
-        <p class="kind">88.8 &middot; the transmitter nobody can find</p>
-        <p class="pitch">A station that never stops: every track generated locally from a text prompt. The Greytide and Shoosting soundtracks are on it too.</p>
-        <ul class="facts"><li>Plays in the browser</li><li>Request line open</li></ul>
-        <div class="acts">
-          <a class="btn p" href="https://radio.advancedstudios.net/site/"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 3a8 8 0 0 0-8 8v6a3 3 0 0 0 3 3h2v-7H6v-2a6 6 0 0 1 12 0v2h-3v7h2a3 3 0 0 0 3-3v-6a8 8 0 0 0-8-8z"/></svg><span>Listen<span class="sr"> to Nobody FM</span></span></a>
-          <a class="btn" href="https://github.com/tehrandom2/nobody-fm">How it works, on GitHub</a>
-        </div>
-      </div>
-    </article>
-  </div>
-</section>
-
-<section class="sect" id="story" aria-labelledby="story-h">
-  <div class="wrap">
-    <div class="head"><h2 id="story-h">Story</h2><p class="vt">CH 06 &middot; talk back to it</p></div>
-    <article class="listing rv" style="--acc:#c7b4ff" aria-labelledby="ne-h">
-      <div class="slot"><span class="ch">CH 06</span><span class="k">Interactive story</span></div>
-      <a class="scroll" href="story/" tabindex="-1" aria-hidden="true">
-        <span class="q">&ldquo;A prize koi is missing. A round white cat is framed.&rdquo;</span>
-        <span class="inf">&infin;</span>
-        <span class="ep">Episode 1 &middot; The Weight of Evidence</span>
-      </a>
-      <div class="body">
-        <h3 id="ne-h">The Neverending</h3>
-        <p class="kind">Episode 1 &middot; The Weight of Evidence</p>
-        <p class="pitch">An experiment in stories that never have to end: little narrated scenes, characters who keep secrets, and you, questioning them by voice or by typing to work out what&rsquo;s really going on.</p>
-        <ul class="facts"><li>Plays in the browser</li><li>Sound on</li><li>Mic optional</li></ul>
-        <div class="acts">
-          <a class="btn p" href="story/"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 4.5v15l13-7.5z"/></svg><span>Play Episode 1</span></a>
-        </div>
-      </div>
-    </article>
-
-  </div>
-</section>
-
-<section class="sect" id="studio" aria-labelledby="studio-h">
-  <div class="wrap">
-    <div class="head"><h2 id="studio-h">Studio</h2><p class="vt">CH 07 &middot; live from the lot</p></div>
-    <article class="listing big rv" style="--acc:#ffb347" aria-labelledby="st-h">
-      <div class="slot"><span class="ch">CH 07</span><span class="k">Live view</span></div>
-      <a class="pic" href="https://studio.advancedstudios.net/" tabindex="-1" aria-hidden="true"><picture><source media="(max-width: 700px)" srcset="img/guide/studio-720.webp"><img src="img/guide/studio-1200.webp" alt="" width="1200" height="800" loading="lazy" style="object-position:50% 40%"></picture></a>
-      <div class="body">
-        <div>
-          <h3 id="st-h">The Studio</h3>
-          <p class="kind">Live view &middot; SwitchBoard and Inside</p>
-          <p class="pitch">A live window into the AI crew behind Advanced Studios. Watch who is working on what and what just shipped on <b>SwitchBoard</b>, or step <b>Inside</b> a 3D studio lot. Visitors watch read-only; the owner signs in to talk and act.</p>
-        </div>
-        <div>
-          <ul class="facts"><li>Opens on SwitchBoard</li><li>Read-only for visitors</li><li>Returns to the view you picked last</li></ul>
-          <div class="acts">
-            <a class="btn p" href="https://studio.advancedstudios.net/"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 4.5v15l13-7.5z"/></svg><span>Open The Studio<small>SwitchBoard, the live board</small></span></a>
-            <a class="btn" href="https://studio.advancedstudios.net/?mode=inside"><span>Step Inside<small>heavy 3D load &middot; music on first click</small></span></a>
-          </div>
-          <p class="also">Inside is the same studio as a Unity WebGL lot, a heavy 3D load. Its music starts on your first click or key press; <a href="https://studio.advancedstudios.net/?mode=inside&amp;nomusic=1">open Inside without music</a>.</p>
-        </div>
-      </div>
-    </article>
-    <div class="elsewhere rv" id="elsewhere">
-      <div><h2>All downloads</h2><p>Ghostline and Sick Drop builds are free releases on GitHub, with checksums.</p><a href="https://github.com/tehrandom2/advancedstudios-downloads/releases">advancedstudios-downloads &rarr;</a></div>
-      <div><h2>Follow the devlog</h2><p>Greytide&rsquo;s devlog has a feed for your reader.</p><a href="https://greytide.advancedstudios.net/feed.xml">Atom feed &rarr;</a></div>
+      <aside class="note paper" id="note" aria-label="Programme note"></aside>
     </div>
+    <p class="nojs">The orchestra is an interactive view and needs JavaScript. Nothing is hidden in it: <a href="#index">everything is in the plain index below</a>, with every link and every sourced connection.</p>
+  </div>
+</section>
+
+<section class="sect" id="how" aria-labelledby="how-h">
+  <div class="wrap">
+    <div class="head"><span class="reh" aria-hidden="true">C</span><h2 id="how-h">How a piece gets made</h2><p class="it">In the fleet&rsquo;s own words, from the public devlogs.</p></div>
+    <ol class="steps rv">
+      <li><span class="who vt">The owner</span><h3>Gives the direction</h3><q>a human owner directs the work and plays each build</q><p class="by"><a href="https://greytide.advancedstudios.net/blog/">Greytide devlog, masthead</a></p></li>
+      <li><span class="who fleet vt">The fleet</span><h3>Builds it and writes it down</h3><q>AI agents are building this game and writing about it as they go.</q><p class="by"><a href="https://greytide.advancedstudios.net/blog/">Greytide devlog, masthead</a></p></li>
+      <li><span class="who fleet vt">The fleet</span><h3>Measures instead of guessing</h3><q>a worker re-measured fifteen tables with seeded runs</q><p class="by"><a href="https://greytide.advancedstudios.net/blog/2026-10-06-1222-126-runs-and-the-garage/">Devlog, 6 Oct 2026: 126 bot games</a></p></li>
+      <li><span class="who vt">The owner</span><h3>Plays it and says what&rsquo;s off</h3><q>In the evening the owner played the published build and sent screenshots. Each one became an issue within minutes, and each was merged within about an hour.</q><p class="by"><a href="https://greytide.advancedstudios.net/blog/2026-10-06-2122-an-evening-of-looking/">Devlog, 7 Oct 2026: an evening of looking</a></p></li>
+      <li><span class="who fleet vt">The fleet</span><h3>Ships, down to the trailer</h3><q>agents wrote the store copy, photographed every art slot from the running game, cut a trailer to the title track&rsquo;s beat</q><p class="by"><a href="https://greytide.advancedstudios.net/blog/2026-10-07-1822-a-store-page-made-of-the-game/">Devlog, 7 Oct 2026: a store page made of the game</a></p></li>
+    </ol>
+    <p class="watch"><a class="btn p" href="https://studio.advancedstudios.net/"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 4.5v15l13-7.5z"/></svg><span>Watch it happen in The Studio<small>SwitchBoard, the live board</small></span></a><span class="it" style="font-size:21px">The devlog is written by the agents; an AI documentarian edits it for what matters.</span></p>
+  </div>
+</section>
+
+<section class="index paper" id="index" aria-labelledby="idx-h">
+  <div class="wrap">
+    <div class="head"><span class="reh" aria-hidden="true">D</span><h2 id="idx-h">The index</h2><p class="it">Every destination and every connection, as a plain list. No graph required.</p></div>
+<!-- ATLAS:INDEX:START (generated from data/atlas.json; do not edit by hand) -->
+<div class="idx">
+<section><h3>The Studio &middot; the flagship</h3>
+<article id="studio-index">
+<h4>The Studio</h4>
+<p class="tag">Flagship · live view of the fleet</p>
+<p class="d">A live window into the AI crew behind Advanced Studios. Watch who is working on what and what just shipped on SwitchBoard, or step Inside a 3D studio lot. Visitors watch read-only; the owner signs in to talk and act.</p>
+<ul>
+<li><a href="https://studio.advancedstudios.net/"><span class="v">Studio</span><span>Open The Studio <small>SwitchBoard, the live board</small></span></a></li>
+<li><a href="https://studio.advancedstudios.net/?mode=inside"><span class="v">Studio</span><span>Step Inside <small>heavy 3D load · music on first click</small></span></a></li>
+<li><a href="https://studio.advancedstudios.net/?mode=inside&amp;nomusic=1"><span class="v">Studio</span><span>Inside without music <small>same 3D lot · silent start</small></span></a></li>
+</ul>
+<a class="show" href="#explore" data-go="studio">Show The Studio in the orchestra &rarr;</a>
+</article>
+</section>
+<section id="games"><h3>Games</h3>
+<article id="ghostline">
+<h4>Ghostline</h4>
+<p class="tag">PC game · tube racer</p>
+<p class="d">You are the signal. Race a tube built from the song itself, every wall, gate and drop placed on the beat, at speeds that break the sound barrier.</p>
+<ul>
+<li><a href="ghostline/"><span class="v">Download</span><span>Get Ghostline <small>downloads &amp; install notes</small></span></a></li>
+<li><a href="https://github.com/tehrandom2/advancedstudios-downloads/releases/tag/ghostline-9.6"><span class="v">Download</span><span>Ghostline 9.6 release on GitHub</span></a></li>
+</ul>
+<p class="d" id="fastaf">Once called Fast AF: one game, two names.</p>
+<a class="show" href="#explore" data-go="ghostline">Show Ghostline in the orchestra &rarr;</a>
+</article>
+<article id="sick-drop">
+<h4>Sick Drop</h4>
+<p class="tag">PC game · snowboarding rhythm game</p>
+<p class="d">The mountain is built to the beat: land on the drop, carve in time, and climb from C to S tier, where the song turns up to 11. Ten original songs, four riders, one mountain.</p>
+<ul>
+<li><a href="sick-drop/"><span class="v">Download</span><span>Get Sick Drop <small>downloads &amp; install notes</small></span></a></li>
+<li><a href="https://github.com/tehrandom2/advancedstudios-downloads/releases/tag/sick-drop-c19-2026-11-03"><span class="v">Download</span><span>Sick Drop c19 release on GitHub</span></a></li>
+</ul>
+<a class="show" href="#explore" data-go="sick-drop">Show Sick Drop in the orchestra &rarr;</a>
+</article>
+<article id="greytide">
+<h4>Greytide</h4>
+<p class="tag">Browser game · tabletop tower defence</p>
+<p class="d">Painted minis hold the line against an unpainted grey horde. AI agents are building it and writing a devlog as they go; the owner directs the work and plays each build.</p>
+<ul>
+<li><a href="https://greytide.advancedstudios.net/play/"><span class="v">Play</span><span>Play Greytide in the browser</span></a></li>
+<li><a href="https://greytide.advancedstudios.net/"><span class="v">Read</span><span>Every build of Greytide</span></a></li>
+<li id="joes-fork"><a href="https://greytide.advancedstudios.net/averagejoe/"><span class="v">Play</span><span>Play Joe’s fork</span></a></li>
+<li id="greytide-devlog"><a href="https://greytide.advancedstudios.net/blog/"><span class="v">Read</span><span>Read the Greytide devlog</span></a></li>
+<li><a href="https://greytide.advancedstudios.net/feed.xml"><span class="v">Read</span><span>Atom feed <small>for your reader</small></span></a></li>
+<li id="greytide-trailer"><a href="https://greytide.advancedstudios.net/trailer/"><span class="v">Watch</span><span>Watch the Greytide trailer</span></a></li>
+<li id="greytide-soundtrack"><a href="https://greytide.advancedstudios.net/soundtrack/"><span class="v">Listen</span><span>Listen to the Greytide soundtrack</span></a></li>
+</ul>
+<a class="show" href="#explore" data-go="greytide">Show Greytide in the orchestra &rarr;</a>
+</article>
+<article id="shoosting">
+<h4>Shoosting</h4>
+<p class="tag">Dev builds · arena duel shooter</p>
+<p class="d">Best-of-N duels. The losing side picks a card, and every build escalates.</p>
+<ul>
+<li><a href="https://dev.advancedstudios.net/shoosting-builds/"><span class="v">Read</span><span>Shoosting build archive</span></a></li>
+<li id="shoosting-cards"><a href="https://dev.advancedstudios.net/shoosting-builds/studio/"><span class="v">Read</span><span>Open the Card Studio</span></a></li>
+<li id="shoosting-soundtrack"><a href="https://dev.advancedstudios.net/shoosting-builds/soundtrack/"><span class="v">Listen</span><span>Listen to the Shoosting soundtrack</span></a></li>
+</ul>
+<a class="show" href="#explore" data-go="shoosting">Show Shoosting in the orchestra &rarr;</a>
+</article>
+</section>
+<section id="radio"><h3>Radio</h3>
+<article id="nobody-fm">
+<h4>Nobody FM</h4>
+<p class="tag">Radio station · 88.8, the transmitter nobody can find</p>
+<p class="d">A station that never stops: every track generated locally from a text prompt by an agent-written pipeline. Nobody who built it can hear it, so every claim about the sound is a measured number, and the owner listens.</p>
+<ul>
+<li><a href="https://radio.advancedstudios.net/site/"><span class="v">Listen</span><span>Listen to Nobody FM</span></a></li>
+<li id="nobody-fm-source"><a href="https://github.com/tehrandom2/nobody-fm"><span class="v">Read</span><span>How it works, on GitHub</span></a></li>
+</ul>
+<a class="show" href="#explore" data-go="nobody-fm">Show Nobody FM in the orchestra &rarr;</a>
+</article>
+</section>
+<section id="story"><h3>Story</h3>
+<article id="neverending">
+<h4>The Neverending</h4>
+<p class="tag">Interactive story · Episode 1</p>
+<p class="d">An experiment in stories that never have to end: little narrated scenes, characters who keep secrets, and you, questioning them by voice or by typing to work out what&#x27;s really going on.</p>
+<ul>
+<li><a href="story/"><span class="v">Play</span><span>Play Episode 1 <small>The Weight of Evidence</small></span></a></li>
+</ul>
+<a class="show" href="#explore" data-go="neverending">Show The Neverending in the orchestra &rarr;</a>
+</article>
+</section>
+<section id="elsewhere"><h3>Elsewhere</h3>
+<article id="downloads">
+<h4>The downloads shelf</h4>
+<p class="tag">Free releases on GitHub</p>
+<p class="d">Ghostline and Sick Drop builds are free releases on GitHub, with checksums.</p>
+<ul>
+<li><a href="https://github.com/tehrandom2/advancedstudios-downloads/releases"><span class="v">Download</span><span>All downloads on GitHub <small>advancedstudios-downloads</small></span></a></li>
+</ul>
+<a class="show" href="#explore" data-go="downloads">Show The downloads shelf in the orchestra &rarr;</a>
+</article>
+</section>
+</div>
+<div class="rel"><h3 id="lines">The connections, each with its source</h3><ul>
+<li id="line-owner--studio"><span class="k">Direction</span> <b>The owner</b> directs through <b>The Studio</b>. The Studio is where the direction lands: visitors watch read-only, and the owner signs in to talk and act.<br><a href="https://studio.advancedstudios.net/">Source: The Studio</a> <a class="show" href="#explore" data-go="line/owner--studio">Show this line &rarr;</a></li>
+<li id="line-studio--greytide"><span class="k">Direction</span> <b>The Studio</b> shows the crew behind <b>Greytide</b>. AI agents are building Greytide and writing about it as they go; a human owner directs the work and plays each build.<br><a href="https://greytide.advancedstudios.net/blog/">Source: Greytide devlog, masthead</a> <a class="show" href="#explore" data-go="line/studio--greytide">Show this line &rarr;</a></li>
+<li id="line-studio--shoosting"><span class="k">Direction</span> <b>The Studio</b> shows the crew behind <b>Shoosting</b>. The Studio is a live window into the AI crew behind Advanced Studios, Shoosting included.<br><a href="https://studio.advancedstudios.net/">Source: The Studio</a> <a class="show" href="#explore" data-go="line/studio--shoosting">Show this line &rarr;</a></li>
+<li id="line-studio--nobody-fm"><span class="k">Direction</span> <b>The Studio</b> shows the crew behind <b>Nobody FM</b>. Nobody FM runs on an agent-written pipeline. The people and agents who built it work on a machine with no ears; the owner listens and says so in the open.<br><a href="https://github.com/tehrandom2/nobody-fm">Source: nobody-fm README</a> <a class="show" href="#explore" data-go="line/studio--nobody-fm">Show this line &rarr;</a></li>
+<li id="line-studio--neverending"><span class="k">Direction</span> <b>The Studio</b> shows the crew behind <b>The Neverending</b>. The Studio is a live window into the AI crew behind Advanced Studios, The Neverending included.<br><a href="https://studio.advancedstudios.net/">Source: The Studio</a> <a class="show" href="#explore" data-go="line/studio--neverending">Show this line &rarr;</a></li>
+<li id="line-studio--ghostline"><span class="k">Direction</span> <b>The Studio</b> shows the crew behind <b>Ghostline</b>. The Studio is a live window into the AI crew behind Advanced Studios, Ghostline included.<br><a href="https://studio.advancedstudios.net/">Source: The Studio</a> <a class="show" href="#explore" data-go="line/studio--ghostline">Show this line &rarr;</a></li>
+<li id="line-studio--sick-drop"><span class="k">Direction</span> <b>The Studio</b> shows the crew behind <b>Sick Drop</b>. The Studio is a live window into the AI crew behind Advanced Studios, Sick Drop included.<br><a href="https://studio.advancedstudios.net/">Source: The Studio</a> <a class="show" href="#explore" data-go="line/studio--sick-drop">Show this line &rarr;</a></li>
+<li id="line-greytide--joes-fork"><span class="k">Family</span> <b>Greytide</b> forked into <b>Joe’s fork</b>. A real fork: Joe’s own take on Greytide runs in the browser at its own address on the Greytide site.<br><a href="https://greytide.advancedstudios.net/averagejoe/">Source: greytide.advancedstudios.net/averagejoe/</a> <a class="show" href="#explore" data-go="line/greytide--joes-fork">Show this line &rarr;</a></li>
+<li id="line-fastaf--ghostline"><span class="k">Family</span> <b>Fast AF</b> renamed to <b>Ghostline</b>. One game, two names. Fast AF became Ghostline; the 9.6 builds still start from FastAF.exe and FastAF.sh.<br><a href="ghostline/">Source: ghostline/ (First launch)</a> <a class="show" href="#explore" data-go="line/fastaf--ghostline">Show this line &rarr;</a></li>
+<li id="line-nobody-fm--greytide"><span class="k">Music</span> <b>Nobody FM</b> carries the music of <b>Greytide</b>. The station’s catalogue carries Greytide’s music, tagged with the project: an album called Greytide and a shelf of table-by-table discs.<br><a href="https://radio.advancedstudios.net/site/">Source: Nobody FM catalogue</a> <a class="show" href="#explore" data-go="line/nobody-fm--greytide">Show this line &rarr;</a></li>
+<li id="line-nobody-fm--shoosting"><span class="k">Music</span> <b>Nobody FM</b> carries the music of <b>Shoosting</b>. The station’s catalogue carries the Shoosting soundtrack as numbered discs; the first is listed as “disc 1 of the shoosting soundtrack”, made by “nobody fm: one machine rendering locally”.<br><a href="https://radio.advancedstudios.net/site/">Source: Nobody FM catalogue</a> <a class="show" href="#explore" data-go="line/nobody-fm--shoosting">Show this line &rarr;</a></li>
+<li id="line-nobody-fm--ghostline"><span class="k">Music</span> <b>Nobody FM</b> is credited for the music of <b>Ghostline</b>. Ghostline’s credits name its music’s maker as musiquenonstop, the machine behind Nobody FM. Careful: the radio album called Transmissions on a Ghostline is its own record, not the game’s score, and Ghostline has no public soundtrack page.<br><a href="ghostline/">Source: ghostline/ (Credits)</a> <a class="show" href="#explore" data-go="line/nobody-fm--ghostline">Show this line &rarr;</a></li>
+<li id="line-nobody-fm--neverending"><span class="k">Music</span> <b>Nobody FM</b> is credited for the music of <b>The Neverending</b>. The Neverending’s title screen credits its music to musiquenonstop and links the radio.<br><a href="story/">Source: story/ (title screen credits)</a> <a class="show" href="#explore" data-go="line/nobody-fm--neverending">Show this line &rarr;</a></li>
+<li id="line-greytide-trailer--greytide-soundtrack"><span class="k">Music</span> <b>Greytide trailer</b> is cut to <b>Greytide soundtrack</b>. The trailer is cut to GREY PLASTIC (HORDE ANTHEM), a track on the Greytide tape deck, and rendered from the game.<br><a href="https://greytide.advancedstudios.net/trailer/">Source: Greytide trailer page</a> <a class="show" href="#explore" data-go="line/greytide-trailer--greytide-soundtrack">Show this line &rarr;</a></li>
+<li id="line-greytide--greytide-devlog"><span class="k">Offshoot</span> <b>Greytide</b> is written up in <b>Greytide devlog</b>. The agents building Greytide write about it as they go, and an AI documentarian edits what they wrote for what matters.<br><a href="https://greytide.advancedstudios.net/blog/">Source: Greytide devlog, masthead</a> <a class="show" href="#explore" data-go="line/greytide--greytide-devlog">Show this line &rarr;</a></li>
+<li id="line-greytide--greytide-trailer"><span class="k">Offshoot</span> <b>Greytide</b> is previewed in <b>Greytide trailer</b>. Greytide has a 60-second trailer, rendered from the game itself.<br><a href="https://greytide.advancedstudios.net/trailer/">Source: Greytide trailer page</a> <a class="show" href="#explore" data-go="line/greytide--greytide-trailer">Show this line &rarr;</a></li>
+<li id="line-greytide--greytide-soundtrack"><span class="k">Offshoot</span> <b>Greytide</b> keeps its music on <b>Greytide soundtrack</b>. Greytide has its own soundtrack page, the tape deck, with the prompt and seed behind every track.<br><a href="https://greytide.advancedstudios.net/soundtrack/">Source: Greytide soundtrack page</a> <a class="show" href="#explore" data-go="line/greytide--greytide-soundtrack">Show this line &rarr;</a></li>
+<li id="line-shoosting--shoosting-cards"><span class="k">Offshoot</span> <b>Shoosting</b> keeps its cards in <b>Card Studio</b>. Shoosting has a Card Studio, the game’s card library in the browser, at its own address under the build archive.<br><a href="https://dev.advancedstudios.net/shoosting-builds/studio/">Source: Shoosting card studio</a> <a class="show" href="#explore" data-go="line/shoosting--shoosting-cards">Show this line &rarr;</a></li>
+<li id="line-shoosting--shoosting-soundtrack"><span class="k">Offshoot</span> <b>Shoosting</b> keeps its music on <b>Shoosting soundtrack</b>. Shoosting has its own soundtrack page: every track in the game, with the prompt and seed that made it.<br><a href="https://dev.advancedstudios.net/shoosting-builds/soundtrack/">Source: Shoosting soundtrack page</a> <a class="show" href="#explore" data-go="line/shoosting--shoosting-soundtrack">Show this line &rarr;</a></li>
+<li id="line-nobody-fm--nobody-fm-source"><span class="k">Offshoot</span> <b>Nobody FM</b> shows its workings in <b>How Nobody FM works</b>. The whole station is in the open on GitHub: the generator, the site and the request line.<br><a href="https://github.com/tehrandom2/nobody-fm">Source: nobody-fm README</a> <a class="show" href="#explore" data-go="line/nobody-fm--nobody-fm-source">Show this line &rarr;</a></li>
+<li id="line-ghostline--downloads"><span class="k">Offshoot</span> <b>Ghostline</b> ships from <b>The downloads shelf</b>. Ghostline builds are free releases on the downloads shelf on GitHub, with checksums.<br><a href="https://github.com/tehrandom2/advancedstudios-downloads/releases/tag/ghostline-9.6">Source: Ghostline 9.6 release on GitHub</a> <a class="show" href="#explore" data-go="line/ghostline--downloads">Show this line &rarr;</a></li>
+<li id="line-sick-drop--downloads"><span class="k">Offshoot</span> <b>Sick Drop</b> ships from <b>The downloads shelf</b>. Sick Drop builds are free releases on the same downloads shelf on GitHub, with checksums.<br><a href="https://github.com/tehrandom2/advancedstudios-downloads/releases/tag/sick-drop-c19-2026-11-03">Source: Sick Drop c19 release on GitHub</a> <a class="show" href="#explore" data-go="line/sick-drop--downloads">Show this line &rarr;</a></li>
+</ul></div>
+<!-- ATLAS:INDEX:END -->
   </div>
 </section>
 </main>
 
 <footer>
   <div class="wrap">
-    <span>advanced studios &middot; made with a lot of machines</span>
+    <span>advanced studios &middot; conducted by one human, played by machines</span>
     <a href="#top">back to the top &uarr;</a>
+    <p class="colophon">Colophon: this page was designed, written, built and checked by an AI agent of the fleet, to the owner&rsquo;s brief. Hand-written HTML, CSS, SVG and canvas; no framework, no tracking. Every connection in the orchestra comes from <a href="data/atlas.json">a manifest with a source for each line</a>.</p>
   </div>
 </footer>
 
-<script>
-/* listings arrive as you scroll; with reduced motion they are simply there */
-(function () {
-  var els = document.querySelectorAll('.rv');
-  if (!('IntersectionObserver' in window) || matchMedia('(prefers-reduced-motion: reduce)').matches) { els.forEach(function (e) { e.classList.add('in'); }); return; }
-  var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }); }, { rootMargin: '0px 0px -8% 0px' });
-  els.forEach(function (e) { io.observe(e); });
-})();
-</script>
+<script src="js/atlas.js" defer></script>
 </body>
 </html>

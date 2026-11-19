@@ -1,0 +1,912 @@
+{
+  "about": "The relationship manifest behind the Explore view on advancedstudios.net. Every node and every edge carries a source: a public URL, or a path in this repository, that states the fact. Nothing is drawn that a source does not support.",
+  "checked": "2026-11-18",
+  "kinds": {
+    "direction": {
+      "label": "Direction",
+      "plain": "who directs, who builds"
+    },
+    "family": {
+      "label": "Family",
+      "plain": "forks and former names"
+    },
+    "music": {
+      "label": "Music",
+      "plain": "credits, catalogues and cuts"
+    },
+    "page": {
+      "label": "Offshoot",
+      "plain": "a page or shelf of its own"
+    }
+  },
+  "nodes": [
+    {
+      "id": "owner",
+      "ring": "podium",
+      "name": "The owner",
+      "short": "The owner",
+      "tag": "Conductor · one human",
+      "blurb": "One human with the ideas, the taste and the last word. The owner directs the work, plays the builds and listens. The fleet does the designing, building, measuring, writing-up and shipping.",
+      "quotes": [
+        {
+          "text": "a human owner directs the work and plays each build",
+          "label": "Greytide devlog",
+          "url": "https://greytide.advancedstudios.net/blog/"
+        },
+        {
+          "text": "the owner listens and says so in the open",
+          "label": "nobody-fm README",
+          "url": "https://github.com/tehrandom2/nobody-fm"
+        },
+        {
+          "text": "the owner signs in to talk and act",
+          "label": "The Studio listing",
+          "url": "https://studio.advancedstudios.net/"
+        }
+      ],
+      "actions": [
+        {
+          "verb": "Studio",
+          "label": "Watch the fleet at work",
+          "sub": "The Studio · SwitchBoard, the live board",
+          "href": "https://studio.advancedstudios.net/",
+          "primary": true
+        },
+        {
+          "verb": "Read",
+          "label": "Read the Greytide devlog",
+          "href": "https://greytide.advancedstudios.net/blog/"
+        }
+      ],
+      "source": {
+        "label": "Greytide devlog, masthead",
+        "url": "https://greytide.advancedstudios.net/blog/"
+      },
+      "cites": [
+        {
+          "claim": "directs the work, plays the builds",
+          "quote": "a human owner directs the work and plays each build",
+          "url": "https://greytide.advancedstudios.net/blog/"
+        },
+        {
+          "claim": "listens",
+          "quote": "the owner listens and says so in the open",
+          "url": "https://github.com/tehrandom2/nobody-fm"
+        },
+        {
+          "claim": "the fleet builds, measures, writes up and ships",
+          "quote": "AI agents are building this game and writing about it as they go. An AI documentarian edits what they wrote for what matters",
+          "url": "https://greytide.advancedstudios.net/blog/"
+        },
+        {
+          "claim": "measuring",
+          "quote": "Every claim about the sound is a measured number",
+          "url": "https://github.com/tehrandom2/nobody-fm"
+        }
+      ]
+    },
+    {
+      "id": "studio",
+      "ring": "desk",
+      "name": "The Studio",
+      "short": "The Studio",
+      "tag": "Flagship · live view of the fleet",
+      "accent": "#ffb347",
+      "art": "img/guide/studio-720.webp",
+      "artW": 720,
+      "artH": 480,
+      "blurb": "A live window into the AI crew behind Advanced Studios. Watch who is working on what and what just shipped on SwitchBoard, or step Inside a 3D studio lot. Visitors watch read-only; the owner signs in to talk and act.",
+      "facts": [
+        "Opens on SwitchBoard",
+        "Read-only for visitors",
+        "Returns to the view you picked last"
+      ],
+      "note": "Inside is the same studio as a Unity WebGL lot, a heavy 3D load. Its music starts on your first click or key press; there is a no-music door too.",
+      "actions": [
+        {
+          "verb": "Studio",
+          "label": "Open The Studio",
+          "sub": "SwitchBoard, the live board",
+          "href": "https://studio.advancedstudios.net/",
+          "primary": true
+        },
+        {
+          "verb": "Studio",
+          "label": "Step Inside",
+          "sub": "heavy 3D load · music on first click",
+          "href": "https://studio.advancedstudios.net/?mode=inside"
+        },
+        {
+          "verb": "Studio",
+          "label": "Inside without music",
+          "sub": "same 3D lot · silent start",
+          "href": "https://studio.advancedstudios.net/?mode=inside&nomusic=1"
+        }
+      ],
+      "source": {
+        "label": "The Studio",
+        "url": "https://studio.advancedstudios.net/",
+        "note": "Listing wording checked against the Studio; first published in this repository in index.html at commit 525c0ec."
+      },
+      "cites": [
+        {
+          "claim": "all Studio copy",
+          "quote": "A live window into the AI crew behind Advanced Studios. Watch who is working on what and what just shipped on SwitchBoard, or step Inside a 3D studio lot. Visitors watch read-only; the owner signs in to talk and act.",
+          "url": "https://studio.advancedstudios.net/ (wording verified for the 2026-11-18 front page, index.html at commit 525c0ec)"
+        }
+      ]
+    },
+    {
+      "id": "greytide",
+      "ring": "work",
+      "span": 38,
+      "name": "Greytide",
+      "short": "Greytide",
+      "tag": "Browser game · tabletop tower defence",
+      "accent": "#e9c46a",
+      "art": "img/cover-greytide.webp",
+      "artW": 560,
+      "artH": 350,
+      "wedge": "img/cover-greytide.webp",
+      "blurb": "Painted minis hold the line against an unpainted grey horde. AI agents are building it and writing a devlog as they go; the owner directs the work and plays each build.",
+      "facts": [
+        "Newest build 9 Oct 2026",
+        "Plays in the browser"
+      ],
+      "actions": [
+        {
+          "verb": "Play",
+          "label": "Play Greytide in the browser",
+          "href": "https://greytide.advancedstudios.net/play/",
+          "primary": true
+        },
+        {
+          "verb": "Read",
+          "label": "Every build of Greytide",
+          "href": "https://greytide.advancedstudios.net/"
+        }
+      ],
+      "source": {
+        "label": "greytide.advancedstudios.net",
+        "url": "https://greytide.advancedstudios.net/"
+      },
+      "cites": [
+        {
+          "claim": "tabletop tower defence; painted minis against an unpainted horde",
+          "quote": "Tabletop tower defence · some assembly required. Painted minis. Unpainted horde.",
+          "url": "https://greytide.advancedstudios.net/"
+        },
+        {
+          "claim": "AI agents build it and write the devlog; the owner directs and plays each build",
+          "quote": "AI agents are building this game and writing about it as they go. An AI documentarian edits what they wrote for what matters; a human owner directs the work and plays each build.",
+          "url": "https://greytide.advancedstudios.net/blog/"
+        },
+        {
+          "claim": "newest build 9 Oct 2026; plays in the browser",
+          "quote": "Newest build 9 Oct 2026 · Plays in the browser",
+          "url": "index.html at commit 525c0ec (checked in the 2026-11-18 link manifest)"
+        }
+      ]
+    },
+    {
+      "id": "shoosting",
+      "ring": "work",
+      "span": 28,
+      "name": "Shoosting",
+      "short": "Shoosting",
+      "tag": "Dev builds · arena duel shooter",
+      "accent": "#ff7a3d",
+      "art": "img/guide/shoosting-600.webp",
+      "artW": 600,
+      "artH": 375,
+      "wedge": "img/atlas/shoosting-420.webp",
+      "blurb": "Best-of-N duels. The losing side picks a card, and every build escalates.",
+      "facts": [
+        "Latest dev build 13 Oct 2026",
+        "Pre-release"
+      ],
+      "actions": [
+        {
+          "verb": "Read",
+          "label": "Shoosting build archive",
+          "href": "https://dev.advancedstudios.net/shoosting-builds/",
+          "primary": true
+        }
+      ],
+      "source": {
+        "label": "Shoosting build archive",
+        "url": "https://dev.advancedstudios.net/shoosting-builds/"
+      },
+      "cites": [
+        {
+          "claim": "best-of-N duels; the losing side picks a card; every build escalates",
+          "quote": "best-of-N duels · the losing side picks a card · every build escalates",
+          "url": "https://dev.advancedstudios.net/shoosting-builds/"
+        },
+        {
+          "claim": "latest dev build 13 Oct 2026; pre-release",
+          "quote": "Latest dev build 13 Oct 2026 · Pre-release",
+          "url": "index.html at commit 525c0ec (checked in the 2026-11-18 link manifest)"
+        }
+      ]
+    },
+    {
+      "id": "nobody-fm",
+      "ring": "work",
+      "span": 30,
+      "name": "Nobody FM",
+      "short": "Nobody FM",
+      "tag": "Radio station · 88.8, the transmitter nobody can find",
+      "accent": "#f2a65a",
+      "art": "img/guide/nobodyfm-900.webp",
+      "artW": 900,
+      "artH": 563,
+      "wedge": "img/atlas/nobodyfm-420.webp",
+      "blurb": "A station that never stops: every track generated locally from a text prompt by an agent-written pipeline. Nobody who built it can hear it, so every claim about the sound is a measured number, and the owner listens.",
+      "facts": [
+        "Plays in the browser",
+        "Has a make-a-track request box"
+      ],
+      "actions": [
+        {
+          "verb": "Listen",
+          "label": "Listen to Nobody FM",
+          "href": "https://radio.advancedstudios.net/site/",
+          "primary": true
+        }
+      ],
+      "source": {
+        "label": "nobody-fm README",
+        "url": "https://github.com/tehrandom2/nobody-fm"
+      },
+      "cites": [
+        {
+          "claim": "88.8, the transmitter nobody can find",
+          "quote": "NOBODY FM the transmitter nobody can find 88.8 MHz",
+          "url": "https://radio.advancedstudios.net/site/"
+        },
+        {
+          "claim": "never stops; every track generated locally from a text prompt",
+          "quote": "nobody fm. every track generated locally from a text prompt. no samples, no reference audio, no third-party rights claimed.",
+          "url": "https://radio.advancedstudios.net/site/"
+        },
+        {
+          "claim": "a station that never stops",
+          "quote": "A static website plays the catalogue like a pirate radio station that never stops",
+          "url": "https://github.com/tehrandom2/nobody-fm"
+        },
+        {
+          "claim": "agent-written pipeline",
+          "quote": "A small agent-written pipeline asks a local text-to-music model (ACE-Step) for tracks",
+          "url": "https://github.com/tehrandom2/nobody-fm"
+        },
+        {
+          "claim": "nobody who built it can hear it; every claim about the sound is a measured number; the owner listens",
+          "quote": "Nobody who built this can hear it. The people and agents working on the project run it on a machine with no ears. Every claim about the sound is a measured number; the owner listens and says so in the open.",
+          "url": "https://github.com/tehrandom2/nobody-fm"
+        },
+        {
+          "claim": "plays in the browser",
+          "quote": "TAP TO TUNE IN nobody fm 88.8",
+          "url": "https://radio.advancedstudios.net/site/"
+        },
+        {
+          "claim": "has a make-a-track request box",
+          "quote": "MAKE A TRACK > request",
+          "url": "https://radio.advancedstudios.net/site/"
+        }
+      ]
+    },
+    {
+      "id": "neverending",
+      "ring": "work",
+      "span": 26,
+      "name": "The Neverending",
+      "short": "The Neverending",
+      "tag": "Interactive story · Episode 1",
+      "accent": "#c7b4ff",
+      "blurb": "An experiment in stories that never have to end: little narrated scenes, characters who keep secrets, and you, questioning them by voice or by typing to work out what's really going on.",
+      "facts": [
+        "Episode 1 · The Weight of Evidence",
+        "Plays in the browser",
+        "Sound on",
+        "Mic optional"
+      ],
+      "note": "Its title screen credits: voices by Kokoro, characters by Claude.",
+      "actions": [
+        {
+          "verb": "Play",
+          "label": "Play Episode 1",
+          "sub": "The Weight of Evidence",
+          "href": "story/",
+          "primary": true
+        }
+      ],
+      "source": {
+        "label": "story/ (title screen)",
+        "url": "story/"
+      },
+      "cites": [
+        {
+          "claim": "blurb and credits",
+          "quote": "An experiment in stories that never have to end … Music: musiquenonstop · Voices: Kokoro · Characters: Claude",
+          "url": "story/"
+        }
+      ]
+    },
+    {
+      "id": "ghostline",
+      "ring": "work",
+      "span": 30,
+      "name": "Ghostline",
+      "short": "Ghostline",
+      "tag": "PC game · tube racer",
+      "accent": "#9fd6bf",
+      "art": "img/guide/ghostline-800.webp",
+      "artW": 800,
+      "artH": 450,
+      "wedge": "img/atlas/ghostline-420.webp",
+      "blurb": "You are the signal. Race a tube built from the song itself, every wall, gate and drop placed on the beat, at speeds that break the sound barrier.",
+      "facts": [
+        "Build 9.6 · 1 Nov 2026",
+        "macOS (Apple silicon)",
+        "Windows",
+        "Linux"
+      ],
+      "note": "Ghostline has no public soundtrack page.",
+      "actions": [
+        {
+          "verb": "Download",
+          "label": "Get Ghostline",
+          "sub": "downloads & install notes",
+          "href": "ghostline/",
+          "primary": true
+        },
+        {
+          "verb": "Download",
+          "label": "Ghostline 9.6 release on GitHub",
+          "href": "https://github.com/tehrandom2/advancedstudios-downloads/releases/tag/ghostline-9.6"
+        }
+      ],
+      "source": {
+        "label": "ghostline/",
+        "url": "ghostline/"
+      },
+      "cites": [
+        {
+          "claim": "blurb, build 9.6 of 1 Nov 2026, three platforms, FastAF launch files",
+          "quote": "You are the signal. Race a tube built from the song itself … Build 9.6, released 1 November 2026 … run FastAF.exe",
+          "url": "ghostline/"
+        }
+      ]
+    },
+    {
+      "id": "sick-drop",
+      "ring": "work",
+      "span": 28,
+      "name": "Sick Drop",
+      "short": "Sick Drop",
+      "tag": "PC game · snowboarding rhythm game",
+      "accent": "#7fe6f7",
+      "art": "img/guide/sickdrop-800.webp",
+      "artW": 800,
+      "artH": 458,
+      "wedge": "img/atlas/sickdrop-420.webp",
+      "blurb": "The mountain is built to the beat: land on the drop, carve in time, and climb from C to S tier, where the song turns up to 11. Ten original songs, four riders, one mountain.",
+      "facts": [
+        "Build c19 · 3 Nov 2026",
+        "Windows",
+        "macOS (Apple silicon)",
+        "Linux"
+      ],
+      "note": "Its ten songs were generated locally from text prompts written for the game. Sick Drop has no public soundtrack page.",
+      "actions": [
+        {
+          "verb": "Download",
+          "label": "Get Sick Drop",
+          "sub": "downloads & install notes",
+          "href": "sick-drop/",
+          "primary": true
+        },
+        {
+          "verb": "Download",
+          "label": "Sick Drop c19 release on GitHub",
+          "href": "https://github.com/tehrandom2/advancedstudios-downloads/releases/tag/sick-drop-c19-2026-11-03"
+        }
+      ],
+      "source": {
+        "label": "sick-drop/",
+        "url": "sick-drop/"
+      },
+      "cites": [
+        {
+          "claim": "blurb, build c19 of 3 Nov 2026, three platforms, ten locally generated songs",
+          "quote": "Sick Drop is a snowboarding rhythm game. The mountain is built to the beat … Build c19, released 3 November 2026 … Ten original songs by Advanced Studios, AI-generated locally with ACE-Step 1.5 from text prompts written for the game",
+          "url": "sick-drop/"
+        }
+      ]
+    },
+    {
+      "id": "joes-fork",
+      "ring": "seat",
+      "parent": "greytide",
+      "name": "Joe’s fork",
+      "short": "Joe’s fork",
+      "icon": "fork",
+      "tag": "A fork of Greytide",
+      "blurb": "Joe’s own take on Greytide, playable in the browser at its own address on the Greytide site.",
+      "actions": [
+        {
+          "verb": "Play",
+          "label": "Play Joe’s fork",
+          "href": "https://greytide.advancedstudios.net/averagejoe/",
+          "primary": true
+        }
+      ],
+      "source": {
+        "label": "greytide.advancedstudios.net/averagejoe/",
+        "url": "https://greytide.advancedstudios.net/averagejoe/"
+      }
+    },
+    {
+      "id": "greytide-devlog",
+      "ring": "seat",
+      "parent": "greytide",
+      "name": "Greytide devlog",
+      "short": "Devlog",
+      "icon": "pen",
+      "tag": "Written by the agents who build it",
+      "blurb": "AI agents are building this game and writing about it as they go. An AI documentarian edits what they wrote for what matters; a human owner directs the work and plays each build.",
+      "actions": [
+        {
+          "verb": "Read",
+          "label": "Read the Greytide devlog",
+          "href": "https://greytide.advancedstudios.net/blog/",
+          "primary": true
+        },
+        {
+          "verb": "Read",
+          "label": "Atom feed",
+          "sub": "for your reader",
+          "href": "https://greytide.advancedstudios.net/feed.xml"
+        }
+      ],
+      "source": {
+        "label": "Greytide devlog, masthead",
+        "url": "https://greytide.advancedstudios.net/blog/"
+      }
+    },
+    {
+      "id": "greytide-trailer",
+      "ring": "seat",
+      "parent": "greytide",
+      "name": "Greytide trailer",
+      "short": "Trailer",
+      "icon": "film",
+      "tag": "60 seconds, rendered from the game",
+      "blurb": "The second cut of the trailer: 60 seconds, cut to GREY PLASTIC (HORDE ANTHEM) and rendered from the game.",
+      "actions": [
+        {
+          "verb": "Watch",
+          "label": "Watch the Greytide trailer",
+          "href": "https://greytide.advancedstudios.net/trailer/",
+          "primary": true
+        }
+      ],
+      "source": {
+        "label": "Greytide trailer page",
+        "url": "https://greytide.advancedstudios.net/trailer/"
+      }
+    },
+    {
+      "id": "greytide-soundtrack",
+      "ring": "seat",
+      "parent": "greytide",
+      "name": "Greytide soundtrack",
+      "short": "Soundtrack",
+      "icon": "tape",
+      "tag": "The tape deck",
+      "blurb": "Music for painting minis at night. Every track is listed with the prompt and seed that made it.",
+      "actions": [
+        {
+          "verb": "Listen",
+          "label": "Listen to the Greytide soundtrack",
+          "href": "https://greytide.advancedstudios.net/soundtrack/",
+          "primary": true
+        }
+      ],
+      "source": {
+        "label": "Greytide soundtrack page",
+        "url": "https://greytide.advancedstudios.net/soundtrack/"
+      }
+    },
+    {
+      "id": "shoosting-cards",
+      "ring": "seat",
+      "parent": "shoosting",
+      "name": "Card Studio",
+      "short": "Card Studio",
+      "icon": "cards",
+      "tag": "Shoosting’s card library",
+      "blurb": "Shoosting’s card library, readable in the browser.",
+      "actions": [
+        {
+          "verb": "Read",
+          "label": "Open the Card Studio",
+          "href": "https://dev.advancedstudios.net/shoosting-builds/studio/",
+          "primary": true
+        }
+      ],
+      "source": {
+        "label": "Shoosting card studio",
+        "url": "https://dev.advancedstudios.net/shoosting-builds/studio/"
+      }
+    },
+    {
+      "id": "shoosting-soundtrack",
+      "ring": "seat",
+      "parent": "shoosting",
+      "name": "Shoosting soundtrack",
+      "short": "Soundtrack",
+      "icon": "tape",
+      "tag": "Original game soundtrack",
+      "blurb": "The music that plays under every match, free to download. Open any track to read the exact prompt and seed that made it.",
+      "actions": [
+        {
+          "verb": "Listen",
+          "label": "Listen to the Shoosting soundtrack",
+          "href": "https://dev.advancedstudios.net/shoosting-builds/soundtrack/",
+          "primary": true
+        }
+      ],
+      "source": {
+        "label": "Shoosting soundtrack page",
+        "url": "https://dev.advancedstudios.net/shoosting-builds/soundtrack/"
+      }
+    },
+    {
+      "id": "nobody-fm-source",
+      "ring": "seat",
+      "parent": "nobody-fm",
+      "name": "How Nobody FM works",
+      "short": "Source",
+      "icon": "code",
+      "tag": "The machine, on GitHub",
+      "blurb": "The generator, the station and the request line, in the open: a few words in, a measured track and the story of how it was made out.",
+      "actions": [
+        {
+          "verb": "Read",
+          "label": "How it works, on GitHub",
+          "href": "https://github.com/tehrandom2/nobody-fm",
+          "primary": true
+        }
+      ],
+      "source": {
+        "label": "nobody-fm README",
+        "url": "https://github.com/tehrandom2/nobody-fm"
+      }
+    },
+    {
+      "id": "fastaf",
+      "ring": "seat",
+      "parent": "ghostline",
+      "name": "Fast AF",
+      "short": "Fast AF",
+      "icon": "tag",
+      "tag": "Ghostline’s former name",
+      "blurb": "Not a second game: Fast AF is what Ghostline used to be called. The 9.6 builds still start from FastAF.exe and FastAF.sh.",
+      "actions": [
+        {
+          "verb": "Download",
+          "label": "Get Ghostline",
+          "sub": "the game it became",
+          "href": "ghostline/",
+          "primary": true
+        }
+      ],
+      "source": {
+        "label": "ghostline/ (First launch)",
+        "url": "ghostline/"
+      }
+    },
+    {
+      "id": "downloads",
+      "ring": "seat",
+      "parent": "ghostline",
+      "also": "sick-drop",
+      "name": "The downloads shelf",
+      "short": "Downloads",
+      "icon": "box",
+      "tag": "Free releases on GitHub",
+      "blurb": "Ghostline and Sick Drop builds are free releases on GitHub, with checksums.",
+      "actions": [
+        {
+          "verb": "Download",
+          "label": "All downloads on GitHub",
+          "sub": "advancedstudios-downloads",
+          "href": "https://github.com/tehrandom2/advancedstudios-downloads/releases",
+          "primary": true
+        }
+      ],
+      "source": {
+        "label": "advancedstudios-downloads releases",
+        "url": "https://github.com/tehrandom2/advancedstudios-downloads/releases"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "owner--studio",
+      "from": "owner",
+      "to": "studio",
+      "kind": "direction",
+      "label": "directs through",
+      "statement": "The Studio is where the direction lands: visitors watch read-only, and the owner signs in to talk and act.",
+      "source": {
+        "label": "The Studio",
+        "url": "https://studio.advancedstudios.net/",
+        "note": "Listing wording checked against the Studio; first published in this repository in index.html at commit 525c0ec."
+      }
+    },
+    {
+      "id": "studio--greytide",
+      "from": "studio",
+      "to": "greytide",
+      "kind": "direction",
+      "label": "shows the crew behind",
+      "statement": "AI agents are building Greytide and writing about it as they go; a human owner directs the work and plays each build.",
+      "source": {
+        "label": "Greytide devlog, masthead",
+        "url": "https://greytide.advancedstudios.net/blog/"
+      }
+    },
+    {
+      "id": "studio--shoosting",
+      "from": "studio",
+      "to": "shoosting",
+      "kind": "direction",
+      "label": "shows the crew behind",
+      "statement": "The Studio is a live window into the AI crew behind Advanced Studios, Shoosting included.",
+      "source": {
+        "label": "The Studio",
+        "url": "https://studio.advancedstudios.net/",
+        "note": "Listing wording checked against the Studio; index.html at commit 525c0ec says the AI crew makes it all."
+      }
+    },
+    {
+      "id": "studio--nobody-fm",
+      "from": "studio",
+      "to": "nobody-fm",
+      "kind": "direction",
+      "label": "shows the crew behind",
+      "statement": "Nobody FM runs on an agent-written pipeline. The people and agents who built it work on a machine with no ears; the owner listens and says so in the open.",
+      "source": {
+        "label": "nobody-fm README",
+        "url": "https://github.com/tehrandom2/nobody-fm"
+      }
+    },
+    {
+      "id": "studio--neverending",
+      "from": "studio",
+      "to": "neverending",
+      "kind": "direction",
+      "label": "shows the crew behind",
+      "statement": "The Studio is a live window into the AI crew behind Advanced Studios, The Neverending included.",
+      "source": {
+        "label": "The Studio",
+        "url": "https://studio.advancedstudios.net/",
+        "note": "Listing wording checked against the Studio; index.html at commit 525c0ec says the AI crew makes it all."
+      }
+    },
+    {
+      "id": "studio--ghostline",
+      "from": "studio",
+      "to": "ghostline",
+      "kind": "direction",
+      "label": "shows the crew behind",
+      "statement": "The Studio is a live window into the AI crew behind Advanced Studios, Ghostline included.",
+      "source": {
+        "label": "The Studio",
+        "url": "https://studio.advancedstudios.net/",
+        "note": "Listing wording checked against the Studio; index.html at commit 525c0ec says the AI crew makes it all."
+      }
+    },
+    {
+      "id": "studio--sick-drop",
+      "from": "studio",
+      "to": "sick-drop",
+      "kind": "direction",
+      "label": "shows the crew behind",
+      "statement": "The Studio is a live window into the AI crew behind Advanced Studios, Sick Drop included.",
+      "source": {
+        "label": "The Studio",
+        "url": "https://studio.advancedstudios.net/",
+        "note": "Listing wording checked against the Studio; index.html at commit 525c0ec says the AI crew makes it all."
+      }
+    },
+    {
+      "id": "greytide--joes-fork",
+      "from": "greytide",
+      "to": "joes-fork",
+      "kind": "family",
+      "label": "forked into",
+      "statement": "A real fork: Joe’s own take on Greytide runs in the browser at its own address on the Greytide site.",
+      "source": {
+        "label": "greytide.advancedstudios.net/averagejoe/",
+        "url": "https://greytide.advancedstudios.net/averagejoe/"
+      }
+    },
+    {
+      "id": "fastaf--ghostline",
+      "from": "fastaf",
+      "to": "ghostline",
+      "kind": "family",
+      "label": "renamed to",
+      "statement": "One game, two names. Fast AF became Ghostline; the 9.6 builds still start from FastAF.exe and FastAF.sh.",
+      "source": {
+        "label": "ghostline/ (First launch)",
+        "url": "ghostline/"
+      }
+    },
+    {
+      "id": "nobody-fm--greytide",
+      "from": "nobody-fm",
+      "to": "greytide",
+      "kind": "music",
+      "label": "carries the music of",
+      "statement": "The station’s catalogue carries Greytide’s music, tagged with the project: an album called Greytide and a shelf of table-by-table discs.",
+      "source": {
+        "label": "Nobody FM catalogue",
+        "note": "tracks/index.json: tracks and albums with project “greytide”.",
+        "url": "https://radio.advancedstudios.net/site/",
+        "data": "https://radio.advancedstudios.net/tracks/index.json"
+      }
+    },
+    {
+      "id": "nobody-fm--shoosting",
+      "from": "nobody-fm",
+      "to": "shoosting",
+      "kind": "music",
+      "label": "carries the music of",
+      "statement": "The station’s catalogue carries the Shoosting soundtrack as numbered discs; the first is listed as “disc 1 of the shoosting soundtrack”, made by “nobody fm: one machine rendering locally”.",
+      "source": {
+        "label": "Nobody FM catalogue",
+        "note": "tracks/index.json: albums “shoosting · disc 1” onwards, project “shoosting”.",
+        "url": "https://radio.advancedstudios.net/site/",
+        "data": "https://radio.advancedstudios.net/tracks/index.json"
+      }
+    },
+    {
+      "id": "nobody-fm--ghostline",
+      "from": "nobody-fm",
+      "to": "ghostline",
+      "kind": "music",
+      "label": "is credited for the music of",
+      "statement": "Ghostline’s credits name its music’s maker as musiquenonstop, the machine behind Nobody FM. Careful: the radio album called Transmissions on a Ghostline is its own record, not the game’s score, and Ghostline has no public soundtrack page.",
+      "source": {
+        "label": "ghostline/ (Credits)",
+        "url": "ghostline/"
+      }
+    },
+    {
+      "id": "nobody-fm--neverending",
+      "from": "nobody-fm",
+      "to": "neverending",
+      "kind": "music",
+      "label": "is credited for the music of",
+      "statement": "The Neverending’s title screen credits its music to musiquenonstop and links the radio.",
+      "source": {
+        "label": "story/ (title screen credits)",
+        "url": "story/"
+      }
+    },
+    {
+      "id": "greytide-trailer--greytide-soundtrack",
+      "from": "greytide-trailer",
+      "to": "greytide-soundtrack",
+      "kind": "music",
+      "label": "is cut to",
+      "statement": "The trailer is cut to GREY PLASTIC (HORDE ANTHEM), a track on the Greytide tape deck, and rendered from the game.",
+      "source": {
+        "label": "Greytide trailer page",
+        "url": "https://greytide.advancedstudios.net/trailer/"
+      }
+    },
+    {
+      "id": "greytide--greytide-devlog",
+      "from": "greytide",
+      "to": "greytide-devlog",
+      "kind": "page",
+      "label": "is written up in",
+      "statement": "The agents building Greytide write about it as they go, and an AI documentarian edits what they wrote for what matters.",
+      "source": {
+        "label": "Greytide devlog, masthead",
+        "url": "https://greytide.advancedstudios.net/blog/"
+      }
+    },
+    {
+      "id": "greytide--greytide-trailer",
+      "from": "greytide",
+      "to": "greytide-trailer",
+      "kind": "page",
+      "label": "is previewed in",
+      "statement": "Greytide has a 60-second trailer, rendered from the game itself.",
+      "source": {
+        "label": "Greytide trailer page",
+        "url": "https://greytide.advancedstudios.net/trailer/"
+      }
+    },
+    {
+      "id": "greytide--greytide-soundtrack",
+      "from": "greytide",
+      "to": "greytide-soundtrack",
+      "kind": "page",
+      "label": "keeps its music on",
+      "statement": "Greytide has its own soundtrack page, the tape deck, with the prompt and seed behind every track.",
+      "source": {
+        "label": "Greytide soundtrack page",
+        "url": "https://greytide.advancedstudios.net/soundtrack/"
+      }
+    },
+    {
+      "id": "shoosting--shoosting-cards",
+      "from": "shoosting",
+      "to": "shoosting-cards",
+      "kind": "page",
+      "label": "keeps its cards in",
+      "statement": "Shoosting has a Card Studio, the game’s card library in the browser, at its own address under the build archive.",
+      "source": {
+        "label": "Shoosting card studio",
+        "url": "https://dev.advancedstudios.net/shoosting-builds/studio/"
+      }
+    },
+    {
+      "id": "shoosting--shoosting-soundtrack",
+      "from": "shoosting",
+      "to": "shoosting-soundtrack",
+      "kind": "page",
+      "label": "keeps its music on",
+      "statement": "Shoosting has its own soundtrack page: every track in the game, with the prompt and seed that made it.",
+      "source": {
+        "label": "Shoosting soundtrack page",
+        "url": "https://dev.advancedstudios.net/shoosting-builds/soundtrack/"
+      }
+    },
+    {
+      "id": "nobody-fm--nobody-fm-source",
+      "from": "nobody-fm",
+      "to": "nobody-fm-source",
+      "kind": "page",
+      "label": "shows its workings in",
+      "statement": "The whole station is in the open on GitHub: the generator, the site and the request line.",
+      "source": {
+        "label": "nobody-fm README",
+        "url": "https://github.com/tehrandom2/nobody-fm"
+      }
+    },
+    {
+      "id": "ghostline--downloads",
+      "from": "ghostline",
+      "to": "downloads",
+      "kind": "page",
+      "label": "ships from",
+      "statement": "Ghostline builds are free releases on the downloads shelf on GitHub, with checksums.",
+      "source": {
+        "label": "Ghostline 9.6 release on GitHub",
+        "url": "https://github.com/tehrandom2/advancedstudios-downloads/releases/tag/ghostline-9.6"
+      }
+    },
+    {
+      "id": "sick-drop--downloads",
+      "from": "sick-drop",
+      "to": "downloads",
+      "kind": "page",
+      "label": "ships from",
+      "statement": "Sick Drop builds are free releases on the same downloads shelf on GitHub, with checksums.",
+      "source": {
+        "label": "Sick Drop c19 release on GitHub",
+        "url": "https://github.com/tehrandom2/advancedstudios-downloads/releases/tag/sick-drop-c19-2026-11-03"
+      }
+    }
+  ]
+}
