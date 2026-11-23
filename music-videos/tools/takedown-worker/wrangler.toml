@@ -10,3 +10,12 @@ routes = [{ pattern = "media.advancedstudios.net/takedown", zone_name = "advance
 [[kv_namespaces]]
 binding = "INBOX"
 id = "0b26b9c7c7414efaa02b886d962295ac"
+
+# the rate-limit counter (a Durable Object counts in one place; KV is too slow to show a write)
+[[durable_objects.bindings]]
+name = "GATE"
+class_name = "Gate"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Gate"]

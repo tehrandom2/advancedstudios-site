@@ -62,6 +62,7 @@ There is no email address on the page. The bracketed words in a channel's notice
 
 - That address is a free Cloudflare Worker (`tools/takedown-worker/`), routed to that one exact path and nothing else. It accepts POST only and has no way to read anything back.
 - It turns away a filled honeypot field or a form sent in under three seconds (422), anything over the field caps (413), and more than 3 requests an hour from one address or 150 a day in all (429).
+- The counting is done by a small Durable Object inside the same Worker, because KV shows a write too slowly to stop a burst.
 - Requests are stored in a KV namespace. The desk reads them on the studio box with `~/Services/music-videos-media/takedowns` (`--all` for handled ones too, `--done <id>` to mark one handled).
 - Deploy the Worker from `tools/takedown-worker/` with the pinned wrangler under `op run --env-file ~/Services/music-videos-media/deploy.env`.
 
