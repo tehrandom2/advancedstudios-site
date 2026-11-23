@@ -1,0 +1,448 @@
+#!/usr/bin/env python3
+"""mv-publish: encode, stage, check and deploy the music videos.
+
+The one data file is $MV_DATA (default ~/Services/music-videos-media/videos.json). It is NOT in this repo,
+because the repo is public and the data may hold channels that are not public yet. This script writes the
+public part of it to the media host as channels.json, and that is what the page reads.
+
+  mv-publish                encode what is missing, take posters, check, deploy the public media
+  mv-publish --no-deploy    the same without the deploy
+  mv-publish check          check the staging folder only
+  mv-publish live           check the public hosts: public media plays, nothing of a hidden channel is there
+  mv-publish preview [port] LAN preview of the page with every channel, hidden ones badged
+
+Staging (never in git, never in /tmp): $MV_MEDIA, default ~/Services/music-videos-media
+  videos.json  the data
+  public/      exactly what is deployed to the media host (Cloudflare Pages)
+  hidden/      encoded but never deployed
+  work/        encodes in progress
+  sources      text file, one folder per line, searched in order for a video's "source"
+  deploy.env   the op:// references the deploy runs with (the secrets themselves stay in the vault)
+
+Rules this script keeps:
+  - a channel with "public": false is invisible: its videos never sit in public/, its name, titles and
+    artists are in no deployed file; the deploy refuses otherwise, and the live check looks again
+  - every deployed file is under 25 MiB, a deploy is under 20,000 files
+  - one ffmpeg at a time, under nice
+  - nothing is ever deleted: a flip moves a folder, a re-encode needs you to move the old folder away
+"""
+import json, os, re, subprocess, sys, time
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+PAGE = HERE.parent                      # music-videos/
+SITE = PAGE.parent                      # repo root
+MEDIA = Path(os.environ.get("MV_MEDIA", Path.home() / "Services/music-videos-media"))
+DATA = Path(os.environ.get("MV_DATA", MEDIA / "videos.json"))
+PAGE_URL = "https://advancedstudios.net/music-videos/"
+PUB, HID, WORK = MEDIA / "public", MEDIA / "hidden", MEDIA / "work"
+MAX_FILE = 25 * 1024 * 1024
+MAX_FILES = 20000
+PROJECT = "advancedstudios-music-videos"
+HOSTS = ["https://media.advancedstudios.net", "https://advancedstudios-music-videos.pages.dev"]
+ALLOWED = {".m3u8", ".m4s", ".mp4", ".jpg", ".json", ".txt"}
+ID_RE = re.compile(r"^[a-z0-9][a-z0-9-]{1,60}$")
+# name, height, crf, maxrate kbit/s, audio kbit/s, H.264 level (kept low enough for phones)
+LADDER = [("1080", 1080, 21, 5500, 160, "4.1"), ("720", 720, 22, 3000, 128, "3.1"), ("480", 480, 23, 1400, 96, "3.1")]
+SEG = 4  # seconds
+
+HEADERS = """/*
+  Access-Control-Allow-Origin: *
+  X-Content-Type-Options: nosniff
+/*.m3u8
+  Content-Type: application/vnd.apple.mpegurl
+  Cache-Control: public, max-age=300
+/*.m4s
+  Content-Type: video/iso.segment
+  Cache-Control: public, max-age=86400
+/*.mp4
+  Content-Type: video/mp4
+  Cache-Control: public, max-age=86400
+/*.jpg
+  Cache-Control: public, max-age=3600
+/channels.json
+  Cache-Control: public, max-age=60
+"""
+
+
+def say(*a):
+    print("mv-publish:", *a, flush=True)
+
+
+def die(*a):
+    say("REFUSED:", *a)
+    sys.exit(2)
+
+
+def load():
+    """Returns (data, videos). Each video carries 'public' (its channel's flag) and 'channel'."""
+    if not DATA.exists():
+        die(f"no data file at {DATA}")
+    data = json.loads(DATA.read_text())
+    vids, seen, chans = [], set(), set()
+    for ch in data.get("channels", []):
+        for k in ("id", "name"):
+            if not str(ch.get(k, "")).strip():
+                die(f"a channel has no {k}")
+        if not ID_RE.match(ch["id"]) or ch["id"] in chans:
+            die(f"channel id {ch['id']!r}: lowercase letters, digits and dashes, used once")
+        if not isinstance(ch.get("public"), bool):
+            die(f"channel {ch['id']}: \"public\" must be true or false")
+        chans.add(ch["id"])
+        for v in ch.get("videos", []):
+            for k in ("id", "title", "artist", "concept", "source"):
+                if not str(v.get(k, "")).strip():
+                    die(f"entry {v.get('id', '?')!r} has no {k}")
+            if not ID_RE.match(v["id"]):
+                die(f"id {v['id']!r}: use lowercase letters, digits and dashes")
+            if v["id"] in seen or v["id"] in chans:
+                die(f"id {v['id']!r} is used twice")
+            seen.add(v["id"])
+            vids.append(dict(v, public=ch["public"], channel=ch["id"]))
+    return data, vids
+
+
+def hidden_words(data):
+    """Every string that must not reach a public host while its channel is hidden."""
+    pub = json.dumps([c for c in data["channels"] if c["public"]] + [data.get("offair", {})]).lower()
+    words = set()
+    for ch in data["channels"]:
+        if ch["public"]:
+            continue
+        cand = [ch["id"], ch["name"]] + [x for v in ch.get("videos", []) for x in (v["id"], v["title"], v["artist"])]
+        for w in cand:
+            w = w.strip().lower()
+            if len(w) >= 4 and w not in pub:     # a word the public part also uses cannot be told apart
+                words.add(w)
+    return sorted(words)
+
+
+def channels_json(data, roots, everything=False):
+    """What the page reads. Public channels only, unless this is the LAN preview."""
+    have = {}
+    for r in roots:
+        if r.exists():
+            for d in r.iterdir():
+                m = d / "meta.json"
+                if d.is_dir() and m.exists() and (d / "master.m3u8").exists():
+                    have[d.name] = json.loads(m.read_text())["duration"]
+    out = {"removalForm": data.get("removalForm", ""), "offair": data.get("offair", {}), "channels": []}
+    for ch in data["channels"]:
+        if not (ch["public"] or everything):
+            continue
+        c = {k: ch[k] for k in ("id", "name", "intro", "notice", "next_up") if k in ch}
+        if not ch["public"]:
+            c["hidden"] = True
+        c["videos"] = [dict({k: v[k] for k in ("id", "title", "artist", "concept", "warning") if k in v},
+                            ready=v["id"] in have, duration=have.get(v["id"], 0)) for v in ch.get("videos", [])]
+        out["channels"].append(c)
+    if everything:
+        out["preview"] = True
+    return out
+
+
+def find_source(name):
+    dirs = []
+    f = MEDIA / "sources"
+    if f.exists():
+        dirs = [Path(os.path.expanduser(l.strip())) for l in f.read_text().splitlines() if l.strip() and not l.startswith("#")]
+    for d in dirs:
+        p = d / name
+        if p.is_file():
+            return p
+    return None
+
+
+def probe(src):
+    out = subprocess.run(["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries",
+                          "stream=r_frame_rate,width,height:format=duration", "-of", "json", str(src)],
+                         capture_output=True, text=True, check=True).stdout
+    j = json.loads(out)
+    n, d = j["streams"][0]["r_frame_rate"].split("/")
+    return float(j["format"]["duration"]), float(n) / float(d), j["streams"][0]["height"]
+
+
+def encode(v, src):
+    """One ffmpeg, the whole ladder, into work/<id>.<stamp>/ (a fresh folder)."""
+    dur, fps, h = probe(src)
+    ladder = [r for r in LADDER if r[1] <= h] or [LADDER[-1]]
+    out = WORK / f"{v['id']}.{time.strftime('%Y%m%d-%H%M%S')}"
+    out.mkdir(parents=True)  # refuses an existing folder
+    gop = round(fps * SEG)
+    n = len(ladder)
+    fc = f"[0:v]split={n}" + "".join(f"[s{i}]" for i in range(n)) + ";" + \
+         ";".join(f"[s{i}]scale=-2:{r[1]}:flags=lanczos,format=yuv420p[v{i}]" for i, r in enumerate(ladder))
+    cmd = ["nice", "-n", "15", "ffmpeg", "-hide_banner", "-v", "warning", "-stats", "-nostdin", "-i", str(src), "-filter_complex", fc]
+    for i, r in enumerate(ladder):
+        cmd += ["-map", f"[v{i}]", "-map", "0:a:0"]
+    cmd += ["-c:v", "libx264", "-preset", "slow", "-profile:v", "high", "-g", str(gop), "-keyint_min", str(gop),
+            "-sc_threshold", "0", "-refs", "4", "-c:a", "aac", "-ac", "2", "-threads", "8"]
+    for i, r in enumerate(ladder):
+        cmd += [f"-crf:v:{i}", str(r[2]), f"-maxrate:v:{i}", f"{r[3]}k", f"-bufsize:v:{i}", f"{r[3] * 2}k", f"-b:a:{i}", f"{r[4]}k", f"-level:v:{i}", r[5]]
+    cmd += ["-f", "hls", "-hls_time", str(SEG), "-hls_playlist_type", "vod", "-hls_segment_type", "fmp4",
+            "-hls_flags", "independent_segments", "-master_pl_name", "master.m3u8",
+            "-var_stream_map", " ".join(f"v:{i},a:{i},name:{r[0]}" for i, r in enumerate(ladder)),
+            "-hls_segment_filename", str(out / "%v" / "seg_%04d.m4s"), "-hls_fmp4_init_filename", "init.mp4",
+            str(out / "%v" / "index.m3u8")]
+    say(f"encoding {v['id']} ({dur:.0f} s, {fps:g} fps, {n} renditions) into {out}")
+    log = MEDIA / "logs" / f"{out.name}.log"
+    log.parent.mkdir(exist_ok=True)
+    with open(log, "w") as lf:
+        rc = subprocess.run(cmd, stdout=lf, stderr=subprocess.STDOUT).returncode
+    if rc != 0:
+        die(f"ffmpeg failed for {v['id']} (rc {rc}); log {log}; the partial folder {out} is left for you to look at")
+    # poster
+    at = v.get("poster_at")
+    at = float(at) if at is not None else round(dur * 0.25, 2)
+    subprocess.run(["nice", "-n", "15", "ffmpeg", "-hide_banner", "-v", "error", "-nostdin", "-ss", str(at), "-i", str(src),
+                    "-frames:v", "1", "-vf", "scale=1280:-2:flags=lanczos", "-q:v", "3", str(out / "poster.jpg")], check=True)
+    (out / "meta.json").write_text(json.dumps({"id": v["id"], "duration": round(dur, 2), "poster_at": at,
+                                               "renditions": [r[0] for r in ladder], "source": src.name,
+                                               "source_bytes": src.stat().st_size}, indent=1) + "\n")
+    return out
+
+
+def poster_refresh(v, folder):
+    """A changed poster_at retakes the poster only (the old one is kept beside it)."""
+    meta = json.loads((folder / "meta.json").read_text())
+    want = v.get("poster_at")
+    if want is None or float(want) == float(meta.get("poster_at", -1)):
+        return
+    src = find_source(v["source"])
+    if not src:
+        say(f"{v['id']}: poster_at changed but the source is not here; poster left as it is")
+        return
+    old = folder / "poster.jpg"
+    if old.exists():
+        old.rename(folder.parent.parent / "work" / f"{v['id']}.poster-{time.strftime('%Y%m%d-%H%M%S')}.jpg")
+    subprocess.run(["nice", "-n", "15", "ffmpeg", "-hide_banner", "-v", "error", "-nostdin", "-ss", str(want), "-i", str(src),
+                    "-frames:v", "1", "-vf", "scale=1280:-2:flags=lanczos", "-q:v", "3", str(old)], check=True)
+    meta["poster_at"] = float(want)
+    (folder / "meta.json").write_text(json.dumps(meta, indent=1) + "\n")
+    say(f"{v['id']}: poster retaken at {want} s")
+
+
+def stage(data, vids):
+    for d in (PUB, HID, WORK):
+        d.mkdir(parents=True, exist_ok=True)
+    for v in vids:
+        want = PUB if v["public"] else HID
+        other = HID if want is PUB else PUB
+        here, there = want / v["id"], other / v["id"]
+        if here.exists() and there.exists():
+            die(f"{v['id']} is in both public/ and hidden/; move one away by hand")
+        if there.exists():
+            there.rename(here)
+            say(f"{v['id']}: moved to {want.name}/ (its channel is {'public' if v['public'] else 'hidden'})")
+        if not here.exists():
+            src = find_source(v["source"])
+            if not src:
+                say(f"{v['id']}: source {v['source']!r} not found in the folders listed in {MEDIA / 'sources'}; skipped (shows as tuning in soon)")
+                continue
+            done = encode(v, src)
+            done.rename(here)
+            say(f"{v['id']}: staged in {want.name}/")
+        else:
+            poster_refresh(v, here)
+    # anything in public/ that the data does not call public must go
+    ids_pub = {v["id"] for v in vids if v["public"]}
+    for d in sorted(p for p in PUB.iterdir() if p.is_dir()):
+        if d.name not in ids_pub:
+            dest = HID / d.name
+            if dest.exists():
+                die(f"public/{d.name} is not a public entry and hidden/{d.name} already exists; sort it out by hand")
+            d.rename(dest)
+            say(f"{d.name}: not a public entry in the data, moved out of public/ into hidden/")
+    (PUB / "_headers").write_text(HEADERS)
+    (PUB / "channels.json").write_text(json.dumps(channels_json(data, [PUB]), indent=1, ensure_ascii=False) + "\n")
+    (PUB / "robots.txt").write_text("User-agent: *\nDisallow: /\n")
+
+
+def check(data, vids):
+    """The staging folder: nothing hidden in public/, sizes, count, types, playlists complete."""
+    bad = []
+    hidden = {v["id"] for v in vids if not v["public"]}
+    public = {v["id"] for v in vids if v["public"]}
+    words = hidden_words(data)
+    files = [p for p in PUB.rglob("*") if not p.is_dir()]
+    for p in PUB.rglob("*"):
+        if p.is_symlink():
+            bad.append(f"link in public/: {p}")
+    for d in (p for p in PUB.iterdir() if p.is_dir()):
+        if d.name in hidden or d.name not in public:
+            bad.append(f"public/{d.name} is not a public entry")
+    for p in files:                       # no hidden name in any deployed text or file name
+        hay = str(p.relative_to(PUB)).lower()
+        if p.suffix in (".json", ".m3u8", ".txt") or p.name == "_headers":
+            hay += "\n" + p.read_text(errors="replace").lower()
+        for w in words:
+            if w in hay:
+                bad.append(f"{p.relative_to(PUB)} carries {w!r}, which belongs to a hidden channel")
+    biggest = (0, None)
+    for p in files:
+        s = p.stat().st_size
+        if s > biggest[0]:
+            biggest = (s, p)
+        if s >= MAX_FILE:
+            bad.append(f"over 25 MiB: {p} ({s})")
+        if p.name not in ("_headers",) and p.suffix not in ALLOWED:
+            bad.append(f"unexpected file type: {p}")
+    if len(files) >= MAX_FILES:
+        bad.append(f"{len(files)} files, over the limit")
+    for d in (p for p in PUB.iterdir() if p.is_dir()):
+        for pl in d.glob("*/index.m3u8"):
+            for line in pl.read_text().splitlines():
+                m = re.match(r'#EXT-X-MAP:URI="(.+)"', line)
+                name = m.group(1) if m else (line if line and not line.startswith("#") else None)
+                if name and not (pl.parent / name).is_file():
+                    bad.append(f"{pl}: missing {name}")
+    total = sum(p.stat().st_size for p in files)
+    say(f"staging check: {len(files)} files, {total / 1048576:.1f} MiB, biggest {biggest[0] / 1048576:.2f} MiB"
+        + (f" ({biggest[1].relative_to(PUB)})" if biggest[1] else ""))
+    if bad:
+        for b in bad:
+            say("  bad:", b)
+        die("the staging check failed; nothing was deployed")
+    return len(files), total
+
+
+def deploy():
+    wr = Path.home() / "Services/forkbuild/wrangler/node_modules/.bin/wrangler"
+    node = Path.home() / ".local/share/mise/installs/node/22.23.4/bin"
+    if not wr.exists():
+        die(f"the pinned wrangler is not at {wr}")
+    ref = MEDIA / "deploy.env"   # op references for CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID; never in this repo
+    if not ref.is_file():
+        die(f"no {ref}: it holds the two op:// references the deploy runs with")
+    env = dict(os.environ, PATH=f"{node}:{os.environ['PATH']}", WRANGLER_SEND_METRICS="false")
+    rc = subprocess.run(["op", "run", f"--env-file={ref}", "--", str(wr), "pages", "deploy", str(PUB),
+                         "--project-name", PROJECT, "--branch", "main", "--commit-dirty=true"], env=env, cwd=MEDIA).returncode
+    if rc != 0:
+        die(f"wrangler failed (rc {rc})")
+    say("deployed public/ to", HOSTS[0])
+
+
+def curl_code(url):
+    return subprocess.run(["curl", "-s", "-o", "/dev/null", "-w", "%{http_code} %{content_type}", "-m", "30", url],
+                          capture_output=True, text=True).stdout.strip()
+
+
+def fetch(url):
+    return subprocess.run(["curl", "-sL", "-m", "30", url], capture_output=True, text=True, errors="replace").stdout
+
+
+def live(data, vids):
+    """Public hosts: public media answers; nothing of a hidden channel is there, by path or by name."""
+    ok = True
+    paths = ("master.m3u8", "poster.jpg", "meta.json", "1080/index.m3u8", "720/index.m3u8", "480/index.m3u8",
+             "1080/init_0.mp4", "1080/seg_0000.m4s", "480/seg_0000.m4s")
+    for host in HOSTS:
+        for v in vids:
+            for path in paths:
+                url = f"{host}/{v['id']}/{path}"
+                got = curl_code(url)
+                code = got.split()[0]
+                good = (code == "200" or not (PUB / v["id"]).exists()) if v["public"] else code == "404"
+                ok &= good
+                print(f"{'ok  ' if good else 'FAIL'} {'public' if v['public'] else 'hidden':6} {got:44} {url}")
+    words = hidden_words(data)
+    texts = [f"{h}/channels.json" for h in HOSTS] + [PAGE_URL, PAGE_URL + "app.js", PAGE_URL + "README.md", PAGE_URL + "videos.json"]
+    for url in texts:
+        body = fetch(url).lower()
+        hits = [w for w in words if w in body]
+        ok &= not hits
+        print(f"{'ok  ' if not hits else 'FAIL'} names   {len(body):7} bytes, {len(words)} hidden words looked for, found {hits or 'none'}: {url}")
+    if not ok:
+        die("the live check failed")
+    say("live check passed")
+
+
+def preview(port):
+    """LAN only. Serves the site as it is in this checkout, plus /_mvmedia/ from public/ and hidden/."""
+    import http.server, socketserver
+
+    class H(http.server.SimpleHTTPRequestHandler):
+        def __init__(self, *a, **k):
+            super().__init__(*a, directory=str(SITE), **k)
+
+        def translate_path(self, path):
+            clean = path.split("?", 1)[0].split("#", 1)[0]
+            if clean.startswith("/_mvmedia/"):
+                rel = os.path.normpath(clean[len("/_mvmedia/"):])
+                if rel.startswith(".."):
+                    return "/nonexistent"
+                for root in ((PUB,) if as_host else (PUB, HID)):
+                    p = root / rel
+                    if p.is_file():
+                        return str(p)
+                return "/nonexistent"
+            return super().translate_path(path)
+
+        def do_GET(self):
+            if self.path.split("?", 1)[0] == "/_mvmedia/channels.json":
+                # the data is read again on every request, so an edit shows on reload
+                as_public = as_host or "view=public" in self.path
+                body = channels_json(load()[0], [PUB, HID], everything=not as_public)
+                raw = json.dumps(body).encode()
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Content-Length", str(len(raw)))
+                self.send_header("Cache-Control", "no-store")
+                self.end_headers()
+                self.wfile.write(raw)
+                return
+            super().do_GET()
+
+        def end_headers(self):
+            self.send_header("Cache-Control", "no-store")
+            super().end_headers()
+
+        def guess_type(self, path):
+            if path.endswith(".m3u8"):
+                return "application/vnd.apple.mpegurl"
+            if path.endswith(".m4s"):
+                return "video/iso.segment"
+            return super().guess_type(path)
+
+    class S(socketserver.ThreadingMixIn, http.server.HTTPServer):
+        daemon_threads = True
+        allow_reuse_address = True
+
+    as_host = os.environ.get("MV_PREVIEW_PUBLIC") == "1"   # behave like the public host: public/ only
+    bind = os.environ.get("MV_BIND", "192.168.4.75")
+    with S((bind, port), H) as s:
+        say(f"preview at http://{bind}:{port}/music-videos/ (pid {os.getpid()}); hidden channels show, badged; ?view=public shows what the data would make public")
+        s.serve_forever()
+
+
+def main():
+    args = sys.argv[1:]
+    cmd = args[0] if args and not args[0].startswith("-") else "publish"
+    data, vids = load()
+    if cmd == "preview":
+        return preview(int(args[1]) if len(args) > 1 else 8832)
+    if cmd == "check":
+        return check(data, vids)
+    if cmd == "live":
+        return live(data, vids)
+    if cmd != "publish":
+        die(f"unknown command {cmd!r}")
+    lock = MEDIA / "work" / ".lock"
+    lock.parent.mkdir(parents=True, exist_ok=True)
+    import fcntl
+    with open(lock, "w") as lf:
+        try:
+            fcntl.flock(lf, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except OSError:
+            die("another mv-publish is running")
+        stage(data, vids)
+        check(data, vids)
+        if "--no-deploy" in args:
+            say("staged and checked; not deployed (--no-deploy)")
+            return
+        deploy()
+        live(data, vids)
+
+
+if __name__ == "__main__":
+    main()
