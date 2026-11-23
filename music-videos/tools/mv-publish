@@ -24,7 +24,8 @@ Rules this script keeps:
     artists are in no deployed file; the deploy refuses otherwise, and the live check looks again
   - every deployed file is under 25 MiB, a deploy is under 20,000 files
   - one ffmpeg at a time, under nice
-  - nothing is ever deleted: a flip moves a folder, a re-encode needs you to move the old folder away
+  - nothing is ever deleted: a flip moves a folder; when a source file changes (size or mtime) the old
+    encode is moved to retired/ and the video is encoded again under new piece names
 """
 import json, os, re, subprocess, sys, time
 from pathlib import Path
@@ -35,7 +36,7 @@ SITE = PAGE.parent                      # repo root
 MEDIA = Path(os.environ.get("MV_MEDIA", Path.home() / "Services/music-videos-media"))
 DATA = Path(os.environ.get("MV_DATA", MEDIA / "videos.json"))
 PAGE_URL = "https://advancedstudios.net/music-videos/"
-PUB, HID, WORK = MEDIA / "public", MEDIA / "hidden", MEDIA / "work"
+PUB, HID, WORK, RET = MEDIA / "public", MEDIA / "hidden", MEDIA / "work", MEDIA / "retired"
 MAX_FILE = 25 * 1024 * 1024
 MAX_FILES = 20000
 PROJECT = "advancedstudios-music-videos"
@@ -166,8 +167,10 @@ def encode(v, src):
     """One ffmpeg, the whole ladder, into work/<id>.<stamp>/ (a fresh folder)."""
     dur, fps, h = probe(src)
     ladder = [r for r in LADDER if r[1] <= h] or [LADDER[-1]]
-    out = WORK / f"{v['id']}.{time.strftime('%Y%m%d-%H%M%S')}"
+    stamp = time.strftime('%Y%m%d-%H%M%S')
+    out = WORK / f"{v['id']}.{stamp}"
     out.mkdir(parents=True)  # refuses an existing folder
+    tag = "e" + stamp[2:8] + stamp[9:]   # in every piece's name, so a re-encode never reuses a cached URL
     gop = round(fps * SEG)
     n = len(ladder)
     fc = f"[0:v]split={n}" + "".join(f"[s{i}]" for i in range(n)) + ";" + \
@@ -182,7 +185,7 @@ def encode(v, src):
     cmd += ["-f", "hls", "-hls_time", str(SEG), "-hls_playlist_type", "vod", "-hls_segment_type", "fmp4",
             "-hls_flags", "independent_segments", "-master_pl_name", "master.m3u8",
             "-var_stream_map", " ".join(f"v:{i},a:{i},name:{r[0]}" for i, r in enumerate(ladder)),
-            "-hls_segment_filename", str(out / "%v" / "seg_%04d.m4s"), "-hls_fmp4_init_filename", "init.mp4",
+            "-hls_segment_filename", str(out / "%v" / f"{tag}_%04d.m4s"), "-hls_fmp4_init_filename", f"{tag}_init_%v.mp4",
             str(out / "%v" / "index.m3u8")]
     say(f"encoding {v['id']} ({dur:.0f} s, {fps:g} fps, {n} renditions) into {out}")
     log = MEDIA / "logs" / f"{out.name}.log"
@@ -198,8 +201,21 @@ def encode(v, src):
                     "-frames:v", "1", "-vf", "scale=1280:-2:flags=lanczos", "-q:v", "3", str(out / "poster.jpg")], check=True)
     (out / "meta.json").write_text(json.dumps({"id": v["id"], "duration": round(dur, 2), "poster_at": at,
                                                "renditions": [r[0] for r in ladder], "source": src.name,
-                                               "source_bytes": src.stat().st_size}, indent=1) + "\n")
+                                               "source_bytes": src.stat().st_size,
+                                               "source_mtime": int(src.stat().st_mtime)}, indent=1) + "\n")
     return out
+
+
+def source_changed(v, folder):
+    """True when the source file is there and is not the one this folder was encoded from (name, size, mtime)."""
+    src = find_source(v["source"])
+    if not src:
+        return False
+    meta = json.loads((folder / "meta.json").read_text())
+    st = src.stat()
+    if meta.get("source") != src.name or meta.get("source_bytes") != st.st_size:
+        return True
+    return "source_mtime" in meta and meta["source_mtime"] != int(st.st_mtime)
 
 
 def poster_refresh(v, folder):
@@ -234,6 +250,11 @@ def stage(data, vids):
         if there.exists():
             there.rename(here)
             say(f"{v['id']}: moved to {want.name}/ (its channel is {'public' if v['public'] else 'hidden'})")
+        if here.exists() and source_changed(v, here):
+            RET.mkdir(parents=True, exist_ok=True)
+            old = RET / f"{v['id']}.{time.strftime('%Y%m%d-%H%M%S')}"
+            here.rename(old)
+            say(f"{v['id']}: the source file changed; the old encode is kept at {old}, encoding again")
         if not here.exists():
             src = find_source(v["source"])
             if not src:
@@ -334,11 +355,17 @@ def fetch(url):
 def live(data, vids):
     """Public hosts: public media answers; nothing of a hidden channel is there, by path or by name."""
     ok = True
-    paths = ("master.m3u8", "poster.jpg", "meta.json", "1080/index.m3u8", "720/index.m3u8", "480/index.m3u8",
-             "1080/init_0.mp4", "1080/seg_0000.m4s", "480/seg_0000.m4s")
+    def paths_of(v):
+        out = ["master.m3u8", "poster.jpg", "meta.json"]
+        for root in (PUB, HID):                      # first and last piece of every rendition, by its real name
+            for pl in sorted((root / v["id"]).glob("*/index.m3u8")):
+                names = [m.group(1) if (m := re.match(r'#EXT-X-MAP:URI="(.+)"', l)) else l
+                         for l in pl.read_text().splitlines() if l and (not l.startswith("#") or l.startswith("#EXT-X-MAP"))]
+                out += [f"{pl.parent.name}/index.m3u8"] + [f"{pl.parent.name}/{n}" for n in (names[:2] + names[-1:])]
+        return out
     for host in HOSTS:
         for v in vids:
-            for path in paths:
+            for path in paths_of(v):
                 url = f"{host}/{v['id']}/{path}"
                 got = curl_code(url)
                 code = got.split()[0]

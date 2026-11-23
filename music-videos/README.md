@@ -80,7 +80,7 @@ There is no email address on the page. The bracketed words in a channel's notice
 - `mv-publish check`: check the staging folder.
 - `mv-publish live`: check the public hosts.
 
-`mv-publish` never deletes anything. To encode a video again, move its folder out of `public/` or `hidden/` first.
+`mv-publish` never deletes anything. When a source file is replaced (its size or time changes), the next run moves the old encode to `retired/` and encodes again; the new pieces get new names, so no cached piece of the old cut is ever mixed in. To force a re-encode, move the video's folder out of `public/` or `hidden/` yourself.
 
 ## The player
 
