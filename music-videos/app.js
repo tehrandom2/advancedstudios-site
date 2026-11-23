@@ -417,13 +417,13 @@
     $('osdch').textContent = 'CH ' + (digits.length === 1 ? digits + '_' : digits);
     showOsd(1500);
     clearTimeout(digitTimer);
-    const go = () => {
+    const commit = () => {
       const n = parseInt(digits, 10); digits = '';
       const i = chans.findIndex((c) => c.num === n);
       if (i >= 0 && i !== ci) go(i, chans[i].pos, { user: true }); else { $('osdch').textContent = 'CH ' + pad(chans[ci].num); if (i < 0) nope(); else showOsd(); }
     };
     const more = chans.some((c) => c.num >= 10);
-    digitTimer = setTimeout(go, digits.length === 2 || !more ? 380 : 900);
+    digitTimer = setTimeout(commit, digits.length === 2 || !more ? 380 : 900);
   }
   for (const ev of ['pointerdown', 'keydown', 'touchend']) addEventListener(ev, () => { touched = true; }, { capture: true, passive: true });
   addEventListener('hashchange', () => { const at = find(decodeURIComponent(location.hash.slice(1))); if (at) go(at[0], at[1], { auto: true }); });
