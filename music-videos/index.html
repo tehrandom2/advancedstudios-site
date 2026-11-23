@@ -124,6 +124,12 @@
   @keyframes jolt { 0% { transform: translateY(9%) skewX(-3deg); filter: brightness(1.6) saturate(1.6); } 50% { transform: translateY(-4%); } 100% { transform: none; filter: none; } }
   .fade { z-index: 4; background: #000; opacity: 0; pointer-events: none; transition: opacity .25s linear; }
   .tv.xfade .fade { opacity: 1; }
+  .tv.xfade .big, .tv.xfade .spin, .tv.hold .big, .tv.hold .spin, .tv.wait .big, .tv.wait .spin { display: none; }
+  /* waiting for a video's first frame: its poster stays up, with a little static, and the badge stays on */
+  .tv.wait.flick .roll, .tv.wait.hold .roll { opacity: 1; }
+  .tv.wait .osd { opacity: 1; }
+  .tv.wait.flick > canvas { animation-name: snowflickhold; }
+  @keyframes snowflickhold { 0% { opacity: .9; } 60% { opacity: .55; } 100% { opacity: .18; } }
 
   /* on-screen display */
   .osd { position: absolute; z-index: 7; top: 4.5%; left: 4%; right: 4%; display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; pointer-events: none; opacity: 0; transition: opacity .35s; color: var(--osd); text-shadow: 0 0 8px rgba(125, 255, 155, .65), 2px 2px 0 #000; }
@@ -212,7 +218,7 @@
     .tv.flip .roll { animation: none; opacity: 0; }
     .tv.flip.flip > canvas { animation: none; opacity: 0; }
     .tv.flip .scan, .tv.flick .scan { opacity: 0; }
-    .tv.flick > canvas, .tv.flick > video, .tv.flick > .card { animation: none; }
+    .tv.flick > canvas, .tv.flick > video, .tv.flick > .card, .tv.wait.flick > canvas { animation: none; }
     .spin { animation-duration: 2.4s; }
     .big:hover { transform: none; }
   }

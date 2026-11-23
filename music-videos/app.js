@@ -24,10 +24,14 @@
   let touched = false;    // the viewer has interacted: sound and the blip are allowed
   let actx = null;
   let flipTimer = 0, osdTimer = 0, ctlTimer = 0, digitTimer = 0, digits = '';
-  let snowRaf = 0, snowUntil = 0;
+  let snowRaf = 0, snowUntil = 0, flipTok = 0;
+  const FLIP_CAP = 4000;  // ms: the longest a flip waits for a video's first frame
   let wantPlay = false;
 
   const pad = (n) => String(n).padStart(2, '0');
+  const same = (a, b) => String(a).trim().toLowerCase() === String(b).trim().toLowerCase();
+  // a card's label, unless it only repeats the channel's name or the card's own title
+  const tagOf = (ch, c) => (same(c.label, ch.name) || same(c.label, c.title) ? '' : c.label);
   const clock = (s) => { s = Math.max(0, Math.floor(s || 0)); return Math.floor(s / 60) + ':' + pad(s % 60); };
   const store = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} } };
 
@@ -107,7 +111,7 @@
   const wrap = (i, n) => ((i % n) + n) % n;
   const chan = (d, opt) => { const a = wrap(ci + d, chans.length); go(a, chans[a].pos, opt); };          // up / down
   const step = (d, opt) => { const n = chans[ci].items.length; if (n < 2) { nope(); return; } go(ci, wrap(chans[ci].pos + d, n), opt); };   // left / right
-  function nope() { showOsd(); if (reduce.matches) return; tv.classList.remove('flick'); void tv.offsetWidth; tv.classList.add('flick'); runSnow(300); clearTimeout(flipTimer); flipTimer = setTimeout(() => tv.classList.remove('flick'), 340); }
+  function nope() { flipTok++; showOsd(); if (reduce.matches) return; tv.classList.remove('flick'); void tv.offsetWidth; tv.classList.add('flick'); runSnow(300); clearTimeout(flipTimer); flipTimer = setTimeout(() => tv.classList.remove('flick'), 340); }
 
   // Tune to channel a, item b. A change of channel is the big flip; a change inside a channel is the light one.
   function go(a, b, opt = {}) {
@@ -121,32 +125,47 @@
     const c = ch.items[b];
     stopMedia();
     setLabels(ch, c, bigFlip || opt.first);
-    if (!opt.first) { try { history.replaceState(null, '', '#' + c.id); } catch (e) {} }
-    clearTimeout(flipTimer);
-    tv.classList.remove('flip', 'flick', 'xfade');
-    if (opt.first) { show(c, false); showOsd(3200); return; }
-    const land = () => { tv.classList.remove('flip', 'flick', 'xfade'); showOsd(); if (play && c.kind === 'video' && c.ready) start(); };
-    if (reduce.matches) {                      // a plain crossfade
-      tv.classList.add('xfade');
-      flipTimer = setTimeout(() => { show(c, false, true); land(); }, 260);
-      return;
+    if (!opt.first) {                          // one clean deep link: drop ?v, keep any other parameter
+      const q = new URLSearchParams(location.search); q.delete('v');
+      const qs2 = q.toString();
+      try { history.replaceState(null, '', location.pathname + (qs2 ? '?' + qs2 : '') + '#' + c.id); } catch (e) {}
     }
-    void tv.offsetWidth;
+    clearTimeout(flipTimer);
+    tv.classList.remove('flip', 'flick', 'xfade', 'hold', 'wait');
+    if (opt.first) { show(c, false); showOsd(3200); return; }
+    // The flip holds (static, badge) until the animation has run AND, when a video is about to play, until it
+    // has its first frame; otherwise the set would show black at 0:00. A few seconds at most.
+    const willPlay = play && c.kind === 'video' && c.ready;
+    const tok = ++flipTok;
+    let minDone = false, ready = !willPlay;
+    const land = () => {
+      if (tok !== flipTok || !minDone || !ready) return;
+      flipTok++;                               // lands once
+      snowUntil = 0;
+      tv.classList.remove('flip', 'flick', 'xfade', 'hold', 'wait');
+      showOsd();
+    };
+    const begin = (cls, ms, level) => {
+      if (cls === 'xfade') { tv.classList.add('xfade'); } else { void tv.offsetWidth; tv.classList.add(cls); runSnow(willPlay ? FLIP_CAP + 200 : ms + 40); blip(level); }
+      const put = () => { show(c, false, true); if (willPlay) start(); };
+      if (willPlay) tv.classList.add('wait');   // the poster covers the screen until the first frame
+      if (cls === 'xfade') setTimeout(() => { if (tok !== flipTok) return; put(); tv.classList.remove('xfade'); tv.classList.add('hold'); }, 200); else put();
+      flipTimer = setTimeout(() => { minDone = true; land(); }, ms);
+      if (willPlay) {
+        const got = () => { ready = true; land(); };
+        vid.addEventListener('loadeddata', got, { once: true });
+        vid.addEventListener('playing', got, { once: true });
+        setTimeout(got, FLIP_CAP);
+      }
+    };
+    const p = posterOf(c);
+    tv.style.setProperty('--h', tv.clientHeight + 'px');
+    roll.style.backgroundImage = (bigFlip && !reduce.matches ? 'linear-gradient(#000 0 7%, transparent 7%), ' : 'linear-gradient(transparent, transparent), ') + (p ? `url("${p}")` : BARS);
+    if (reduce.matches) { begin('xfade', 260, 0); return; }   // a plain crossfade
     if (bigFlip) {                             // static, then the new picture rolls in under it and locks
-      const p = posterOf(c);
-      tv.style.setProperty('--h', tv.clientHeight + 'px');
-      roll.style.backgroundImage = 'linear-gradient(#000 0 7%, transparent 7%), ' + (p ? `url("${p}")` : BARS);
-      tv.classList.add('flip');
-      runSnow(900);
-      blip(1);
-      show(c, false, true);
-      flipTimer = setTimeout(land, 860);
+      begin('flip', 860, 1);
     } else {                                   // a flicker of snow and a jolt
-      tv.classList.add('flick');
-      runSnow(340);
-      blip(0.6);
-      show(c, false, true);
-      flipTimer = setTimeout(land, 320);
+      begin('flick', 320, 0.6);
     }
   }
 
@@ -195,9 +214,9 @@
     on.textContent = ch.hidden ? ch.name + ' · HIDDEN' : ch.name;
     on.classList.toggle('hid', ch.hidden);
     $('osdt').textContent = c.title;
-    $('osda').textContent = c.kind === 'video' ? 'by ' + c.artist : (c.label.toLowerCase() === c.title.toLowerCase() ? '' : c.label);
-    if (chanChanged && !ch.offair) {
-      rich($('voice'), ch.intro);
+    $('osda').textContent = c.kind === 'video' ? 'by ' + c.artist : tagOf(ch, c);
+    if (chanChanged) {                         // the header, intro and notice belong to the channel on screen
+      rich($('voice'), ch.offair ? c.concept : ch.intro);
       rich($('notice'), ch.notice);
       $('notice').hidden = !ch.notice;
       $('chname').textContent = ch.name;
@@ -206,7 +225,7 @@
     }
     const k = $('nowk');
     const vids = ch.items.filter((x) => x.kind === 'video');
-    k.textContent = 'Channel ' + pad(ch.num) + ' · ' + ch.name + (c.kind === 'video' ? ' · ' + (vids.indexOf(c) + 1) + ' of ' + vids.length + (c.ready ? '' : ' · tuning in soon') : ' · ' + c.label);
+    k.textContent = 'Channel ' + pad(ch.num) + ' · ' + ch.name + (c.kind === 'video' ? ' · ' + (vids.indexOf(c) + 1) + ' of ' + vids.length + (c.ready ? '' : ' · tuning in soon') : (tagOf(ch, c) ? ' · ' + tagOf(ch, c) : ''));
     if (ch.hidden) k.append(el('span', 'hid', ' · hidden, preview only'));
     $('nowt').textContent = c.title;
     const cr = $('nowc');
@@ -236,7 +255,7 @@
       if (play) start();
     } else {
       big.hidden = true;
-      $('cardk').textContent = 'CH ' + pad(chans[ci].num) + ' · ' + chans[ci].name + ' · ' + (c.kind === 'card' ? c.label : 'tuning in soon');
+      { const tg = c.kind === 'card' ? tagOf(chans[ci], c) : 'tuning in soon'; $('cardk').textContent = 'CH ' + pad(chans[ci].num) + ' · ' + chans[ci].name + (tg ? ' · ' + tg : ''); }
       $('cardh').textContent = c.title;
       $('cardl').textContent = c.kind === 'card' ? c.concept : 'by ' + c.artist + '. Not on the air yet.';
       setTime(0, 0);
@@ -377,18 +396,21 @@
     toggle();
   });
   tv.addEventListener('touchstart', (e) => {
-    if (e.target.closest('.ctl')) { t0 = null; return; }
-    const t = e.changedTouches[0]; t0 = { x: t.clientX, y: t.clientY, at: Date.now() };
+    // A swipe may start anywhere, the control bar too: it covers the bottom third of a phone screen.
+    // On a slider only an up or down swipe counts; sideways there is the slider's own drag.
+    const t = e.changedTouches[0]; t0 = { x: t.clientX, y: t.clientY, at: Date.now(), ctl: !!e.target.closest('.ctl'), slider: !!e.target.closest('input') };
   }, { passive: true });
-  tv.addEventListener('touchmove', (e) => { if (t0 && e.cancelable) e.preventDefault(); }, { passive: false });
+  tv.addEventListener('touchmove', (e) => { if (t0 && !t0.slider && e.cancelable) e.preventDefault(); }, { passive: false });
   tv.addEventListener('touchend', (e) => {
     if (!t0) return;
     lastTouch = Date.now();
-    const t = e.changedTouches[0], dx = t.clientX - t0.x, dy = t.clientY - t0.y;
+    const t = e.changedTouches[0], dx = t.clientX - t0.x, dy = t.clientY - t0.y, onCtl = t0.ctl, onSlider = t0.slider;
     t0 = null;
     if (Math.abs(dy) > 44 && Math.abs(dy) > Math.abs(dx) * 1.3) { chan(dy < 0 ? 1 : -1, { user: true }); return; }   // swipe up: next channel
+    if (onSlider) return;
     if (Math.abs(dx) > 44 && Math.abs(dx) > Math.abs(dy) * 1.3) { step(dx < 0 ? 1 : -1, { user: true }); return; }   // swipe left: next video
     if (Math.abs(dx) > 12 || Math.abs(dy) > 12) return;
+    if (onCtl) return;                                       // a tap on a control is that control's click
     if (e.target === big || e.target.closest('.big')) { start(); return; }
     if (tv.classList.contains('ctl-on') && !vid.paused) ctlHide(); else ctlShow();
   });
@@ -460,7 +482,7 @@
 
   // ---------- the blip: quiet, and never before the viewer has touched something ----------
   function blip(k) {
-    if (!touched || vid.muted || vid.volume === 0) return;
+    if (!k || !touched || vid.muted || vid.volume === 0) return;
     try {
       actx = actx || new (window.AudioContext || window.webkitAudioContext)();
       if (actx.state === 'suspended') actx.resume();
