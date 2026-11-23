@@ -5,7 +5,23 @@ const CAPS = { video: 120, name: 120, contact: 200, message: 2000 };
 const MAX_BODY = 6000;        // bytes
 const MIN_FILL_MS = 3000;     // a person takes longer than this to fill four fields
 const PER_IP_PER_HOUR = 3;
-const PER_DAY = 150;          // every accepted request is 3 KV writes; the free plan allows 1,000 a day
+const PER_DAY = 150;          // every accepted request is one KV write; the free plan's 1,000 a day is shared
+
+import { DurableObject } from 'cloudflare:workers';
+
+// Counts accepted requests: per address in the last hour, and in all today. Wipes itself when the day turns.
+export class Gate extends DurableObject {
+  async admit(who, now) {
+    const st = this.ctx.storage, day = new Date(now).toISOString().slice(0, 10);
+    if ((await st.get('day')) !== day) { await st.deleteAll(); await st.put('day', day); }
+    const total = (await st.get('total')) || 0;
+    if (total >= PER_DAY) return 'day';
+    const hits = ((await st.get('ip:' + who)) || []).filter((t) => now - t < 3600e3);
+    if (hits.length >= PER_IP_PER_HOUR) return 'ip';
+    await st.put({ ['ip:' + who]: [...hits, now], total: total + 1 });
+    return 'ok';
+  }
+}
 
 const cors = (req) => {
   const o = req.headers.get('Origin') || '';
@@ -35,18 +51,17 @@ export default {
     }
     if (!f.video || !f.contact || !f.message) return reply(req, 400, { ok: false, error: 'video, contact and message are needed' });
 
-    const now = Date.now(), day = new Date(now).toISOString().slice(0, 10);
+    const now = Date.now();
     const ip = req.headers.get('CF-Connecting-IP') || 'unknown';
     const who = hex(await crypto.subtle.digest('SHA-256', new TextEncoder().encode('mv-takedown:' + ip))).slice(0, 24);   // no raw address is kept
-    const hits = ((await env.INBOX.get('rl:' + who, 'json')) || []).filter((t) => now - t < 3600e3);
-    if (hits.length >= PER_IP_PER_HOUR) return reply(req, 429, { ok: false, error: 'too many requests, try again in an hour' });
-    const today = parseInt((await env.INBOX.get('day:' + day)) || '0', 10);
-    if (today >= PER_DAY) return reply(req, 429, { ok: false, error: 'the inbox is full for today, try again tomorrow' });
+    // The gate is one Durable Object: it counts in one place, so a burst cannot slip past it the way it
+    // can slip past KV, which takes up to a minute to show a write.
+    const gate = await env.GATE.get(env.GATE.idFromName('gate')).admit(who, now);
+    if (gate === 'ip') return reply(req, 429, { ok: false, error: 'too many requests, try again in an hour' });
+    if (gate === 'day') return reply(req, 429, { ok: false, error: 'the inbox is full for today, try again tomorrow' });
 
     const id = new Date(now).toISOString().replace(/[-:.TZ]/g, '').slice(0, 14) + '-' + hex(crypto.getRandomValues(new Uint8Array(3)));
     await env.INBOX.put('req:' + id, JSON.stringify({ id, at: new Date(now).toISOString(), ...f, from: who, ua: (req.headers.get('User-Agent') || '').slice(0, 200) }), { metadata: { done: false, video: f.video.slice(0, 60) } });
-    await env.INBOX.put('rl:' + who, JSON.stringify([...hits, now]), { expirationTtl: 3600 });
-    await env.INBOX.put('day:' + day, String(today + 1), { expirationTtl: 2 * 86400 });
     return reply(req, 200, { ok: true });
   },
 };
