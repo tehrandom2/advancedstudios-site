@@ -18,7 +18,7 @@
 
   let chans = [];         // {num, id, name, intro, notice, hidden, pos, items:[{kind:'video'|'card', id, title, artist, concept, ready, duration}]}
   let ci = -1;            // channel on screen
-  let contact = '';
+  let formUrl = '';
   const item = () => (ci >= 0 ? chans[ci].items[chans[ci].pos] : null);
   let hls = null;
   let touched = false;    // the viewer has interacted: sound and the blip are allowed
@@ -37,10 +37,10 @@
     const view = lan && qs.get('view') === 'public' ? '?view=public' : '';
     try { data = await (await fetch(MEDIA + '/channels.json' + view, { cache: 'no-cache' })).json(); } catch (e) {}
     data = data || { channels: [] };
-    contact = data.removalContact || '';
+    formUrl = data.removalForm || '';
     // A hidden channel is only ever in the LAN preview's listing. No public host is sent one.
     chans = (data.channels || []).map((c, i) => {
-      const items = (c.videos || []).map((v) => ({ kind: 'video', id: v.id, title: v.title, artist: v.artist, concept: v.concept, ready: v.ready !== false, duration: v.duration || 0 }));
+      const items = (c.videos || []).map((v) => ({ kind: 'video', id: v.id, title: v.title, artist: v.artist, concept: v.concept, warning: v.warning || '', ready: v.ready !== false, duration: v.duration || 0 }));
       if (c.next_up) items.push({ kind: 'card', id: c.id + '-next', title: c.next_up.title || 'Next up', artist: c.name, concept: c.next_up.line || '', label: 'next up' });
       if (!items.length) items.push({ kind: 'card', id: c.id + '-soon', title: 'Stand by', artist: c.name, concept: 'Nothing on this channel yet.', label: 'stand by' });
       return { num: i + 1, id: c.id, name: c.name, intro: c.intro || '', notice: c.notice || '', hidden: !!c.hidden, pos: 0, items };
@@ -87,6 +87,7 @@
         if (c.kind === 'video' && !c.ready) p.append(el('span', 'd vt', 'Soon'));
         const tx = el('span', 'tx');
         tx.append(el('span', 'tt', c.title), el('span', 'ar', c.kind === 'video' ? 'by ' + c.artist : ''), el('span', 'cc it', c.concept));
+        if (c.warning) tx.append(el('span', 'wn vt', '⚠ ' + c.warning));
         bt.append(p, tx);
         bt.addEventListener('click', () => { touched = true; go(a, b, { user: true }); tv.focus({ preventScroll: true }); scrollToTv(); });
         il.append(bt); ol.append(il);
@@ -149,14 +150,44 @@
     }
   }
 
-  function rich(node, text, link) {            // *WORD* is his emphasis; {contact} is the removal address
+  function rich(node, text) {                  // *WORD* is his emphasis; [words] open the take-down form
     node.textContent = '';
-    String(text).split(/(\*[^*]+\*|\{contact\})/).forEach((part) => {
-      if (part === '{contact}') { if (link) { const a = el('a', '', link); a.href = 'mailto:' + link; node.append(a); } }
+    String(text).split(/(\*[^*]+\*|\[[^\]]+\])/).forEach((part) => {
+      if (/^\[[^\]]+\]$/.test(part)) {
+        if (!formUrl) { node.append(part.slice(1, -1)); return; }
+        const b = el('button', 'lk', part.slice(1, -1)); b.type = 'button'; b.addEventListener('click', openForm); node.append(b);
+      }
       else if (/^\*[^*]+\*$/.test(part)) node.append(el('em', '', part.slice(1, -1)));
       else if (part) node.append(part);
     });
   }
+
+  // ---------- the take-down form ----------
+  const dlg = $('td'), tdf = $('tdf');
+  let tdOpened = 0;
+  function openForm() {
+    const sel = $('tdv'), here = item();
+    sel.textContent = '';
+    chans.forEach((ch) => ch.items.forEach((c) => { if (c.kind !== 'video') return; const o = el('option', '', c.title + ', by ' + c.artist); o.value = o.textContent; if (c === here) o.selected = true; sel.append(o); }));
+    sel.append(el('option', '', 'Something else'));
+    $('tdmsg').textContent = ''; tdf.hidden = false; $('tddone').hidden = true;
+    tdOpened = Date.now();
+    if (!vid.paused) { wantPlay = false; vid.pause(); }
+    if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
+  }
+  $('tdx').addEventListener('click', () => dlg.close());
+  $('tdok').addEventListener('click', () => dlg.close());
+  tdf.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const send = $('tdsend'), msg = $('tdmsg');
+    send.disabled = true; msg.textContent = 'Sending…';
+    const body = { video: $('tdv').value, name: $('tdn').value, contact: $('tdc').value, message: $('tdm').value, website: $('tdw').value, elapsed: Date.now() - tdOpened };
+    let status = 0;
+    try { status = (await fetch(formUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })).status; } catch (err) {}
+    send.disabled = false;
+    if (status === 200) { tdf.reset(); tdf.hidden = true; $('tddone').hidden = false; $('tdok').focus(); return; }
+    msg.textContent = status === 429 ? 'Too many requests from here. Try again in an hour.' : status === 413 ? 'That is too long. Shorten it and send again.' : 'That did not send. Try again in a minute.';
+  });
 
   function setLabels(ch, c, chanChanged) {
     $('osdch').textContent = 'CH ' + pad(ch.num);
@@ -167,7 +198,7 @@
     $('osda').textContent = c.kind === 'video' ? 'by ' + c.artist : (c.label.toLowerCase() === c.title.toLowerCase() ? '' : c.label);
     if (chanChanged && !ch.offair) {
       rich($('voice'), ch.intro);
-      rich($('notice'), ch.notice, contact);
+      rich($('notice'), ch.notice);
       $('notice').hidden = !ch.notice;
       $('chname').textContent = ch.name;
       $('chtag').hidden = false;
@@ -182,6 +213,7 @@
     cr.textContent = '';
     if (c.kind === 'video') cr.append('Song: ', el('b', '', c.title), ', by ', el('b', '', c.artist), ' · Visuals: advanced studios');
     $('nowd').textContent = c.concept;
+    $('noww').textContent = c.warning ? '⚠ ' + c.warning : ''; $('noww').hidden = !c.warning;
     document.title = (c.kind === 'video' ? c.title + ', by ' + c.artist + ' · ' : '') + 'Music Video Adventures';
     document.querySelectorAll('#guide .chan').forEach((li) => {
       const mine = +li.dataset.ch === ci;
@@ -363,7 +395,7 @@
 
   // keyboard, anywhere on the page unless you are typing into something
   addEventListener('keydown', (e) => {
-    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (e.altKey || e.ctrlKey || e.metaKey || dlg.open) return;
     const t = e.target, tag = t && t.tagName;
     if (tag === 'INPUT' && t.type !== 'range' || tag === 'TEXTAREA' || tag === 'SELECT') return;
     const range = tag === 'INPUT';

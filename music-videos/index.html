@@ -55,7 +55,23 @@
   .intro .voice { min-height: 2.44em; }
   @media (max-width: 700px) { .intro .voice { min-height: 4.88em; } }
   .note { color: var(--dim); max-width: 44em; font-size: 16px; border-left: 2px solid var(--rule); padding-left: 12px; margin-top: 6px; }
-  .note a { color: var(--bone); }
+  .note .lk { color: var(--bone); text-decoration: underline; text-underline-offset: 3px; }
+  .note .lk:hover { color: var(--amber); }
+
+  /* the take-down form */
+  dialog.td { width: min(560px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); overflow: auto; background: var(--ink2); color: var(--text); border: 1px solid var(--rule); border-radius: 14px; padding: 22px; box-shadow: 0 30px 90px #000; }
+  dialog.td::backdrop { background: rgba(5, 3, 4, .78); }
+  .td h2 { font: 400 30px/1 Anton, Impact, sans-serif; text-transform: uppercase; color: var(--bone); margin-bottom: 8px; }
+  .td p { color: var(--dim); font-size: 16px; margin-bottom: 14px; }
+  .td label { display: grid; gap: 5px; margin-bottom: 12px; font-size: 15px; color: var(--dim); }
+  .td input, .td select, .td textarea { font: inherit; font-size: 16px; color: var(--bone); background: var(--ink); border: 1px solid var(--rule); border-radius: 8px; padding: 10px; width: 100%; }
+  .td textarea { min-height: 110px; resize: vertical; }
+  .td .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  .td .row { display: flex; gap: 10px; align-items: center; justify-content: flex-end; flex-wrap: wrap; }
+  .td .row .m { margin-right: auto; color: var(--amber); font-size: 15px; }
+  .td .btn { padding: 10px 18px; border-radius: 8px; border: 1px solid var(--rule); color: var(--text); }
+  .td .btn.go { background: var(--red); border-color: var(--red); color: #0b0809; font-weight: 650; }
+  .td .btn[disabled] { opacity: .5; }
   .note[hidden] { display: none; }
   .intro .chtag { font-size: 22px; color: var(--osd); line-height: 1; }
   .intro .chtag b { font-weight: 400; color: var(--amber); }
@@ -154,6 +170,9 @@
   .now .credit { color: var(--text); }
   .now .credit b { font-weight: 650; color: var(--bone); }
   .now .concept { font-size: clamp(21px, 2.4vw, 26px); line-height: 1.25; color: var(--dim); max-width: 34em; }
+  .warn { font-size: 19px; line-height: 1; color: var(--amber); border: 1px solid var(--amber); border-radius: 5px; padding: 4px 8px 3px; justify-self: start; }
+  .warn[hidden] { display: none; }
+  .guide .wn { display: inline-block; margin-top: 6px; font-size: 16px; line-height: 1; color: var(--amber); border: 1px solid var(--amber); border-radius: 4px; padding: 3px 6px 2px; }
   .keys { margin-top: 10px; font-size: 19px; color: var(--faint); line-height: 1.25; }
   .keys b { font-weight: 400; color: var(--dim); border: 1px solid var(--rule); border-radius: 4px; padding: 0 5px; }
   @media (pointer: coarse) { .keys .kb { display: none; } }
@@ -249,6 +268,7 @@
         <h2 id="nowt"></h2>
         <p class="credit" id="nowc"></p>
         <p class="concept it" id="nowd"></p>
+        <p class="warn vt" id="noww" hidden></p>
         <p class="note" id="notice" hidden></p>
         <p class="keys vt">
           <span class="kb"><b>&uarr;</b> <b>&darr;</b> channel &nbsp; <b>&larr;</b> <b>&rarr;</b> video &nbsp; <b>0-9</b> channel &nbsp; <b>space</b> play &nbsp; <b>J</b> <b>L</b> seek &nbsp; <b>F</b> full &nbsp; <b>M</b> mute</span>
@@ -267,6 +287,23 @@
     <p>Visuals made at <a href="/">advanced studios</a>. Every song is credited to the artist who made it. Nothing here is for sale, and there are no ads.</p>
   </footer>
 </main>
+
+<dialog class="td" id="td" aria-labelledby="tdh">
+  <form id="tdf">
+    <h2 id="tdh">Want one taken down?</h2>
+    <p>If a song here is yours, or you speak for the artist, say which one and it will be looked at. Nothing you write here is shown on the site.</p>
+    <label>Which video <select id="tdv" required></select></label>
+    <label>Your name or organisation <input id="tdn" maxlength="120" autocomplete="name"></label>
+    <label>Where to reply to you <input id="tdc" maxlength="200" required autocomplete="email"></label>
+    <label>Message <textarea id="tdm" maxlength="2000" required></textarea></label>
+    <label class="hp" aria-hidden="true">Leave this empty <input id="tdw" tabindex="-1" autocomplete="off"></label>
+    <div class="row"><span class="m" id="tdmsg" role="status"></span><button type="button" class="btn" id="tdx">Cancel</button><button type="submit" class="btn go" id="tdsend">Send</button></div>
+  </form>
+  <div id="tddone" hidden>
+    <h2>Thanks, we'll look at it.</h2>
+    <div class="row"><button type="button" class="btn go" id="tdok">Close</button></div>
+  </div>
+</dialog>
 
 <script src="app.js" defer></script>
 </body>

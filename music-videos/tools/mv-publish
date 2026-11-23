@@ -126,14 +126,14 @@ def channels_json(data, roots, everything=False):
                 m = d / "meta.json"
                 if d.is_dir() and m.exists() and (d / "master.m3u8").exists():
                     have[d.name] = json.loads(m.read_text())["duration"]
-    out = {"removalContact": data.get("removalContact", ""), "offair": data.get("offair", {}), "channels": []}
+    out = {"removalForm": data.get("removalForm", ""), "offair": data.get("offair", {}), "channels": []}
     for ch in data["channels"]:
         if not (ch["public"] or everything):
             continue
         c = {k: ch[k] for k in ("id", "name", "intro", "notice", "next_up") if k in ch}
         if not ch["public"]:
             c["hidden"] = True
-        c["videos"] = [dict({k: v[k] for k in ("id", "title", "artist", "concept")},
+        c["videos"] = [dict({k: v[k] for k in ("id", "title", "artist", "concept", "warning") if k in v},
                             ready=v["id"] in have, duration=have.get(v["id"], 0)) for v in ch.get("videos", [])]
         out["channels"].append(c)
     if everything:

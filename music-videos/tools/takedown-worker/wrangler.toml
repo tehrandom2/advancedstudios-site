@@ -1,0 +1,12 @@
+# The take-down form's inbox. Free plan. It answers on ONE exact path and nothing else,
+# so only form posts invoke it (the account's free Workers quota is shared).
+name = "music-videos-takedown"
+main = "worker.js"
+compatibility_date = "2026-10-01"
+workers_dev = false
+preview_urls = false
+routes = [{ pattern = "media.advancedstudios.net/takedown", zone_name = "advancedstudios.net" }]
+
+[[kv_namespaces]]
+binding = "INBOX"
+id = "0b26b9c7c7414efaa02b886d962295ac"

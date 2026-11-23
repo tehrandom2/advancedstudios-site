@@ -38,7 +38,7 @@ A channel in the data looks like this:
   "name": "Channel Name",
   "public": true,
   "intro": "One line in his voice. *THIS* is emphasis.",
-  "notice": "Optional small print. {contact} becomes the removalContact address.",
+  "notice": "Optional small print. [Words in brackets] open the take-down form.",
   "next_up": { "title": "Next up", "line": "Optional card at the end of the channel." },
   "videos": []
 }
@@ -54,7 +54,16 @@ Channel numbers are the order in the file. Channel 00 is the test card (`offair`
 
 Setting it back to `true` and running `mv-publish` puts it all back.
 
-`removalContact` at the top of the data is the address the notice line shows.
+A video can carry `"warning": "Flashing lights"`; the page shows it as a small note.
+
+## The take-down form
+
+There is no email address on the page. The bracketed words in a channel's notice open a small form, which posts to `removalForm` in the data (`https://media.advancedstudios.net/takedown`).
+
+- That address is a free Cloudflare Worker (`tools/takedown-worker/`), routed to that one exact path and nothing else. It accepts POST only and has no way to read anything back.
+- It turns away a filled honeypot field or a form sent in under three seconds (422), anything over the field caps (413), and more than 3 requests an hour from one address or 150 a day in all (429).
+- Requests are stored in a KV namespace. The desk reads them on the studio box with `~/Services/music-videos-media/takedowns` (`--all` for handled ones too, `--done <id>` to mark one handled).
+- Deploy the Worker from `tools/takedown-worker/` with the pinned wrangler under `op run --env-file ~/Services/music-videos-media/deploy.env`.
 
 ## Preview on the LAN
 
