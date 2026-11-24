@@ -98,4 +98,12 @@ What moves at rest: the ticker (its titles are buttons), the slow pan of the pos
 
 Posters are fetched when a tile comes near the screen. A video of 20 minutes or more is a long play and gets a double tile.
 
+## Changing the page
+
+The site sits behind a 10-minute edge cache, and `index.html` and `app.js` are cached separately. So `index.html` loads the script as `app.js?v=<hash>`: a new page then always pulls its matching script. After any change to `app.js`, put the new hash in the script tag in the same commit:
+
+```sh
+sed -i "s|app.js?v=[0-9a-f]*|app.js?v=$(sha256sum music-videos/app.js | cut -c1-10)|" music-videos/index.html
+```
+
 No ads, no analytics, no third-party scripts. Keep it that way.
