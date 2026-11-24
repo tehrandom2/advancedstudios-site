@@ -1,7 +1,10 @@
-/* Music Video Adventures: the set.
-   Everything on the dial comes from channels.json on the media host, which tools/mv-publish writes from the
-   one data file. Nothing here names a channel or a video. Channel numbers are the data order; CH 00 is the
-   test card. Up and down change channel (the big flip), left and right change video inside a channel. */
+/* Music Video Adventures: the set and the wall.
+   Everything here comes from channels.json on the media host, which tools/mv-publish writes from the one
+   data file. Nothing here names a channel or a video. Channel numbers are the data order; CH 00 is the
+   test card. The channels are slabs you can hit; the channel that is on shows its videos as a wall of their
+   own pictures. Up and down change channel (the big flip), left and right change video inside a channel.
+   A video that carries a warning never starts by itself: it waits on its poster, the warning on the play
+   button, until the viewer presses play. */
 (() => {
   'use strict';
   const $ = (id) => document.getElementById(id);
@@ -52,7 +55,8 @@
     const off = data.offair || {};
     chans.push({ num: 0, id: 'off-air', name: 'Off air', intro: '', notice: '', hidden: false, pos: 0, offair: true,
       items: [{ kind: 'card', id: 'test-card', title: off.title || 'Test card', artist: 'Off air', concept: off.line || (data.channels && data.channels.length ? 'Nothing on this one. Flip back.' : 'The set is warming up. Try again in a minute.'), label: 'off air' }] });
-    buildGuide();
+    buildDial();
+    slides();
     const want = qs.get('v') || decodeURIComponent(location.hash.slice(1));
     const at = find(want) || [0, 0];
     go(at[0], at[1], { first: true });
@@ -66,41 +70,175 @@
     return null;
   }
 
-  function buildGuide() {
-    const g = $('guide');
+  const LONG = 1200;       // seconds: from here a video is a long play and gets a full row on the wall
+  const pick = (ch, c, b) => { touched = true; if (chans[ci] === ch && ch.pos === b) { toggle(); } else go(chans.indexOf(ch), b, { user: true }); tv.focus({ preventScroll: true }); scrollToTv(); };
+  function pic(c) { const im = el('img'); im.alt = ''; im.decoding = 'async'; im.crossOrigin = 'anonymous'; im.width = 1280; im.height = 720; return im; }
+
+  // the channels: one slab each, all of them on the first screen
+  function buildDial() {
+    const g = $('dial');
     g.textContent = '';
     chans.forEach((ch, a) => {
-      const li = el('li', 'chan');
-      li.dataset.ch = a;
-      const hb = el('button', 'chh'); hb.type = 'button';
-      hb.append(el('span', 'n vt', pad(ch.num)), el('span', 'nm vt', ch.name));
-      if (ch.hidden) hb.append(el('span', 'badge vt', 'Hidden'));
-      const nv = ch.items.filter((x) => x.kind === 'video').length;
-      hb.append(el('span', 'ct vt', ch.offair ? '' : nv + (nv === 1 ? ' video' : ' videos')));
-      hb.addEventListener('click', () => { touched = true; go(a, ch.pos, { user: true }); tv.focus({ preventScroll: true }); scrollToTv(); });
-      li.append(hb);
-      const ol = el('ol', 'items');
-      ch.items.forEach((c, b) => {
-        if (ch.offair) return;
-        const il = document.createElement('li'), bt = el('button'); bt.type = 'button';
-        const p = el('span', 'p' + (c.kind === 'card' || !c.ready ? ' bars' : ''));
-        if (c.kind === 'video' && c.ready) {
-          p.style.backgroundImage = `url("${MEDIA}/${c.id}/poster.jpg")`;
-          if (c.duration) p.append(el('span', 'd vt', clock(c.duration)));
-        }
-        if (c.kind === 'video' && !c.ready) p.append(el('span', 'd vt', 'Soon'));
-        const tx = el('span', 'tx');
-        tx.append(el('span', 'tt', c.title), el('span', 'ar', c.kind === 'video' ? 'by ' + c.artist : ''), el('span', 'cc it', c.concept));
-        if (c.warning) tx.append(el('span', 'wn vt', '⚠ ' + c.warning));
-        bt.append(p, tx);
-        bt.addEventListener('click', () => { touched = true; go(a, b, { user: true }); tv.focus({ preventScroll: true }); scrollToTv(); });
-        il.append(bt); ol.append(il);
-      });
-      li.append(ol);
-      g.append(li);
+      const li = el('li', ch.offair ? 'off' : ''), hb = el('button', 'slab' + (ch.offair ? ' off' : '')); hb.type = 'button';
+      hb.dataset.ch = a;
+      const vids = ch.items.filter((x) => x.kind === 'video'), nv = vids.length;
+      if (ch.offair) { hb.append(el('span', 'num', pad(ch.num))); hb.setAttribute('aria-label', 'Channel ' + pad(ch.num) + ', ' + ch.name); hb.title = ch.name; }
+      else {
+        const pics = el('span', 'pics'), ready = vids.filter((x) => x.ready);
+        const take = ready.length > 3 ? [0, Math.floor(ready.length / 3), Math.floor(ready.length * 2 / 3)] : ready.map((x, i) => i);
+        take.forEach((i) => { const im = pic(ready[i]); im.src = posterOf(ready[i]); pics.append(im); });
+        const meta = el('span', 'meta vt');
+        meta.append(el('span', 'go', ''), el('span', 'ct', nv + (nv === 1 ? ' video' : ' videos')));
+        if (ch.hidden) meta.append(el('span', 'badge', 'Hidden'));
+        const tx = el('span', 'tx'); tx.append(el('span', 'nm', ch.name), meta); hb.style.setProperty('--n', Math.max(4, ch.name.length));
+        hb.append(pics, el('span', 'num', pad(ch.num)), tx);
+      }
+      hb.addEventListener('click', () => { touched = true; go(a, ch.pos, { user: true }); tv.focus({ preventScroll: true }); });
+      li.append(hb); g.append(li);
     });
-    const n = chans.filter((c) => !c.offair).length;
-    $('count').textContent = n + (n === 1 ? ' channel' : ' channels');
+    const real = chans.filter((c) => !c.offair), nv = real.reduce((n, c) => n + c.items.filter((x) => x.kind === 'video').length, 0);
+    const st = $('stats'); st.textContent = '';
+    if (real.length) [nv + (nv === 1 ? ' video' : ' videos'), real.length + (real.length === 1 ? ' channel' : ' channels'), '0 ads', '0 algorithms'].forEach((t) => st.append(el('span', '', t)));
+    // the ticker: every title, twice over so the loop has no seam
+    const tk = $('tick'); tk.textContent = '';
+    for (let k = 0; k < 2; k++) real.forEach((ch) => ch.items.forEach((c, b) => { if (c.kind !== 'video') return; const bt = el('button', '', c.title); bt.type = 'button'; bt.tabIndex = -1; bt.addEventListener('click', () => pick(ch, c, b)); tk.append(bt); }));
+    tk.style.animationDuration = Math.max(40, tk.childElementCount * 2.2) + 's';
+  }
+
+  // the wall: the videos of the channel that is on, as their own pictures
+  // a poster is fetched when its tile comes near the screen, not before
+  const lazy = 'IntersectionObserver' in window ? new IntersectionObserver((es) => es.forEach((e) => { if (!e.isIntersecting) return; lazy.unobserve(e.target); e.target.src = e.target.dataset.src; }), { rootMargin: '240px 0px' }) : null;
+  let wallFor = -1;
+  function buildWall() {
+    const w = $('wall'), ch = chans[ci];
+    if (wallFor === ci) return;
+    wallFor = ci;
+    pvStop();
+    if (lazy) lazy.disconnect();
+    w.textContent = '';
+    if (ch.offair) return;
+    ch.items.forEach((c, b) => {
+      const isVid = c.kind === 'video', long = isVid && c.duration >= LONG;
+      const li = el('li', long ? 'long' : ''), bt = el('button', 'tile' + (isVid && c.ready ? '' : ' bars')); bt.type = 'button';
+      if (isVid && c.ready) {
+        const im = pic(c);
+        im.addEventListener('load', () => { const h = hotOf(im, c.id); if (h) bt.style.setProperty('--c', h); });
+        if (lazy) { im.dataset.src = posterOf(c); lazy.observe(im); } else { im.loading = 'lazy'; im.src = posterOf(c); }
+        bt.append(im);
+      }
+      const top = el('span', 'top vt');
+      if (c.warning) top.append(el('span', 'wn', '⚠ ' + (long ? c.warning : '')));
+      if (long) top.append(el('span', 'lp', 'Long play'));
+      if (isVid) top.append(el('span', 'd', c.ready ? (long ? Math.round(c.duration / 60) + ' min' : clock(c.duration)) : 'Soon'));
+      const tx = el('span', 'tx');
+      tx.append(el('span', 'tt', c.title), el('span', 'ar vt', isVid ? 'by ' + c.artist : ''));
+      bt.append(top, tx);
+      bt.setAttribute('aria-label', c.title + (isVid ? ', by ' + c.artist + (c.duration ? ', ' + clock(c.duration) : '') : '') + (c.warning ? '. Warning: ' + c.warning : ''));
+      bt.title = (c.warning ? '⚠ ' + c.warning + '. ' : '') + c.concept;
+      bt.addEventListener('click', () => { pvStop(); pick(ch, c, b); });
+      pvArm(bt, c);
+      li.style.setProperty('--i', Math.min(b, 24));
+      li.append(bt); w.append(li);
+    });
+  }
+
+  // The slabs are alive: every few seconds one of a slab's pictures changes to another of its channel's posters.
+  // Still pictures only, one slow cross-fade at a time, and not at all under reduced motion.
+  let slideT = 0, slideN = 0;
+  function slides() {
+    clearInterval(slideT);
+    if (reduce.matches) return;
+    slideT = setInterval(() => {
+      if (document.hidden) return;
+      const slabs = [...document.querySelectorAll('#dial .slab:not(.off)')]; if (!slabs.length) return;
+      const hb = slabs[slideN % slabs.length], ch = chans[+hb.dataset.ch], ims = hb.querySelectorAll('.pics img'); slideN++;
+      const pool = ch.items.filter((x) => x.kind === 'video' && x.ready).slice(0, 9).map(posterOf).filter((u) => ![...ims].some((i) => i.getAttribute('src') === u));
+      if (!ims.length || !pool.length) return;
+      const im = ims[(slideN >> 1) % ims.length], next = pool[Math.floor(Math.random() * pool.length)];
+      const pre = new Image(); pre.crossOrigin = 'anonymous';
+      pre.onload = () => { im.classList.add('out'); setTimeout(() => { im.src = next; im.classList.remove('out'); }, 460); };
+      pre.src = next;
+    }, 2600);
+  }
+
+  // Hover a picture and it moves: a silent preview from a quarter of the way in, smallest rendition.
+  // Never for a video that carries a warning, never on touch, never under reduced motion.
+  let pv = null, pvT = 0;
+  function pvStop() {
+    clearTimeout(pvT);
+    if (!pv) return;
+    const o = pv; pv = null;
+    try { if (o.hls) o.hls.destroy(); } catch (e) {}
+    try { o.v.pause(); o.v.removeAttribute('src'); o.v.load(); } catch (e) {}
+    o.v.remove();
+  }
+  function pvArm(bt, c) {
+    if (c.warning || c.kind !== 'video' || !c.ready) return;
+    bt.addEventListener('pointerenter', (e) => {
+      if (e.pointerType !== 'mouse' || reduce.matches) return;
+      pvStop();
+      pvT = setTimeout(() => pvStart(bt, c), 320);
+    });
+    bt.addEventListener('pointerleave', pvStop);
+  }
+  async function pvStart(bt, c) {
+    if (c.warning || item() === c && !vid.paused) return;   // belt and braces; and no double picture of what is playing
+    const v = document.createElement('video'); v.muted = true; v.defaultMuted = true; v.volume = 0; v.playsInline = true; v.loop = true; v.disablePictureInPicture = true; v.tabIndex = -1; v.setAttribute('aria-hidden', 'true');
+    const o = pv = { v, hls: null }, url = `${MEDIA}/${c.id}/master.m3u8`, at = Math.max(0, (c.duration || 0) * 0.25);
+    v.addEventListener('playing', () => v.classList.add('on'), { once: true });
+    bt.append(v);
+    try {
+      if (v.canPlayType('application/vnd.apple.mpegurl') && qs.get('hlsjs') !== '1') { v.src = url + '#t=' + at.toFixed(1); }
+      else {
+        const Hls = await loadHls();
+        if (pv !== o || !Hls || !Hls.isSupported()) { if (pv === o) pvStop(); return; }
+        o.hls = new Hls({ startPosition: at, maxBufferLength: 6, maxMaxBufferLength: 8, startLevel: 0 });
+        o.hls.on(Hls.Events.MANIFEST_PARSED, () => { o.hls.autoLevelCapping = 0; });
+        o.hls.on(Hls.Events.ERROR, (e, d) => { if (d.fatal && pv === o) pvStop(); });
+        o.hls.loadSource(url); o.hls.attachMedia(v);
+      }
+      await v.play();
+    } catch (e) { if (pv === o) pvStop(); }
+  }
+
+  // A colour for each picture: the strongest hue in its poster. The tile glows in it, and the page takes the
+  // colour of whatever is on the screen. A grey picture has none and keeps the house red.
+  const hots = {};
+  const hcv = document.createElement('canvas'); hcv.width = 48; hcv.height = 27;
+  function hotOf(im, id) {
+    if (id in hots) return hots[id];
+    let out = '';
+    try {
+      const x = hcv.getContext('2d', { willReadFrequently: true });
+      x.drawImage(im, 0, 0, 48, 27);
+      const d = x.getImageData(0, 0, 48, 27).data, bins = new Float32Array(12), hx = new Float32Array(12), hy = new Float32Array(12);
+      let total = 0;
+      for (let i = 0; i < d.length; i += 4) {
+        const r = d[i], g = d[i + 1], b = d[i + 2], mx = Math.max(r, g, b), mn = Math.min(r, g, b), sat = mx - mn;
+        if (sat < 30 || mx < 60) continue;
+        let h = mx === r ? ((g - b) / sat) % 6 : mx === g ? (b - r) / sat + 2 : (r - g) / sat + 4;
+        h = ((h * 60) + 360) % 360;
+        const wgt = sat * sat * (0.4 + mx / 425), k = Math.floor(h / 30) % 12, rad = h * Math.PI / 180;
+        bins[k] += wgt; hx[k] += Math.cos(rad) * wgt; hy[k] += Math.sin(rad) * wgt; total += wgt;
+      }
+      let best = 0; for (let k = 1; k < 12; k++) if (bins[k] > bins[best]) best = k;
+      if (total > 48 * 27 * 40 && bins[best] > 0) {
+        const h = Math.round((Math.atan2(hy[best], hx[best]) * 180 / Math.PI + 360) % 360);
+        out = `hsl(${h} 96% ${h > 200 && h < 290 ? 70 : 60}%)`;   // blues and violets need lifting to read on ink
+      }
+    } catch (e) {}
+    hots[id] = out;
+    return out;
+  }
+  // light the room from the picture that is on
+  function tint(c) {
+    const root = document.documentElement.style, p = posterOf(c);
+    root.setProperty('--poster', p ? `url("${p}")` : 'none');
+    $('hb').classList.toggle('pic', !!p);
+    if (!p) { root.removeProperty('--hot'); return; }
+    const im = new Image(); im.crossOrigin = 'anonymous';
+    im.onload = () => { if (item() !== c) return; const h = hotOf(im, c.id); if (h) root.setProperty('--hot', h); else root.removeProperty('--hot'); };
+    im.src = p;
   }
   function el(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
   function scrollToTv() { const r = tv.getBoundingClientRect(); if (r.top < 0 || r.bottom > innerHeight) tv.scrollIntoView({ behavior: reduce.matches ? 'auto' : 'smooth', block: 'center' }); }
@@ -135,7 +273,7 @@
     if (opt.first) { show(c, false); showOsd(3200); return; }
     // The flip holds (static, badge) until the animation has run AND, when a video is about to play, until it
     // has its first frame; otherwise the set would show black at 0:00. A few seconds at most.
-    const willPlay = play && c.kind === 'video' && c.ready;
+    const willPlay = play && c.kind === 'video' && c.ready && !c.warning;
     const tok = ++flipTok;
     let minDone = false, ready = !willPlay;
     const land = () => {
@@ -147,7 +285,7 @@
     };
     const begin = (cls, ms, level) => {
       if (cls === 'xfade') { tv.classList.add('xfade'); } else { void tv.offsetWidth; tv.classList.add(cls); runSnow(willPlay ? FLIP_CAP + 200 : ms + 40); blip(level); }
-      const put = () => { show(c, false, true); if (willPlay) start(); };
+      const put = () => { show(c, false, true); if (willPlay) start(); else ctlShow(true); };
       if (willPlay) tv.classList.add('wait');   // the poster covers the screen until the first frame
       if (cls === 'xfade') setTimeout(() => { if (tok !== flipTok) return; put(); tv.classList.remove('xfade'); tv.classList.add('hold'); }, 200); else put();
       flipTimer = setTimeout(() => { minDone = true; land(); }, ms);
@@ -234,12 +372,18 @@
     $('nowd').textContent = c.concept;
     $('noww').textContent = c.warning ? '⚠ ' + c.warning : ''; $('noww').hidden = !c.warning;
     document.title = (c.kind === 'video' ? c.title + ', by ' + c.artist + ' · ' : '') + 'Music Video Adventures';
-    document.querySelectorAll('#guide .chan').forEach((li) => {
-      const mine = +li.dataset.ch === ci;
-      li.classList.toggle('on', mine);
-      li.querySelectorAll('.items button').forEach((bt, k2) => bt.setAttribute('aria-current', mine && k2 === ch.pos ? 'true' : 'false'));
-      li.querySelector('.chh').setAttribute('aria-current', mine ? 'true' : 'false');
+    buildWall();
+    document.querySelectorAll('#dial .slab').forEach((hb) => {
+      const mine = +hb.dataset.ch === ci;
+      hb.setAttribute('aria-current', mine ? 'true' : 'false');
+      const g = hb.querySelector('.go'); if (g) g.textContent = mine ? 'On air' : 'Tune in ▶';
     });
+    document.querySelectorAll('#wall .tile').forEach((bt, k2) => {
+      const cur = k2 === ch.pos;
+      bt.setAttribute('aria-current', cur ? 'true' : 'false');
+      if (cur && !chanChanged) { const r = bt.getBoundingClientRect(); if (r.bottom > 0 && r.top < innerHeight && (r.top < 0 || r.bottom > innerHeight)) bt.scrollIntoView({ block: 'nearest', behavior: reduce.matches ? 'auto' : 'smooth' }); }
+    });
+    tint(c);
   }
 
   // put channel c on the screen (not yet playing)
@@ -251,6 +395,9 @@
     if (isVid) {
       vid.poster = posterOf(c);
       big.hidden = false;
+      big.classList.toggle('warn', !!c.warning);
+      big.setAttribute('aria-label', c.warning ? 'Play. Warning: ' + c.warning : 'Play');
+      { const bw = $('bigw'); bw.textContent = ''; if (c.warning) bw.append('⚠ ' + c.warning, el('small', '', 'your call. press play.')); }
       setTime(0, c.duration);
       if (play) start();
     } else {
@@ -384,6 +531,7 @@
   $('next').addEventListener('click', () => step(1, { user: true }));
   $('prev').addEventListener('click', () => step(-1, { user: true }));
   $('ctl').addEventListener('click', (e) => e.stopPropagation());
+  $('remote').addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) $(b.dataset.act).click(); });
   tv.addEventListener('mousemove', () => ctlShow());
   tv.addEventListener('mouseleave', ctlHide);
   tv.addEventListener('dblclick', (e) => { if (!e.target.closest('.ctl')) fullscreen(); });
@@ -501,6 +649,6 @@
     } catch (e) {}
   }
 
-  window.__mv = { get chans() { return chans; }, get ci() { return ci; }, get item() { return item(); }, go, chan, step, media: MEDIA, get hlsjs() { return !!hls; } };
+  window.__mv = { get preview() { return pv ? pv.v : null; }, get chans() { return chans; }, get ci() { return ci; }, get item() { return item(); }, go, chan, step, media: MEDIA, get hlsjs() { return !!hls; } };
   boot();
 })();

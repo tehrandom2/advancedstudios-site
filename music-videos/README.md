@@ -1,6 +1,10 @@
 # Music Video Adventures
 
-The page at https://advancedstudios.net/music-videos/: a set with channels. Up and down change channel, left and right change video inside a channel.
+The page at https://advancedstudios.net/music-videos/: a set, the channels as slabs beside it, and the channel that is on as a wall of its videos' own pictures.
+
+- Every channel is a slab on the first screen: one click or tap opens it.
+- Every video is a tile on its channel's wall: one click or tap puts it on the set.
+- The page takes its colour, its backdrop and the fill of its title from the poster of whatever is on.
 
 - The page (`index.html`, `app.js`) names no channel and no video. It reads `channels.json` from the media host.
 - The media host is its own Cloudflare Pages project (`advancedstudios-music-videos`, https://media.advancedstudios.net). The video is HLS: 1080p, 720p and 480p in 4-second pieces, every file far under the 25 MiB limit. Video is never in this repo.
@@ -54,7 +58,7 @@ Channel numbers are the order in the file. Channel 00 is the test card (`offair`
 
 Setting it back to `true` and running `mv-publish` puts it all back.
 
-A video can carry `"warning": "Flashing lights"`; the page shows it as a small note.
+A video can carry `"warning": "Flashing lights"`. Such a video never starts by itself, however it is reached (tile, channel, key, swipe, link, the video before it ending): it waits on its poster with the warning written on the play button, and plays when that is pressed. It also gets no hover preview.
 
 ## The take-down form
 
@@ -88,6 +92,10 @@ Safari plays HLS itself; other browsers load `vendor/hls.light.min.js` (hls.js 1
 
 Deep links: `/music-videos/#song-name` or `/music-videos/?v=song-name`; a channel id works too.
 
-Keys: up/down or PageUp/PageDown channel, left/right video, 0-9 channel number, space play/pause, J/L seek, F fullscreen, M mute. On a phone: swipe up/down for channel, left/right for video, tap for the controls.
+Keys: up/down or PageUp/PageDown channel, left/right video, 0-9 channel number, space play/pause, J/L seek, F fullscreen, M mute. On a phone: the channel slabs, the wall and the four buttons under the set; swipes on the set still work (up/down channel, left/right video), tap for the controls.
+
+What moves at rest: the ticker (its titles are buttons), the slow pan of the poster inside the title, the slabs changing one still picture at a time, and a silent hover preview on a tile (mouse only, smallest rendition, from a quarter of the way in, never for a video with a warning). All of it stops under `prefers-reduced-motion`.
+
+Posters are fetched when a tile comes near the screen. A video of 20 minutes or more is a long play and gets a double tile.
 
 No ads, no analytics, no third-party scripts. Keep it that way.
