@@ -20,6 +20,7 @@
   const HLS_JS = 'vendor/hls.light.min.js'; // hls.js 1.6.13, vendored
 
   let chans = [];         // {num, id, name, intro, notice, hidden, pos, items:[{kind:'video'|'card', id, title, artist, concept, ready, duration}]}
+  const credit = (c) => (c.album ? 'on ' + c.album : 'by ' + c.artist);   // a game soundtrack track is ON its album, not BY it
   let ci = -1;            // channel on screen
   let formUrl = '';
   const item = () => (ci >= 0 ? chans[ci].items[chans[ci].pos] : null);
@@ -47,7 +48,7 @@
     formUrl = data.removalForm || '';
     // A hidden channel is only ever in the LAN preview's listing. No public host is sent one.
     chans = (data.channels || []).map((c, i) => {
-      const items = (c.videos || []).map((v) => ({ kind: 'video', id: v.id, title: v.title, artist: v.artist, concept: v.concept, warning: v.warning || '', ready: v.ready !== false, duration: v.duration || 0 }));
+      const items = (c.videos || []).map((v) => ({ kind: 'video', id: v.id, title: v.title, artist: v.artist, album: v.album || '', concept: v.concept, warning: v.warning || '', ready: v.ready !== false, duration: v.duration || 0 }));
       if (c.next_up) items.push({ kind: 'card', id: c.id + '-next', title: c.next_up.title || 'Next up', artist: c.name, concept: c.next_up.line || '', label: 'next up' });
       if (!items.length) items.push({ kind: 'card', id: c.id + '-soon', title: 'Stand by', artist: c.name, concept: 'Nothing on this channel yet.', label: 'stand by' });
       return { num: i + 1, id: c.id, name: c.name, intro: c.intro || '', notice: c.notice || '', hidden: !!c.hidden, pos: 0, items };
@@ -131,9 +132,9 @@
       if (long) top.append(el('span', 'lp', 'Long play'));
       if (isVid) top.append(el('span', 'd', c.ready ? (long ? Math.round(c.duration / 60) + ' min' : clock(c.duration)) : 'Soon'));
       const tx = el('span', 'tx');
-      tx.append(el('span', 'tt', c.title), el('span', 'ar vt', isVid ? 'by ' + c.artist : ''));
+      tx.append(el('span', 'tt', c.title), el('span', 'ar vt', isVid ? credit(c) : ''));
       bt.append(top, tx);
-      bt.setAttribute('aria-label', c.title + (isVid ? ', by ' + c.artist + (c.duration ? ', ' + clock(c.duration) : '') : '') + (c.warning ? '. Warning: ' + c.warning : ''));
+      bt.setAttribute('aria-label', c.title + (isVid ? ', ' + credit(c) + (c.duration ? ', ' + clock(c.duration) : '') : '') + (c.warning ? '. Warning: ' + c.warning : ''));
       bt.title = (c.warning ? '⚠ ' + c.warning + '. ' : '') + c.concept;
       bt.addEventListener('click', () => { pvStop(); pick(ch, c, b); });
       pvArm(bt, c);
@@ -325,7 +326,7 @@
   function openForm() {
     const sel = $('tdv'), here = item();
     sel.textContent = '';
-    chans.forEach((ch) => ch.items.forEach((c) => { if (c.kind !== 'video') return; const o = el('option', '', c.title + ', by ' + c.artist); o.value = o.textContent; if (c === here) o.selected = true; sel.append(o); }));
+    chans.forEach((ch) => ch.items.forEach((c) => { if (c.kind !== 'video') return; const o = el('option', '', c.title + ', ' + credit(c)); o.value = o.textContent; if (c === here) o.selected = true; sel.append(o); }));
     sel.append(el('option', '', 'Something else'));
     $('tdmsg').textContent = ''; tdf.hidden = false; $('tddone').hidden = true;
     tdOpened = Date.now();
@@ -352,7 +353,7 @@
     on.textContent = ch.hidden ? ch.name + ' · HIDDEN' : ch.name;
     on.classList.toggle('hid', ch.hidden);
     $('osdt').textContent = c.title;
-    $('osda').textContent = c.kind === 'video' ? 'by ' + c.artist : tagOf(ch, c);
+    $('osda').textContent = c.kind === 'video' ? credit(c) : tagOf(ch, c);
     if (chanChanged) {                         // the header, intro and notice belong to the channel on screen
       rich($('voice'), ch.offair ? c.concept : ch.intro);
       rich($('notice'), ch.notice);
@@ -368,10 +369,10 @@
     $('nowt').textContent = c.title;
     const cr = $('nowc');
     cr.textContent = '';
-    if (c.kind === 'video') cr.append('Song: ', el('b', '', c.title), ', by ', el('b', '', c.artist), ' · Visuals: advanced studios');
+    if (c.kind === 'video') cr.append('Song: ', el('b', '', c.title), c.album ? ', on ' : ', by ', el('b', '', c.album || c.artist), ' · Visuals: advanced studios');
     $('nowd').textContent = c.concept;
     $('noww').textContent = c.warning ? '⚠ ' + c.warning : ''; $('noww').hidden = !c.warning;
-    document.title = (c.kind === 'video' ? c.title + ', by ' + c.artist + ' · ' : '') + 'Music Video Adventures';
+    document.title = (c.kind === 'video' ? c.title + ', ' + credit(c) + ' · ' : '') + 'Music Video Adventures';
     buildWall();
     document.querySelectorAll('#dial .slab').forEach((hb) => {
       const mine = +hb.dataset.ch === ci;
@@ -404,7 +405,7 @@
       big.hidden = true;
       { const tg = c.kind === 'card' ? tagOf(chans[ci], c) : 'tuning in soon'; $('cardk').textContent = 'CH ' + pad(chans[ci].num) + ' · ' + chans[ci].name + (tg ? ' · ' + tg : ''); }
       $('cardh').textContent = c.title;
-      $('cardl').textContent = c.kind === 'card' ? c.concept : 'by ' + c.artist + '. Not on the air yet.';
+      $('cardl').textContent = c.kind === 'card' ? c.concept : credit(c) + '. Not on the air yet.';
       setTime(0, 0);
       idleSnow();
     }

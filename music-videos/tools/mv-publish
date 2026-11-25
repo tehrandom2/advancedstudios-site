@@ -134,7 +134,7 @@ def channels_json(data, roots, everything=False):
         c = {k: ch[k] for k in ("id", "name", "intro", "notice", "next_up") if k in ch}
         if not ch["public"]:
             c["hidden"] = True
-        c["videos"] = [dict({k: v[k] for k in ("id", "title", "artist", "concept", "warning") if k in v},
+        c["videos"] = [dict({k: v[k] for k in ("id", "title", "artist", "album", "concept", "warning") if k in v},
                             ready=v["id"] in have, duration=have.get(v["id"], 0)) for v in ch.get("videos", [])]
         out["channels"].append(c)
     if everything:
