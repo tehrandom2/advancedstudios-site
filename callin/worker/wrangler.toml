@@ -1,0 +1,32 @@
+# The call-in voicemail inbox. Free plan. It answers on ONE exact path and nothing else, so only the site's
+# Send button invokes it (the account's free Workers quota is shared). Pattern copied from the take-down Worker.
+name = "advancedstudios-callin"
+main = "worker.js"
+compatibility_date = "2026-10-01"
+workers_dev = false
+preview_urls = false
+routes = [{ pattern = "media.advancedstudios.net/callin", zone_name = "advancedstudios.net" }]
+
+# The calls: one value per call (the MP3), its index in the value's metadata. Read by the desk's `callins`.
+[[kv_namespaces]]
+binding = "STORE"
+id = "a77b44ab798c4544b2cef21f8442826b"
+
+# Speech to text (whisper-large-v3-turbo), inside the free 10,000 neurons a day.
+[ai]
+binding = "AI"
+
+# The rate and cap counter (a Durable Object counts in one place; KV is too slow to show a write).
+[[durable_objects.bindings]]
+name = "GATE"
+class_name = "Gate"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Gate"]
+
+# Lowers the 200-a-day cap in worker.js (never raises it). 20 while Turnstile is on the test secret.
+[vars]
+DAILY_CAP = "20"
+
+# TURNSTILE_SECRET is a secret (wrangler secret put, from the vault through op), never in this file.
