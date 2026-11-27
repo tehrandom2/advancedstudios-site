@@ -244,7 +244,7 @@
   }
 
   // ---- Turnstile ---------------------------------------------------------------------------------------------------
-  var tsReady = null;
+  var tsReady = null, tsWidget = null;
   function loadTurnstile() {
     if (tsReady) return tsReady;
     tsReady = new Promise(function (ok, no) {
@@ -259,11 +259,13 @@
   }
   function renderTurnstile() {
     var my = sess;
+    if (tsWidget != null && window.turnstile) { try { window.turnstile.remove(tsWidget); } catch (e) {} }
+    tsWidget = null;
     els.ts.textContent = '';
     var box = h('div', {}); els.ts.appendChild(box);
     loadTurnstile().then(function () {
       if (my !== sess) return;
-      window.turnstile.render(box, {
+      tsWidget = window.turnstile.render(box, {
         sitekey: SITEKEY, action: 'callin', theme: 'dark', size: 'flexible',
         callback: function (t) { s.token = t; ['send', 'resend'].forEach(function (k) { var b = els.keys.querySelector('[data-act="' + k + '"]'); if (b) b.disabled = false; }); },
         'expired-callback': function () { s.token = null; ['send', 'resend'].forEach(function (k) { var b = els.keys.querySelector('[data-act="' + k + '"]'); if (b) b.disabled = true; }); },
@@ -292,6 +294,8 @@
   function redo() {
     var my = ++sess, ctx = s.ctx;
     if (s.audio) { s.audio.pause(); URL.revokeObjectURL(s.audio.src); }
+    releaseMic();
+    clearData();
     s = { ctx: ctx };
     if (ctx && ctx.resume) ctx.resume();
     view('asking', { kick: 'Calling', title: 'One moment', sub: '', keys: ['hangup'] });
@@ -317,6 +321,9 @@
     if (s.audio) { s.audio.pause(); URL.revokeObjectURL(s.audio.src); s.audio = null; }
     if (s.ctx && s.ctx.close) { try { s.ctx.close(); } catch (e) {} }
     s.ctx = null;
+    clearData();
+  }
+  function clearData() {
     if (dlg) ['data-secs', 'data-lufs', 'data-peak', 'data-gain', 'data-bytes', 'data-sha256', 'data-ref', 'data-listen'].forEach(function (k) { dlg.removeAttribute(k); });
   }
 
