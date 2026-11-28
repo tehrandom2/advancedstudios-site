@@ -39,6 +39,8 @@ dialog.ci::backdrop { background: rgba(5, 3, 4, .78); }
 .ci-wave i:nth-child(2) { animation-delay: -.8s; } .ci-wave i:nth-child(3) { animation-delay: -.6s; }
 .ci-wave i:nth-child(4) { animation-delay: -.4s; } .ci-wave i:nth-child(5) { animation-delay: -.2s; }
 .ci-ts { margin-top: 12px; min-height: 65px; font: 14px/1.4 system-ui, sans-serif; color: #b8deaa; }
+.ci-ts-note { margin: 8px 0 0; }
+.ci-ts-note:empty { display: none; }
 .ci [hidden] { display: none !important; }
 .ci-keys { display: grid; grid-template-columns: repeat(auto-fit, minmax(128px, 1fr)); gap: 10px; margin-top: 14px; }
 .ci-keys .ci-k:nth-child(3) { grid-column: 1 / -1; }
