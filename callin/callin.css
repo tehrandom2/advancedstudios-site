@@ -1,0 +1,70 @@
+/* Call-in: the button's notice and the phone panel. Dark only, like the pages it sits on. */
+.callin { --ci-ink: #0b0809; --ci-bone: #f3ead9; --ci-dim: #b5a89a; --ci-red: #ff4f3d; --ci-amber: #ffb347; }
+.callin-note { margin: .5rem 0 0; font-size: .82rem; line-height: 1.35; color: #b5a89a; max-width: 34em; }
+.callin-btn .ci-ico { width: 1.25em; height: 1.25em; flex: none; }
+
+dialog.ci {
+  --ink: #0b0809; --body: #1a1416; --edge: #3a2e31; --bone: #f3ead9; --dim: #c2b5a7; --red: #ff4f3d; --amber: #ffb347;
+  --lcd: #1d2a1f; --lcdink: #c9f7b5; --lcddim: #8fbf80;
+  padding: 0; border: 0; background: transparent; color: var(--bone); max-width: min(380px, calc(100vw - 32px));
+  width: 100%; max-height: calc(100dvh - 24px); overflow: visible;
+  font: 16px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+dialog.ci::backdrop { background: rgba(5, 3, 4, .78); }
+.ci-phone {
+  background: linear-gradient(180deg, #241c1f, var(--body)); border: 1px solid var(--edge); border-radius: 28px;
+  padding: 14px 16px 16px; box-shadow: 0 24px 60px rgba(0, 0, 0, .6), inset 0 1px 0 rgba(255, 255, 255, .06);
+  max-height: calc(100dvh - 24px); overflow-y: auto;
+}
+.ci-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+.ci-line { font-size: .78rem; letter-spacing: .04em; text-transform: uppercase; color: var(--dim); }
+.ci-x {
+  inline-size: 44px; block-size: 44px; border-radius: 50%; border: 1px solid var(--edge); background: #120d0f; color: var(--bone);
+  font-size: 1.5rem; line-height: 1; cursor: pointer; flex: none;
+}
+.ci-screen {
+  background: var(--lcd); color: var(--lcdink); border-radius: 14px; padding: 16px 16px 14px; min-height: 196px;
+  border: 2px solid #0f1710; box-shadow: inset 0 2px 10px rgba(0, 0, 0, .55);
+  font-family: "VT323", ui-monospace, Menlo, monospace;
+}
+.ci-kick { margin: 0; font-size: 1.05rem; letter-spacing: .12em; text-transform: uppercase; color: var(--lcddim); }
+.ci-title { margin: 2px 0 6px; font: inherit; font-size: 1.75rem; line-height: 1.05; color: var(--lcdink); }
+.ci-sub { margin: 8px 0 0; font: 15px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: #b8deaa; }
+.ci-time { margin: 2px 0; font-size: 3rem; line-height: 1; letter-spacing: .04em; }
+.ci[data-state="recording"] .ci-kick::before { content: ""; display: inline-block; width: .6em; height: .6em; margin-right: .4em; border-radius: 50%; background: var(--red); vertical-align: .05em; animation: ci-blink 1s steps(2) infinite; }
+.ci-meter { height: 10px; border-radius: 5px; background: #0f1710; overflow: hidden; margin: 6px 0 2px; }
+.ci-meter i { display: block; height: 100%; background: linear-gradient(90deg, #7dff9b, #ffd36e 70%, var(--red)); transform-origin: left; transform: scaleX(0); }
+.ci-wave { display: flex; gap: 5px; align-items: center; height: 34px; margin: 6px 0; }
+.ci-wave i { width: 6px; height: 100%; background: var(--lcdink); border-radius: 3px; animation: ci-wave 1s ease-in-out infinite; }
+.ci-wave i:nth-child(2) { animation-delay: -.8s; } .ci-wave i:nth-child(3) { animation-delay: -.6s; }
+.ci-wave i:nth-child(4) { animation-delay: -.4s; } .ci-wave i:nth-child(5) { animation-delay: -.2s; }
+.ci-ts { margin-top: 12px; min-height: 65px; font: 14px/1.4 system-ui, sans-serif; color: #b8deaa; }
+.ci [hidden] { display: none !important; }
+.ci-keys { display: grid; grid-template-columns: repeat(auto-fit, minmax(128px, 1fr)); gap: 10px; margin-top: 14px; }
+.ci-keys .ci-k:nth-child(3) { grid-column: 1 / -1; }
+.ci-keys .ci-k { white-space: nowrap; }
+.ci-k {
+  min-height: 48px; padding: 8px 12px; border-radius: 14px; border: 1px solid var(--edge); background: #120d0f; color: var(--bone);
+  font: 600 16px/1.2 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; cursor: pointer;
+}
+.ci-k.go { background: #1f6b3a; border-color: #2f8f50; color: #fff; }
+.ci-k.end { background: #8a1d12; border-color: #b8321f; color: #fff; }
+.ci-k[disabled] { opacity: .45; cursor: not-allowed; }
+.ci-k:focus-visible, .ci-x:focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; }
+.ci-note { margin: 12px 2px 0; font-size: .8rem; line-height: 1.35; color: var(--dim); }
+@keyframes ci-blink { 50% { opacity: 0; } }
+@keyframes ci-wave { 0%, 100% { transform: scaleY(.25); } 50% { transform: scaleY(1); } }
+@media (prefers-reduced-motion: reduce) { .ci-wave i, .ci[data-state="recording"] .ci-kick::before { animation: none; } }
+
+/* the trigger on each page */
+.callin .callin-btn { font-family: inherit; background: transparent; cursor: pointer; }
+.callin:not(.callin-mv) { margin-top: 10px; }
+.callin.callin-mv { margin-top: 10px; }
+.callin.callin-mv .callin-btn {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 6px 14px 5px; border: 0; border-radius: 0;
+  background: #f3ead9; color: #0b0809; font-size: 22px; line-height: 1; transform: rotate(-1deg);
+  box-shadow: 4px 4px 0 var(--hot, #ff4f3d);
+}
+.callin.callin-mv .callin-btn:hover { background: #fff; }
+.callin.callin-mv .callin-btn:focus-visible { outline: 3px solid #ffb347; outline-offset: 3px; }
+.callin.callin-mv .callin-btn { font-family: "VT323", ui-monospace, monospace; text-transform: uppercase; letter-spacing: .04em; }
