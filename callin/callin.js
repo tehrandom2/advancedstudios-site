@@ -262,13 +262,21 @@
     if (tsWidget != null && window.turnstile) { try { window.turnstile.remove(tsWidget); } catch (e) {} }
     tsWidget = null;
     els.ts.textContent = '';
-    var box = h('div', {}); els.ts.appendChild(box);
+    var box = h('div', {}), note = h('p', { class: 'ci-ts-note', 'aria-live': 'polite' });
+    els.ts.appendChild(box); els.ts.appendChild(note);
+    function sendable(on) { ['send', 'resend'].forEach(function (k) { var b = els.keys.querySelector('[data-act="' + k + '"]'); if (b) b.disabled = !on; }); }
     loadTurnstile().then(function () {
       if (my !== sess) return;
       tsWidget = window.turnstile.render(box, {
         sitekey: SITEKEY, action: 'callin', theme: 'dark', size: 'flexible',
-        callback: function (t) { s.token = t; ['send', 'resend'].forEach(function (k) { var b = els.keys.querySelector('[data-act="' + k + '"]'); if (b) b.disabled = false; }); },
-        'expired-callback': function () { s.token = null; ['send', 'resend'].forEach(function (k) { var b = els.keys.querySelector('[data-act="' + k + '"]'); if (b) b.disabled = true; }); },
+        callback: function (t) { s.token = t; note.textContent = ''; sendable(true); },
+        'expired-callback': function () { s.token = null; sendable(false); },
+        // Handled here, so Turnstile doesn't throw. It retries by itself; the message stays on the phone meanwhile.
+        'error-callback': function () {
+          s.token = null; sendable(false);
+          note.textContent = "The robot check didn't pass. It will try again by itself, or tap its box. Your message is still here.";
+          return true;
+        },
       });
     }, function () {
       if (my === sess) els.ts.textContent = "The robot check didn't load. Check your connection, then record again.";
