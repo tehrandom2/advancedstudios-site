@@ -34,6 +34,7 @@ The desk reads the store with `~/Services/music-videos-media/callins` (list, `--
 - Deploy: from `callin/worker`, with the token read through op, never on a command line:
   `op run --env-file=$HOME/Services/music-videos-media/deploy.env -- npx wrangler@4.156.0 deploy`. The Turnstile secret
   goes in by `wrangler secret put TURNSTILE_SECRET` with the value on stdin.
-- `SITEKEY` in callin.js is Cloudflare's always-pass test key until our widget exists. While the Worker uses the test
-  secret, `DAILY_CAP = "20"` in wrangler.toml keeps the unguarded route small. The variable can only lower the
-  200-a-day cap in worker.js.
+- `SITEKEY` in callin.js is the Turnstile widget "advancedstudios call in" (managed mode, advancedstudios.net and www).
+  Its secret is the Worker's TURNSTILE_SECRET; to set it again, pipe it from the Turnstile API into
+  `wrangler secret put` on stdin. A `DAILY_CAP` var in wrangler.toml can lower the 200-a-day cap in worker.js, never
+  raise it.

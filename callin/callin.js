@@ -9,7 +9,7 @@
   var BASE = new URL('.', document.currentScript.src);
   var V = new URL(document.currentScript.src).search;            // the same ?v= for the files this one loads
   var ENDPOINT = 'https://media.advancedstudios.net/callin';
-  var SITEKEY = '1x00000000000000000000AA';                      // Cloudflare's always-pass test key until our widget exists
+  var SITEKEY = '0x4AAAAAAGWgiMe4mmxsUpXc';                      // Turnstile widget "advancedstudios call in" (managed; apex and www)
   var MAX_SECS = 60;
 
   var dlg, els = {}, sess = 0, s = {};     // s: the live call (context, stream, nodes, samples, mp3)
